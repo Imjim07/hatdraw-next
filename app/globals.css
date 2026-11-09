@@ -207,6 +207,18 @@ select.in option{background:var(--indigo-cloth);color:var(--starch)}
 .adire-grid span{display:grid;place-items:center;padding:16%;background:var(--indigo-cloth);min-width:0;min-height:0}
 .adire-grid svg{width:100%;height:100%}
 
+/* adire loader: 2.8s cycle. 0–20% dye wash, then each square draws in 120ms apart, holds, fades */
+.adire-loader{position:relative;margin:0 auto;border:1.5px solid rgba(239,232,216,.35);border-radius:6px;overflow:hidden;background:var(--indigo-cloth)}
+.adire-loader .adire-grid{position:absolute;inset:0;background:rgba(239,232,216,.3)}
+.adire-loader .adire-grid span{padding:18%}
+.adire-loader svg{opacity:0;animation:al-show 2.8s calc(var(--i) * 120ms) infinite}
+.adire-loader svg :is(path,ellipse){stroke-dasharray:1;stroke-dashoffset:1;animation:al-draw 2.8s calc(var(--i) * 120ms) infinite}
+.adire-loader::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(74,110,190,.9) 50%,transparent 70%) no-repeat;background-size:300% 300%;background-position:100% 100%;animation:al-wash 2.8s ease-in-out infinite;pointer-events:none}
+@keyframes al-wash{0%{background-position:100% 100%;opacity:1}20%{background-position:0 0;opacity:1}21%,100%{opacity:0}}
+@keyframes al-show{0%,20%{opacity:0}24%,80%{opacity:1}92%,100%{opacity:0}}
+@keyframes al-draw{0%,20%{stroke-dashoffset:1}38%,100%{stroke-dashoffset:0}}
+.loading-screen{position:relative;z-index:1;min-height:70vh;display:grid;place-content:center;gap:16px;text-align:center}
+
 /* the starch reveal: one button, three beats */
 .cloth{position:relative;display:block;width:min(300px,80vw);aspect-ratio:1;margin:30px auto 22px;background:var(--indigo-cloth);border:2px solid rgba(239,232,216,.25);border-radius:8px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;box-shadow:0 30px 60px -28px rgba(0,0,0,.7)}
 .cloth:focus-visible{outline:2px solid var(--gold);outline-offset:6px}
@@ -272,5 +284,6 @@ select.in option{background:var(--indigo-cloth);color:var(--starch)}
   .res-row .acts .btn{flex:1;padding:9px 8px;font-size:.8rem}
   .tabs{width:100%}.tabs button{flex:1;padding:10px 8px;font-size:.82rem;white-space:nowrap}
 }
-@media (prefers-reduced-motion:reduce){.cloth.shake-a,.cloth.shake-b{animation:none}.starch,.cracks path,.chunks path{transition:none!important}
+@media (prefers-reduced-motion:reduce){.adire-loader svg,.adire-loader svg :is(path,ellipse),.adire-loader::after{animation:none!important}.adire-loader svg{opacity:1}.adire-loader svg :is(path,ellipse){stroke-dashoffset:0}.adire-loader::after{display:none}
+  .cloth.shake-a,.cloth.shake-b{animation:none}.starch,.cracks path,.chunks path{transition:none!important}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}

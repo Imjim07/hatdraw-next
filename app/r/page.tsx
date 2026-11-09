@@ -1,9 +1,23 @@
 "use client";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import GiftReveal from "@/components/GiftReveal";
+import AdireLoader from "@/components/AdireLoader";
 import type { RevealPayload } from "@/lib/types";
 import { BRAND } from "@/lib/config";
+
+// The reveal UI loads in parallel with the decrypt request (both start on mount),
+// so first-load JS stays small for people opening links on slow mobile data.
+const loadReveal = () => import("@/components/GiftReveal");
+const GiftReveal = lazy(loadReveal);
+
+function Opening() {
+  return (
+    <div className="reveal"><div className="reveal-inner">
+      <AdireLoader label="Opening your cloth" />
+      <p className="sub" style={{ margin: "18px auto 0" }} aria-hidden="true">Opening your cloth…</p>
+    </div></div>
+  );
+}
 
 // Links look like /r#<token>. The token stays in the URL fragment, which
 // browsers never send to servers, and is posted to /api/reveal to decrypt.
@@ -12,6 +26,7 @@ export default function RevealPage() {
 
   useEffect(() => {
     const token = window.location.hash.slice(1);
+    loadReveal();
     // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only value, read once after hydration
     if (!token) { setState({ error: "This link is missing its secret part. Ask your organizer to resend it." }); return; }
     fetch("/api/reveal", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) })
@@ -21,15 +36,16 @@ export default function RevealPage() {
   }, []);
 
   if (state.data)
-    return <GiftReveal data={state.data} context="link" actions={<Link href="/draw" className="btn btn-ghost">Run your own draw on {BRAND.name}</Link>} />;
+    return (
+      <Suspense fallback={<Opening />}>
+        <GiftReveal data={state.data} context="link" actions={<Link href="/draw" className="btn btn-ghost">Run your own draw on {BRAND.name}</Link>} />
+      </Suspense>
+    );
+  if (!state.error) return <Opening />;
 
   return (
     <div className="reveal"><div className="reveal-inner">
-      {state.error ? (
-        <><h2 className="serif">Hmm 🎩</h2><p className="sub" style={{ margin: "0 auto 24px" }}>{state.error}</p><Link href="/" className="btn btn-ghost">Go to {BRAND.name}</Link></>
-      ) : (
-        <p className="sub" style={{ margin: "0 auto" }}>Opening the hat…</p>
-      )}
+      <h2 className="serif">Hmm</h2><p className="sub" style={{ margin: "0 auto 24px" }}>{state.error}</p><Link href="/" className="btn btn-ghost">Go to {BRAND.name}</Link>
     </div></div>
   );
 }
