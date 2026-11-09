@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { burst } from "./Ambient";
 import { AdireGrid, IgiIye, Ododo } from "./motifs";
+import { serifName } from "@/lib/marks";
 import { naira } from "@/lib/config";
 import type { RevealPayload } from "@/lib/types";
 
@@ -35,6 +36,7 @@ export default function GiftReveal({ data, context, actions }: Props) {
   const spinning = useRef(false);
   const { e, g, r } = data;
   const open = taps >= 3;
+  const giver = serifName(g), match = serifName(r);
 
   const tap = () => {
     if (open) return;
@@ -69,7 +71,7 @@ export default function GiftReveal({ data, context, actions }: Props) {
   return (
     <div className="reveal"><div className="reveal-inner">
       <div className="eyebrow">{e.name}{context === "preview" ? " · preview" : ""}</div>
-      <h2 className="serif" style={{ marginTop: 12 }}>Hi {g} 👋</h2>
+      <h2 style={{ marginTop: 12 }}>Hi <span className={giver.className}>{giver.text}</span> 👋</h2>
       <p className="sub" style={{ margin: "0 auto" }} aria-live="polite">
         {open ? <>This Christmas, you&apos;re gifting <span className="sr-only">{r}</span></> : "Someone\u2019s name is under the starch."}
       </p>
@@ -85,7 +87,7 @@ export default function GiftReveal({ data, context, actions }: Props) {
         {open && (
           <span className="cloth-name" aria-hidden="true">
             <IgiIye size={34} color="var(--gold)" strokeWidth={6} />
-            <span className="serif" style={{ fontSize: `calc(min(300px, 80vw) * ${(nameSize / 300).toFixed(3)})` }}>{r}</span>
+            <span className={match.className} style={{ fontSize: `calc(min(300px, 80vw) * ${(nameSize / 300).toFixed(3)})` }}>{match.text}</span>
           </span>
         )}
         <span className="starch" aria-hidden="true">

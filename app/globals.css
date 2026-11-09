@@ -27,6 +27,7 @@ button{cursor:pointer;border:0;background:none}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .serif{font-family:var(--serif)}
+.serif.yo{font-family:'Noto Serif',Georgia,serif;font-weight:600}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .ambient{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 .fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:90}
@@ -68,10 +69,23 @@ h1 em{font-style:italic;color:var(--gold)}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
 .trust{display:flex;gap:22px;margin-top:30px;color:var(--starch-dim);font-size:.86rem;flex-wrap:wrap}
 .trust span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);margin-right:8px;vertical-align:middle;box-shadow:var(--pit-shadow)}
-.hat-stage{position:relative;aspect-ratio:1;max-width:440px;margin-left:auto;width:100%}
-.hat-stage svg{position:absolute;inset:0;width:100%;height:100%}
-.slip{position:absolute;background:var(--starch);color:var(--indigo-deep);font-family:var(--serif);font-weight:600;padding:8px 14px;border-radius:8px;font-size:.95rem;box-shadow:0 12px 30px -8px rgba(0,0,0,.5);animation:float 6s ease-in-out infinite}
-@keyframes float{50%{translate:0 -14px}}
+/* ṣẹ̀kẹ̀rẹ̀ */
+.hero-shekere{max-width:440px;width:100%;margin-left:auto;text-align:center}
+.shekere-btn{display:block;width:100%;border-radius:24px;-webkit-tap-highlight-color:transparent}
+.shekere{display:block;width:100%;height:auto;overflow:visible}
+.shekere-cap{font-size:.82rem;color:var(--muted);margin-top:4px}
+.shk-gourd,.shk-beads{transform-box:view-box;transform-origin:240px 34px}
+.panel .shekere{--shk-fill:var(--indigo-deep)}
+.shekere.shaking .shk-gourd{animation:shk-twist .9s cubic-bezier(.36,.07,.19,.97) infinite}
+.shekere.shaking .shk-beads{animation:shk-rattle .9s cubic-bezier(.36,.07,.19,.97) 80ms infinite}
+@keyframes shk-twist{0%{transform:rotate(0)}22%{transform:rotate(-8deg)}50%{transform:rotate(6deg)}76%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+@keyframes shk-rattle{0%{transform:rotate(0)}24%{transform:rotate(-10.5deg)}52%{transform:rotate(8.5deg)}78%{transform:rotate(-4.5deg)}90%{transform:rotate(1.5deg)}100%{transform:rotate(0)}}
+.shekere.counting .bead{transform-box:fill-box;transform-origin:center;animation:beadpop .4s var(--spring)}
+@keyframes beadpop{from{transform:scale(0)}}
+.names-head{display:grid;grid-template-columns:1fr 150px;gap:18px;align-items:center}
+.names-head .shekere{width:150px}
+.drum{display:grid;place-items:center;gap:6px;min-height:300px;text-align:center}
+.drum .shekere{width:min(220px,60vw)}
 
 /* sections */
 section.band{padding:80px 0;border-top:1px solid var(--line)}
@@ -171,7 +185,6 @@ select.in option{background:var(--indigo-cloth);color:var(--starch)}
 .ex-list{display:grid;gap:8px;margin-top:12px}
 .ex{display:flex;align-items:center;justify-content:space-between;padding:6px 6px 6px 18px;background:var(--indigo-pit);box-shadow:var(--pit-shadow);border-radius:999px;font-size:.92rem;gap:10px}
 .ex button{color:var(--muted);min-height:44px;padding:0 14px;border-radius:999px}.ex button:hover{color:var(--starch)}
-.drum{display:grid;place-items:center;min-height:300px;text-align:center}
 .drum .big{font-family:var(--serif);font-size:clamp(2rem,6vw,3.4rem);font-weight:600;color:var(--starch);min-height:1.3em}
 .res{display:grid;gap:10px;margin-top:22px}
 .res-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:var(--indigo-deep);border:1px solid var(--line);border-radius:14px;flex-wrap:wrap}
@@ -240,7 +253,7 @@ select.in option{background:var(--indigo-cloth);color:var(--starch)}
 
 @media (max-width:860px){
   .hero{grid-template-columns:1fr;padding-top:30px}
-  .hat-stage{margin:0 auto;max-width:340px}
+  .hero-shekere{margin:0 auto;max-width:360px}
   .grid3,.prices{grid-template-columns:1fr}
   .feat{grid-template-columns:1fr 1fr}
   .navlinks{display:none}
@@ -254,6 +267,7 @@ select.in option{background:var(--indigo-cloth);color:var(--starch)}
   .ex-row{grid-template-columns:1fr 1fr}
   .ex-row .btn{grid-column:1/-1}
   .board{grid-template-columns:repeat(3,minmax(0,1fr));padding:10px;gap:8px}
+  .names-head{grid-template-columns:1fr 112px;gap:10px}.names-head .shekere{width:112px}
   .res-row .acts{width:100%;flex-wrap:nowrap}
   .res-row .acts .btn{flex:1;padding:9px 8px;font-size:.8rem}
   .tabs{width:100%}.tabs button{flex:1;padding:10px 8px;font-size:.82rem;white-space:nowrap}

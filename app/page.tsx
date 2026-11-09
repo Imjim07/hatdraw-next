@@ -1,16 +1,9 @@
 import Link from "next/link";
 import Logo from "@/components/Logo";
+import HeroShekere from "@/components/HeroShekere";
 import Countdown, { Year } from "@/components/Countdown";
 import { BRAND, PRICING, naira } from "@/lib/config";
 import { AyeDegbe, Dundun, Owo, Sunbebe } from "@/components/motifs";
-
-const slips: { t: string; s: React.CSSProperties }[] = [
-  { t: "Tolu", s: { top: "6%", left: "18%", rotate: "-8deg" } },
-  { t: "Chidinma", s: { top: "2%", right: "14%", rotate: "6deg", animationDelay: "-2s" } },
-  { t: "Mum", s: { top: "20%", left: "2%", rotate: "4deg", animationDelay: "-4s" } },
-  { t: "Uncle Femi", s: { top: "16%", right: 0, rotate: "-5deg", animationDelay: "-1s" } },
-  { t: "You?", s: { top: "-4%", left: "45%", rotate: "3deg", animationDelay: "-3s", background: "var(--gold)" } },
-];
 
 const features = [
   ["Organizer-blind", "Links are encrypted. Even the person running the draw can't peek, so they can play too."],
@@ -49,18 +42,7 @@ export default function Home() {
             </div>
             <div className="trust"><span>No sign-up</span><span>Free up to {PRICING.FREE_LIMIT} people</span><span>Share on WhatsApp</span></div>
           </div>
-          <div className="hat-stage" aria-hidden="true">
-            <div className="glow" />
-            <svg viewBox="0 0 400 400">
-              <ellipse cx="200" cy="318" rx="160" ry="34" fill="#0A1230" />
-              <ellipse cx="200" cy="300" rx="150" ry="30" fill="#E3B45A" />
-              <path d="M95 300 L118 120 Q200 86 282 120 L305 300 Z" fill="#2E4A8F" />
-              <path d="M118 120 Q200 86 282 120 L278 150 Q200 120 122 150 Z" fill="#1E2F66" />
-              <rect x="105" y="236" width="190" height="26" rx="4" fill="#E3B45A" />
-              <ellipse cx="200" cy="118" rx="82" ry="18" fill="#0A1230" />
-            </svg>
-            {slips.map((s) => <div key={s.t} className="slip" style={s.s}>{s.t}</div>)}
-          </div>
+          <HeroShekere />
         </div>
       </div>
 

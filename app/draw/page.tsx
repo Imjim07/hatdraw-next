@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import GiftReveal from "@/components/GiftReveal";
+import Shekere from "@/components/Shekere";
+import { serifName } from "@/lib/marks";
 import { burst } from "@/components/Ambient";
 import { PRICING, PAYWALL_MODE, naira } from "@/lib/config";
 import type { DrawResponse, EventInfo, Kind, RevealPayload } from "@/lib/types";
@@ -44,7 +46,6 @@ export default function DrawPage() {
   const [nameIn, setNameIn] = useState("");
   const [exA, setExA] = useState(""); const [exB, setExB] = useState("");
   const [drawing, setDrawing] = useState(false);
-  const [shuf, setShuf] = useState("…");
   const [result, setResult] = useState<Result | null>(null);
   const [tab, setTab] = useState<"links" | "phone">("links");
   const [seen, setSeen] = useState<string[]>([]);
@@ -100,7 +101,6 @@ export default function DrawPage() {
 
   async function runDraw(reference?: string) {
     setErr(""); setDrawing(true); setResult(null); setSeen([]); go(3);
-    const iv = setInterval(() => setShuf(d.people[Math.floor(Math.random() * d.people.length)]), 80);
     const minWait = new Promise((r) => setTimeout(r, 1700));
     try {
       const res = await fetch("/api/draw", {
@@ -118,7 +118,7 @@ export default function DrawPage() {
       if (d.circle && !j.circle) say("Your rules blocked a single circle, so we used a normal shuffle");
     } catch {
       await minWait; setStep(2); setErr("Couldn't reach the hat. Check your connection and try again.");
-    } finally { clearInterval(iv); setDrawing(false); }
+    } finally { setDrawing(false); }
   }
 
   const shake = () => { if (paid) setPayOpen(true); else runDraw(); };
@@ -189,9 +189,14 @@ export default function DrawPage() {
 
         {step === 1 && (
           <div className="panel rise">
-            <div className="eyebrow">Step 2 of 4</div>
-            <h2>Drop the names in the hat</h2>
-            <p className="hint">Press Enter after each name, or paste a whole list (one per line or comma-separated).</p>
+            <div className="names-head">
+              <div>
+                <div className="eyebrow">Step 2 of 4</div>
+                <h2>Drop the names in the hat</h2>
+                <p className="hint">Press Enter after each name, or paste a whole list (one per line or comma-separated). Each name becomes a bead on the {"\u1E63\u1EB9\u0300k\u1EB9\u0300r\u1EB9\u0300"}.</p>
+              </div>
+              <Shekere names={d.people} filled={false} maxLabeled={0} className="counting" />
+            </div>
             <div className="field chips-in">
               <span className="pit"><input ref={nameRef} className="in" maxLength={400} placeholder="Type a name…" autoComplete="off" aria-label="Name" value={nameIn}
                 onChange={(e) => setNameIn(e.target.value)}
@@ -235,14 +240,17 @@ export default function DrawPage() {
             </div>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row"><button className="btn btn-ghost" onClick={() => go(1)}>← Back</button>
-              <button className="btn btn-gold" onClick={shake} disabled={drawing}>🎩 Shake the hat{paid ? ` · ${naira(PRICING.ONE_TIME)}` : ""}</button></div>
+              <button className="btn btn-gold" onClick={shake} disabled={drawing}>{drawing ? "Shaking…" : `Shake the hat${paid ? ` · ${naira(PRICING.ONE_TIME)}` : ""}`}</button></div>
           </div>
         )}
 
         {step === 3 && (
           <div className="panel rise">
             {drawing || !result ? (
-              <div className="drum"><div><div className="eyebrow">Shuffling</div><div className="big">{shuf}</div><p className="hint">Making sure nobody draws themselves…</p></div></div>
+              <div className="drum" role="status">
+                <Shekere names={d.people} filled={false} maxLabeled={0} shaking className="drawing" />
+                <div><div className="big">Shaking…</div><p className="hint">Making sure nobody draws themselves…</p></div>
+              </div>
             ) : (
               <>
                 <div className="eyebrow">Step 4 of 4 · The hat has spoken</div>
@@ -304,7 +312,7 @@ export default function DrawPage() {
       {confirmFor && (() => { const [token, name] = confirmFor.split("\u0000"); return (
         <div className="modal" role="dialog" aria-modal="true"><div className="panel" style={{ textAlign: "center" }}>
           <div className="eyebrow">Pass the phone</div>
-          <h2 style={{ fontSize: "2rem" }}>Are you {name}?</h2>
+          <h2 style={{ fontSize: "2rem" }}>Are you <span className={serifName(name).className}>{serifName(name).text}</span>?</h2>
           <p className="sub" style={{ margin: "0 auto" }}>Make sure nobody&apos;s looking over your shoulder.</p>
           <div className="nav-row" style={{ justifyContent: "center" }}>
             <button className="btn btn-ghost" onClick={() => setConfirmFor(null)}>Not me</button>
