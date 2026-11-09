@@ -4,6 +4,7 @@ import { BRAND } from "@/lib/config";
 import { WeatherProvider } from "@/components/WeatherContext";
 import Ambient from "@/components/Ambient";
 import WeatherChip from "@/components/WeatherChip";
+import TransitionLayer from "@/components/TransitionLayer";
 
 export const metadata: Metadata = {
   title: `${BRAND.name}: Secret Santa for friends, family & teams`,
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <WeatherProvider>
           <Ambient />
-          {children}
+          <TransitionLayer>{children}</TransitionLayer>
           <WeatherChip />
         </WeatherProvider>
       </body>

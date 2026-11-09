@@ -22,11 +22,11 @@ function init(mode: Mode, W: number, H: number): P[] {
     case "clear-night":
       return mk(n(9, 150), () => ({ x: R() * W, y: R() * H * 0.75, vx: 0, vy: 0, r: 0.4 + R() * 1.2, a: 0, ph: R() * 6.3, w: 0.4 + R() * 1.6 }));
     case "cloudy":
-      return mk(7, () => ({ x: R() * W, y: R() * H * 0.65, vx: 0.06 + R() * 0.14, vy: 0, r: 0, a: 0.09 + R() * 0.08, ph: 0, w: 220 + R() * 280, h: 70 + R() * 80 }));
+      return mk(7, () => ({ x: R() * W, y: R() * H * 0.65, vx: 0.06 + R() * 0.14, vy: 0, r: 0, a: 0.11 + R() * 0.09, ph: 0, w: 220 + R() * 280, h: 70 + R() * 80 }));
     case "fog":
       return mk(6, () => ({ x: R() * W, y: R() * H, vx: 0.12 + R() * 0.2, vy: 0, r: 0, a: 0.1 + R() * 0.07, ph: 0, w: W * (0.6 + R() * 0.5), h: 90 + R() * 150 }));
     case "harmattan":
-      return mk(n(8, 150), () => ({ x: R() * W, y: R() * H, vx: -(0.25 + R() * 0.6), vy: 0.04 + R() * 0.14, r: 0.4 + R() * 1.4, a: 0.15 + R() * 0.35, ph: R() * 6.3 }));
+      return mk(n(8, 150), () => ({ x: R() * W, y: R() * H, vx: -(0.25 + R() * 0.6), vy: 0.04 + R() * 0.14, r: 0.5 + R() * 1.5, a: 0.25 + R() * 0.35, ph: R() * 6.3 }));
   }
 }
 
@@ -92,7 +92,7 @@ function frame(ctx: CanvasRenderingContext2D, mode: Mode, ps: P[], W: number, H:
       const w = p.w!, h = p.h!;
       ctx.save(); ctx.translate(p.x + w / 2, p.y); ctx.scale(1, h / w);
       const g = ctx.createRadialGradient(0, 0, 0, 0, 0, w / 2);
-      const c = mode === "fog" ? "220,228,224" : "200,215,210";
+      const c = mode === "fog" ? "222,226,238" : "201,207,227"; // starch-blue reads on indigo
       g.addColorStop(0, `rgba(${c},${p.a})`); g.addColorStop(1, `rgba(${c},0)`);
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, w / 2, 0, 6.3); ctx.fill();
       ctx.restore();

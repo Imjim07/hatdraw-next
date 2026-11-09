@@ -22,6 +22,9 @@ const blankDraft = (): Draft => ({
   people: [], ex: [], circle: true, blind: true,
 });
 
+// First two letters, counting a letter plus its tone marks as one (Ọ̀pẹ́ → Ọ̀P).
+const initials = (s: string) => Array.from(new Intl.Segmenter().segment(s.normalize("NFC")), (x) => x.segment).slice(0, 2).join("").toUpperCase();
+
 async function copyText(t: string) {
   try { await navigator.clipboard.writeText(t); return true; } catch {
     const ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta); ta.select();
@@ -273,7 +276,7 @@ export default function DrawPage() {
                         const wa = "https://wa.me/?text=" + encodeURIComponent(`🎅 Hi ${name}! You're in the "${d.ev.name}" Secret Santa.\nOpen this link to find out who you're gifting. It's only for you, so don't share it:\n${url}`);
                         return (
                           <div key={name} className="res-row">
-                            <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{name.slice(0, 2).toUpperCase()}</span>{name}</div>
+                            <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                             <div className="acts">
                               <a className="btn btn-gold btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                               <button className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? "Link copied ✓" : "Couldn't copy")}>Copy link</button>
@@ -295,7 +298,7 @@ export default function DrawPage() {
                     <div className="res">
                       {result.givers.map(({ name, token }, i) => (
                         <div key={name} className={`res-row ${seen.includes(name) ? "seen" : ""}`}>
-                          <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{name.slice(0, 2).toUpperCase()}</span>{name}</div>
+                          <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                           {seen.includes(name) ? <span className="hint" style={{ margin: 0 }}>Unwrapped ✓</span>
                             : <button className="btn btn-gold btn-sm" onClick={() => setConfirmFor(token + "\u0000" + name)}>That&apos;s me</button>}
                         </div>
