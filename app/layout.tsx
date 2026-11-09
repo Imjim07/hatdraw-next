@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Drop everyone's name in the hat. It secretly picks who gifts who this Christmas and sends each person a private link to unwrap their match.",
 };
 
-export const viewport: Viewport = { themeColor: "#0E1A16" };
+export const viewport: Viewport = { themeColor: "#0E1838" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

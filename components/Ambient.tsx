@@ -44,7 +44,7 @@ function frame(ctx: CanvasRenderingContext2D, mode: Mode, ps: P[], W: number, H:
     for (const p of ps) {
       if (!still) { p.ph += 0.01; p.x += Math.sin(p.ph) * 0.35; }
       move(p);
-      ctx.fillStyle = `rgba(245,239,227,${p.a})`;
+      ctx.fillStyle = `rgba(239,232,216,${p.a})`;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.3); ctx.fill();
     }
   } else if (mode === "rain" || mode === "storm") {
@@ -71,7 +71,7 @@ function frame(ctx: CanvasRenderingContext2D, mode: Mode, ps: P[], W: number, H:
   } else if (mode === "clear-night") {
     for (const p of ps) {
       const a = still ? 0.6 : 0.25 + 0.75 * Math.abs(Math.sin(t / 1000 * (p.w ?? 1) + p.ph));
-      ctx.fillStyle = `rgba(245,239,227,${a * 0.85})`;
+      ctx.fillStyle = `rgba(239,232,216,${a * 0.85})`;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.3); ctx.fill();
     }
     if (!still) {
@@ -141,7 +141,7 @@ export default function Ambient() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     type B = { x: number; y: number; vx: number; vy: number; w: number; h: number; c: string; a: number; va: number; life: number };
     let bits: B[] = [], raf = 0, running = false;
-    const cols = ["#E3B45A", "#F2CF86", "#C2413B", "#E0605A", "#F5EFE3", "#9CC5B4"];
+    const cols = ["#E3B45A", "#F2CF86", "#EFE8D8", "#C9CFE3", "#2E4A8F", "#EFE8D8"];
     const size = () => {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       c.width = window.innerWidth * dpr; c.height = window.innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

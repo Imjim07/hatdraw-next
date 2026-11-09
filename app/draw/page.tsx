@@ -11,7 +11,7 @@ type Draft = { ev: EventInfo; people: string[]; ex: [string, string][]; circle: 
 type Result = Extract<DrawResponse, { ok: true }>;
 
 const DRAFT_KEY = "hd-draft-v2";
-const AV = ["#E3B45A", "#F5EFE3", "#E0605A", "#9CC5B4", "#F2CF86", "#C9B6E4"];
+const AV = ["#E3B45A", "#EFE8D8", "#C9CFE3", "#F2CF86", "#9AA4C4", "#D9CCB0"];
 const KINDS: { k: Kind; icon: string; label: string }[] = [
   { k: "friends", icon: "🥂", label: "Friends" }, { k: "family", icon: "🏡", label: "Family" }, { k: "company", icon: "💼", label: "Company" },
 ];
@@ -150,13 +150,15 @@ export default function DrawPage() {
       actions={<button className="btn btn-gold" onClick={done}>{view.context === "phone" ? "🙈 Hide & pass the phone" : "← Back to links"}</button>} />;
   }
 
+  // An ayo board has two rows of six pits; keep at least that, and fill out the last row.
+  const emptyPits = Math.max(12, Math.ceil(n / 6) * 6) - n;
   const tier = paid ? `Big Hat: ${naira(PRICING.ONE_TIME)}` : `Free · ${Math.max(0, PRICING.FREE_LIMIT - n)} free spots left`;
 
   return (
     <div className="wrap">
       <nav className="top"><Logo /><Link href="/" className="btn btn-ghost btn-sm">← Home</Link></nav>
       <main className="app">
-        <div className="steps">{[0, 1, 2, 3].map((i) => <span key={i} className={i <= step ? "on" : ""} />)}</div>
+        <div className="steps" role="img" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((i) => <span key={i === step ? `now-${step}` : i} className={i < step ? "on" : i === step ? "on now" : ""} />)}</div>
 
         {step === 0 && (
           <div className="panel rise">
@@ -167,19 +169,19 @@ export default function DrawPage() {
                 {KINDS.map((k) => <button key={k.k} role="radio" aria-checked={d.ev.kind === k.k} className={d.ev.kind === k.k ? "on" : ""} onClick={() => setEv({ kind: k.k })}><b>{k.icon}</b>{k.label}</button>)}
               </div></div>
             <div className="field"><label htmlFor="ev-name">Name your exchange</label>
-              <input id="ev-name" className="in" maxLength={60} placeholder="e.g. Adeyemi Family Christmas" value={d.ev.name} onChange={(e) => setEv({ name: e.target.value })} /></div>
+              <span className="pit"><input id="ev-name" className="in" maxLength={60} placeholder="e.g. Adeyemi Family Christmas" value={d.ev.name} onChange={(e) => setEv({ name: e.target.value })} /></span></div>
             <div className="row">
               <div className="field"><label htmlFor="ev-budget">Budget per gift (₦)</label>
-                <input id="ev-budget" className="in" inputMode="numeric" placeholder="e.g. 15,000"
+                <span className="pit"><input id="ev-budget" className="in" inputMode="numeric" placeholder="e.g. 15,000"
                   value={d.ev.budget ? Number(d.ev.budget).toLocaleString("en-NG") : ""}
-                  onChange={(e) => setEv({ budget: e.target.value.replace(/\D/g, "").slice(0, 9) })} /></div>
+                  onChange={(e) => setEv({ budget: e.target.value.replace(/\D/g, "").slice(0, 9) })} /></span></div>
               <div className="field"><label htmlFor="ev-date">Exchange date</label>
-                <input id="ev-date" className="in" type="date" value={d.ev.date} onChange={(e) => setEv({ date: e.target.value })} /></div>
+                <span className="pit"><input id="ev-date" className="in" type="date" value={d.ev.date} onChange={(e) => setEv({ date: e.target.value })} /></span></div>
             </div>
             <div className="field"><label htmlFor="ev-where">Where are gifts exchanged? <small>(optional)</small></label>
-              <input id="ev-where" className="in" maxLength={90} placeholder="e.g. Grandma's house, Surulere" value={d.ev.where} onChange={(e) => setEv({ where: e.target.value })} /></div>
+              <span className="pit"><input id="ev-where" className="in" maxLength={90} placeholder="e.g. Grandma's house, Surulere" value={d.ev.where} onChange={(e) => setEv({ where: e.target.value })} /></span></div>
             <div className="field"><label htmlFor="ev-note">A note for everyone <small>(optional)</small></label>
-              <textarea id="ev-note" className="in" maxLength={200} placeholder="e.g. No gift cards! Dress code: something red." value={d.ev.note} onChange={(e) => setEv({ note: e.target.value })} /></div>
+              <span className="pit ta"><textarea id="ev-note" className="in" maxLength={200} placeholder="e.g. No gift cards! Dress code: something red." value={d.ev.note} onChange={(e) => setEv({ note: e.target.value })} /></span></div>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row"><span /><button className="btn btn-gold" onClick={next}>Next: add names →</button></div>
           </div>
@@ -191,17 +193,21 @@ export default function DrawPage() {
             <h2>Drop the names in the hat</h2>
             <p className="hint">Press Enter after each name, or paste a whole list (one per line or comma-separated).</p>
             <div className="field chips-in">
-              <input ref={nameRef} className="in" maxLength={400} placeholder="Type a name…" autoComplete="off" aria-label="Name" value={nameIn}
+              <span className="pit"><input ref={nameRef} className="in" maxLength={400} placeholder="Type a name…" autoComplete="off" aria-label="Name" value={nameIn}
                 onChange={(e) => setNameIn(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } } }}
-                onPaste={(e) => { const t = e.clipboardData.getData("text"); if (/[\n,;]/.test(t)) { e.preventDefault(); addNames(t); } }} />
+                onPaste={(e) => { const t = e.clipboardData.getData("text"); if (/[\n,;]/.test(t)) { e.preventDefault(); addNames(t); } }} /></span>
               <button className="btn btn-gold" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</button>
             </div>
-            <div className="names">
-              {n ? d.people.map((p) => <span key={p} className="name">{p}<button aria-label={`Remove ${p}`} onClick={() => removeName(p)}>×</button></span>)
-                : <span className="hint">Nobody in the hat yet.</span>}
-            </div>
-            <div className="counter"><span>{n} {n === 1 ? "person" : "people"}</span><span style={paid ? { color: "var(--berry-2)" } : undefined}>{tier}</span></div>
+            <ul className="board" aria-label="Names in the hat">
+              {d.people.map((p) => (
+                <li key={p} className="hole filled"><span className="seed" aria-hidden="true" /><span className="nm" title={p}>{p}</span>
+                  <button aria-label={`Remove ${p}`} onClick={() => removeName(p)}>×</button></li>
+              ))}
+              {Array.from({ length: emptyPits }, (_, i) => <li key={`e${i}`} className="hole empty" aria-hidden="true" />)}
+              {!n && <li className="board-empty">Nobody in the hat yet.</li>}
+            </ul>
+            <div className="counter"><span>{n} {n === 1 ? "person" : "people"}</span><span className={paid ? "over" : undefined}>{tier}</span></div>
             <div className="meter"><i className={paid ? "over" : ""} style={{ width: `${Math.min(100, (n / PRICING.FREE_LIMIT) * 100)}%` }} /></div>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row"><button className="btn btn-ghost" onClick={() => go(0)}>← Back</button><button className="btn btn-gold" onClick={next}>Next: rules →</button></div>
@@ -218,8 +224,8 @@ export default function DrawPage() {
               <span><b>Keep it secret from me too</b><span className="d">You&apos;ll only get links, never the matches, so you can play as well.</span></span></label>
             <div className="field"><span className="lbl">Keep these people apart <small>(couples, siblings, flatmates)</small></span>
               <div className="ex-row">
-                <select className="in" aria-label="First person" value={exA || d.people[0]} onChange={(e) => setExA(e.target.value)}>{d.people.map((p) => <option key={p}>{p}</option>)}</select>
-                <select className="in" aria-label="Second person" value={exB || d.people[1]} onChange={(e) => setExB(e.target.value)}>{d.people.map((p) => <option key={p}>{p}</option>)}</select>
+                <span className="pit"><select className="in" aria-label="First person" value={exA || d.people[0]} onChange={(e) => setExA(e.target.value)}>{d.people.map((p) => <option key={p}>{p}</option>)}</select></span>
+                <span className="pit"><select className="in" aria-label="Second person" value={exB || d.people[1]} onChange={(e) => setExB(e.target.value)}>{d.people.map((p) => <option key={p}>{p}</option>)}</select></span>
                 <button className="btn btn-ghost" onClick={addEx}>Add</button>
               </div>
               <div className="ex-list">
@@ -314,7 +320,7 @@ export default function DrawPage() {
           <div className="amt" style={{ margin: "18px 0 6px" }}><strong>{naira(PRICING.ONE_TIME)}</strong><small>one-off</small></div>
           {PAYWALL_MODE === "live" ? (
             <div className="field"><label htmlFor="pay-email">Email for your receipt</label>
-              <input id="pay-email" className="in" type="email" value={payEmail} onChange={(e) => setPayEmail(e.target.value)} placeholder="you@example.com" /></div>
+              <span className="pit"><input id="pay-email" className="in" type="email" value={payEmail} onChange={(e) => setPayEmail(e.target.value)} placeholder="you@example.com" /></span></div>
           ) : <p className="hint">Demo mode: payments aren&apos;t connected yet, so this unlocks the draw for free.</p>}
           <div className="nav-row"><button className="btn btn-ghost" onClick={() => setPayOpen(false)}>Not now</button>
             <button className="btn btn-gold" onClick={pay}>{PAYWALL_MODE === "live" ? `Pay ${naira(PRICING.ONE_TIME)} & draw` : "Unlock (demo) & draw"}</button></div>
@@ -325,7 +331,7 @@ export default function DrawPage() {
         <div className="modal" role="dialog" aria-modal="true"><div className="panel">
           <div className="eyebrow">Organizer view</div>
           <h2 style={{ fontSize: "1.8rem" }}>All matches</h2>
-          <div className="res">{result.pairs.map(([g, r]) => <div key={g} className="res-row"><span>{g}</span><span style={{ color: "var(--gold)" }}>→ {r}</span></div>)}</div>
+          <div className="res">{result.pairs.map(([g, r]) => <div key={g} className="res-row"><span>{g}</span><span style={{ color: "var(--gold-2)" }}>→ {r}</span></div>)}</div>
           <div className="nav-row"><span /><button className="btn btn-gold" onClick={() => setPeek(false)}>Hide them</button></div>
         </div></div>
       )}

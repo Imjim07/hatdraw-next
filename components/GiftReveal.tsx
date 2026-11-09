@@ -87,9 +87,9 @@ export default function GiftReveal({ data, context, actions }: Props) {
             </div>
           )}
           <div className="idea">
-            <div className="eyebrow" style={{ color: "var(--pine)" }}>Stuck for ideas?</div>
+            <div className="eyebrow">Stuck for ideas?</div>
             <div className="q">{idea}</div>
-            <button className="btn btn-berry btn-sm" onClick={spin}>🎲 Spin</button>
+            <button className="btn btn-indigo btn-sm" onClick={spin}>Spin for another</button>
           </div>
           {e.note && <p className="note">&ldquo;{e.note}&rdquo; (from the organizer)</p>}
           <div style={{ marginTop: 26, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>{actions}</div>
