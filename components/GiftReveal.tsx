@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import { burst } from "./Ambient";
+import { AdireGrid, IgiIye, Ododo } from "./motifs";
 import { naira } from "@/lib/config";
 import type { RevealPayload } from "@/lib/types";
 
@@ -18,22 +19,28 @@ function daysTo(d: string) {
   return Math.ceil((t - now.getTime()) / 864e5);
 }
 
+const IDLE_IDEA = "Spin for a gift idea";
+
+// Crack lines in the dried starch (viewBox 0 0 100 100). Tap 1 shows the first set,
+// tap 2 adds the second set and knocks three chunks of crust off.
+const CRACKS_1 = ["M50 48 L44 38 L46 28 L40 16", "M50 48 L60 44 L70 47 L82 40", "M50 48 L52 60 L47 70"];
+const CRACKS_2 = ["M40 16 L30 12 L20 18", "M82 40 L88 52 L84 64", "M47 70 L36 78 L28 90", "M60 44 L64 30 L74 22", "M44 38 L34 46 L24 50 L14 56", "M52 60 L62 64 L70 72"];
+const CHUNKS = ["M66 13 L71 9 L79 11 L80 15 L85 19 L79 23 L76 28 L71 24 L65 21 Z", "M10 61 L15 57 L22 55 L25 60 L28 66 L23 69 L20 75 L13 74 L9 69 Z", "M58 78 L63 72 L69 73 L72 70 L77 78 L74 83 L70 89 L62 88 L59 84 Z"];
+
 type Props = { data: RevealPayload; context: "link" | "preview" | "phone"; actions?: React.ReactNode };
 
 export default function GiftReveal({ data, context, actions }: Props) {
   const [taps, setTaps] = useState(0);
-  const [open, setOpen] = useState(false);
-  const [shake, setShake] = useState(0);
-  const [idea, setIdea] = useState("Spin for a gift idea");
+  const [idea, setIdea] = useState(IDLE_IDEA);
   const spinning = useRef(false);
   const { e, g, r } = data;
+  const open = taps >= 3;
 
   const tap = () => {
-    if (taps >= 3) return;
+    if (open) return;
     const n = taps + 1;
     setTaps(n);
-    setShake((s) => s + 1);
-    if (n === 3) setTimeout(() => { setOpen(true); burst(); }, 700);
+    if (n === 3) setTimeout(burst, 450);
   };
 
   const spin = () => {
@@ -45,7 +52,7 @@ export default function GiftReveal({ data, context, actions }: Props) {
     let k = 0;
     const iv = setInterval(() => {
       setIdea(pick());
-      if (++k > 12) { clearInterval(iv); setIdea(pick() + " 🎁"); spinning.current = false; }
+      if (++k > 12) { clearInterval(iv); setIdea(pick()); spinning.current = false; }
     }, 70);
   };
 
@@ -56,30 +63,47 @@ export default function GiftReveal({ data, context, actions }: Props) {
   if (e.where) details.push({ k: "w", wide: true, body: <><small>Where</small><b>📍 {e.where}</b></> });
   if (details.length === 1) details[0].wide = true;
 
+  // ~72px for short names, shrinking so long ones still fit across the cloth.
+  const nameSize = Math.max(26, Math.min(72, 420 / Math.max(1, r.length)));
+
   return (
     <div className="reveal"><div className="reveal-inner">
       <div className="eyebrow">{e.name}{context === "preview" ? " · preview" : ""}</div>
       <h2 className="serif" style={{ marginTop: 12 }}>Hi {g} 👋</h2>
+      <p className="sub" style={{ margin: "0 auto" }} aria-live="polite">
+        {open ? <>This Christmas, you&apos;re gifting <span className="sr-only">{r}</span></> : "Someone\u2019s name is under the starch."}
+      </p>
+
+      <button
+        type="button"
+        className={`cloth s${Math.min(taps, 3)} ${taps > 0 && !open ? (taps % 2 ? "shake-a" : "shake-b") : ""}`}
+        aria-label={open ? `You're gifting ${r}` : `Tap to beat the starch, ${3 - taps} left`}
+        aria-disabled={open || undefined}
+        onClick={tap}
+      >
+        <AdireGrid className="cloth-grid" />
+        {open && (
+          <span className="cloth-name" aria-hidden="true">
+            <IgiIye size={34} color="var(--gold)" strokeWidth={6} />
+            <span className="serif" style={{ fontSize: `calc(min(300px, 80vw) * ${(nameSize / 300).toFixed(3)})` }}>{r}</span>
+          </span>
+        )}
+        <span className="starch" aria-hidden="true">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <g className="chunks">{CHUNKS.map((d) => <path key={d} d={d} />)}</g>
+            <g className="cracks c1">{CRACKS_1.map((d) => <path key={d} d={d} pathLength={1} />)}</g>
+            <g className="cracks c2">{CRACKS_2.map((d) => <path key={d} d={d} pathLength={1} />)}</g>
+          </svg>
+        </span>
+      </button>
 
       {!open ? (
-        <>
-          <p className="sub" style={{ margin: "0 auto" }}>Someone&apos;s name is waiting inside. Tap the gift three times to unwrap it.</p>
-          <div
-            key={shake}
-            className={`gift ${taps > 0 && taps < 3 ? "shake" : ""} ${taps === 3 ? "open" : ""}`}
-            role="button" tabIndex={0} aria-label={`Tap to unwrap (${3 - taps} left)`}
-            onClick={tap}
-            onKeyDown={(ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); tap(); } }}
-          >
-            <div className="box"><div className="rib" /></div>
-            <div className="lid"><div className="rib" /><div className="bow" /></div>
-          </div>
+        <div className="cloth-copy">
           <div className="taps" aria-hidden="true">{[0, 1, 2].map((i) => <i key={i} className={i < taps ? "on" : ""} />)}</div>
-        </>
+          <p className="hint">Adire makers beat dried starch off the cloth to reveal the pattern. Three taps and yours is revealed.</p>
+        </div>
       ) : (
-        <div className="match" aria-live="polite">
-          <div className="eyebrow">This Christmas, you&apos;re gifting</div>
-          <div className="to">{r}</div>
+        <div className="match">
           <p className="sub" style={{ margin: "0 auto" }}>Keep it to yourself 🤫</p>
           {details.length > 0 && (
             <div className="details">
@@ -87,9 +111,9 @@ export default function GiftReveal({ data, context, actions }: Props) {
             </div>
           )}
           <div className="idea">
-            <div className="eyebrow">Stuck for ideas?</div>
-            <div className="q">{idea}</div>
-            <button className="btn btn-indigo btn-sm" onClick={spin}>Spin for another</button>
+            <div className="eyebrow idea-head"><Ododo size={22} color="var(--indigo-dip)" strokeWidth={5} />Stuck for ideas?</div>
+            <div className="q" aria-live="polite">{idea}</div>
+            <button className="btn btn-indigo btn-sm" onClick={spin}>{idea === IDLE_IDEA ? "Spin" : "Spin again"}</button>
           </div>
           {e.note && <p className="note">&ldquo;{e.note}&rdquo; (from the organizer)</p>}
           <div style={{ marginTop: 26, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>{actions}</div>

@@ -99,3 +99,20 @@ export function Ododo(p: MotifProps) {
     </Svg>
   );
 }
+
+// A 3×3 adire eleko square: the tree of life at the centre, flowers and
+// "world on its side" triangles alternating around it. Used behind the reveal
+// and by the loader (which draws the strokes in, one square at a time).
+const ADIRE = [AyeDegbe, Ododo, AyeDegbe, Ododo, IgiIye, Ododo, AyeDegbe, Ododo, AyeDegbe];
+
+export function AdireGrid({ className = "", strokeWidth = 4 }: { className?: string; strokeWidth?: number }) {
+  return (
+    <div className={`adire-grid ${className}`} aria-hidden="true">
+      {ADIRE.map((M, i) => (
+        <span key={i} style={{ "--i": i } as React.CSSProperties}>
+          <M size="100%" strokeWidth={strokeWidth} pathLength={1} />
+        </span>
+      ))}
+    </div>
+  );
+}
