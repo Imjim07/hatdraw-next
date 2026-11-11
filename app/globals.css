@@ -74,14 +74,7 @@ h1 em{font-style:italic;color:var(--gold)}
 .shekere-btn{display:block;width:100%;border-radius:24px;-webkit-tap-highlight-color:transparent}
 .shekere{display:block;width:100%;height:auto;overflow:visible}
 .shekere-cap{font-size:.82rem;color:var(--muted);margin-top:4px}
-.shk-gourd,.shk-beads{transform-box:view-box;transform-origin:240px 34px}
 .panel .shekere{--shk-fill:var(--indigo-deep)}
-.shekere.shaking .shk-gourd{animation:shk-twist .9s cubic-bezier(.36,.07,.19,.97) infinite}
-.shekere.shaking .shk-beads{animation:shk-rattle .9s cubic-bezier(.36,.07,.19,.97) 80ms infinite}
-@keyframes shk-twist{0%{transform:rotate(0)}22%{transform:rotate(-8deg)}50%{transform:rotate(6deg)}76%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
-@keyframes shk-rattle{0%{transform:rotate(0)}24%{transform:rotate(-10.5deg)}52%{transform:rotate(8.5deg)}78%{transform:rotate(-4.5deg)}90%{transform:rotate(1.5deg)}100%{transform:rotate(0)}}
-.shekere.counting .bead{transform-box:fill-box;transform-origin:center;animation:beadpop .4s var(--spring)}
-@keyframes beadpop{from{transform:scale(0)}}
 .names-head{display:grid;grid-template-columns:1fr 150px;gap:18px;align-items:center}
 .names-head .shekere{width:150px}
 .drum{display:grid;place-items:center;gap:6px;min-height:300px;text-align:center}

@@ -198,7 +198,7 @@ export default function DrawPage() {
                 <h2>Drop the names in the hat</h2>
                 <p className="hint">Press Enter after each name, or paste a whole list (one per line or comma-separated). Each name becomes a bead on the {"\u1E63\u1EB9\u0300k\u1EB9\u0300r\u1EB9\u0300"}.</p>
               </div>
-              <Shekere names={d.people} filled={false} maxLabeled={0} className="counting" />
+              <Shekere names={d.people} maxLabeled={0} beadsFromNames shakeOnTap={false} />
             </div>
             <div className="field chips-in">
               <span className="pit"><input ref={nameRef} className="in" maxLength={400} placeholder="Type a name…" autoComplete="off" aria-label="Name" value={nameIn}
@@ -251,7 +251,7 @@ export default function DrawPage() {
           <div className="panel rise">
             {drawing || !result ? (
               <div className="drum" role="status">
-                <Shekere names={d.people} filled={false} maxLabeled={0} shaking className="drawing" />
+                <Shekere names={d.people} maxLabeled={0} beadsFromNames shakeOnTap={false} shaking={drawing} />
                 <div><div className="big">Shaking…</div><p className="hint">Making sure nobody draws themselves…</p></div>
               </div>
             ) : (
