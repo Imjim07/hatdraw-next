@@ -2,6 +2,11 @@
 import { useEffect, useRef } from "react";
 import { useWeather } from "./WeatherContext";
 import type { Mode } from "@/lib/weather";
+import { PALETTE, rgb } from "@/lib/palette";
+
+// The page is light (cloud), so every scene is drawn in indigo tones; palm gold
+// only for the clear-day glow. The canvas sits under all content.
+const INDIGO = rgb(PALETTE.indigo), MIST = rgb(PALETTE.indigoMist), GOLD = rgb(PALETTE.palmGold);
 
 /** Fire a confetti burst from anywhere: burst() */
 export const burst = () => window.dispatchEvent(new Event("hd:burst"));
@@ -14,17 +19,17 @@ function init(mode: Mode, W: number, H: number): P[] {
   const mk = (count: number, f: () => P) => Array.from({ length: count }, f);
   switch (mode) {
     case "snow":
-      return mk(n(11, 110), () => ({ x: R() * W, y: R() * H, vx: 0, vy: 0.3 + R() * 0.7, r: 0.6 + R() * 2.3, a: 0.35 + R() * 0.45, ph: R() * 6.3 }));
+      return mk(n(11, 110), () => ({ x: R() * W, y: R() * H, vx: 0, vy: 0.3 + R() * 0.7, r: 0.6 + R() * 2.3, a: 0.18 + R() * 0.12, ph: R() * 6.3 }));
     case "rain": case "storm":
-      return mk(n(mode === "storm" ? 5 : 7, 180), () => ({ x: R() * W, y: R() * H, vx: -1.6, vy: 9 + R() * 6, r: 10 + R() * 14, a: 0.18 + R() * 0.25, ph: 0 }));
+      return mk(n(mode === "storm" ? 5 : 7, 180), () => ({ x: R() * W, y: R() * H, vx: -1.6, vy: 9 + R() * 6, r: 10 + R() * 14, a: 0.14 + R() * 0.12, ph: 0 }));
     case "clear-day":
       return mk(n(30, 45), () => ({ x: R() * W, y: R() * H, vx: 0, vy: -(0.08 + R() * 0.25), r: 0.8 + R() * 2, a: 0.25 + R() * 0.45, ph: R() * 6.3 }));
     case "clear-night":
       return mk(n(9, 150), () => ({ x: R() * W, y: R() * H * 0.75, vx: 0, vy: 0, r: 0.4 + R() * 1.2, a: 0, ph: R() * 6.3, w: 0.4 + R() * 1.6 }));
     case "cloudy":
-      return mk(7, () => ({ x: R() * W, y: R() * H * 0.65, vx: 0.06 + R() * 0.14, vy: 0, r: 0, a: 0.11 + R() * 0.09, ph: 0, w: 220 + R() * 280, h: 70 + R() * 80 }));
+      return mk(7, () => ({ x: R() * W, y: R() * H * 0.65, vx: 0.06 + R() * 0.14, vy: 0, r: 0, a: 0.05 + R() * 0.04, ph: 0, w: 220 + R() * 280, h: 70 + R() * 80 }));
     case "fog":
-      return mk(6, () => ({ x: R() * W, y: R() * H, vx: 0.12 + R() * 0.2, vy: 0, r: 0, a: 0.1 + R() * 0.07, ph: 0, w: W * (0.6 + R() * 0.5), h: 90 + R() * 150 }));
+      return mk(6, () => ({ x: R() * W, y: R() * H, vx: 0.12 + R() * 0.2, vy: 0, r: 0, a: 0.55 + R() * 0.3, ph: 0, w: W * (0.6 + R() * 0.5), h: 90 + R() * 150 }));
     case "harmattan":
       return mk(n(8, 150), () => ({ x: R() * W, y: R() * H, vx: -(0.25 + R() * 0.6), vy: 0.04 + R() * 0.14, r: 0.5 + R() * 1.5, a: 0.25 + R() * 0.35, ph: R() * 6.3 }));
   }
@@ -44,34 +49,34 @@ function frame(ctx: CanvasRenderingContext2D, mode: Mode, ps: P[], W: number, H:
     for (const p of ps) {
       if (!still) { p.ph += 0.01; p.x += Math.sin(p.ph) * 0.35; }
       move(p);
-      ctx.fillStyle = `rgba(239,232,216,${p.a})`;
+      ctx.fillStyle = `rgba(${INDIGO},${p.a})`;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.3); ctx.fill();
     }
   } else if (mode === "rain" || mode === "storm") {
     ctx.lineWidth = 1; ctx.lineCap = "round";
     for (const p of ps) {
       move(p);
-      ctx.strokeStyle = `rgba(170,200,230,${p.a})`;
+      ctx.strokeStyle = `rgba(${INDIGO},${p.a})`;
       ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + p.vx * (p.r / p.vy), p.y + p.r); ctx.stroke();
     }
     if (mode === "storm" && !still) {
-      if (R() < 0.0022) s.flash = 0.16; // subtle & rare: no strobing
-      if (s.flash > 0.004) { ctx.fillStyle = `rgba(220,230,255,${s.flash})`; ctx.fillRect(0, 0, W, H); s.flash *= 0.88; }
+      if (R() < 0.0022) s.flash = 0.35; // subtle & rare: no strobing
+      if (s.flash > 0.004) { ctx.fillStyle = `rgba(${MIST},${s.flash})`; ctx.fillRect(0, 0, W, H); s.flash *= 0.88; }
     }
   } else if (mode === "clear-day") {
     const g = ctx.createRadialGradient(W * 0.88, H * 0.04, 0, W * 0.88, H * 0.04, Math.max(W, H) * 0.55);
-    g.addColorStop(0, "rgba(242,207,134,0.22)"); g.addColorStop(1, "rgba(242,207,134,0)");
+    g.addColorStop(0, `rgba(${GOLD},0.2)`); g.addColorStop(1, `rgba(${GOLD},0)`);
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     for (const p of ps) {
       if (!still) { p.ph += 0.012; p.x += Math.sin(p.ph) * 0.25; }
       move(p);
-      ctx.fillStyle = `rgba(242,207,134,${p.a * (0.6 + 0.4 * Math.sin(t / 900 + p.ph))})`;
+      ctx.fillStyle = `rgba(${INDIGO},${0.45 * p.a * (0.6 + 0.4 * Math.sin(t / 900 + p.ph))})`;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.3); ctx.fill();
     }
   } else if (mode === "clear-night") {
     for (const p of ps) {
       const a = still ? 0.6 : 0.25 + 0.75 * Math.abs(Math.sin(t / 1000 * (p.w ?? 1) + p.ph));
-      ctx.fillStyle = `rgba(239,232,216,${a * 0.85})`;
+      ctx.fillStyle = `rgba(${INDIGO},${0.18 + a * 0.12})`;
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.3); ctx.fill();
     }
     if (!still) {
@@ -79,7 +84,7 @@ function frame(ctx: CanvasRenderingContext2D, mode: Mode, ps: P[], W: number, H:
       const sh = s.shoot;
       if (sh) {
         const grad = ctx.createLinearGradient(sh.x, sh.y, sh.x - sh.vx * 9, sh.y - sh.vy * 9);
-        grad.addColorStop(0, `rgba(242,207,134,${sh.a})`); grad.addColorStop(1, "rgba(242,207,134,0)");
+        grad.addColorStop(0, `rgba(${INDIGO},${sh.a * 0.45})`); grad.addColorStop(1, `rgba(${INDIGO},0)`);
         ctx.strokeStyle = grad; ctx.lineWidth = 1.6;
         ctx.beginPath(); ctx.moveTo(sh.x, sh.y); ctx.lineTo(sh.x - sh.vx * 9, sh.y - sh.vy * 9); ctx.stroke();
         sh.x += sh.vx; sh.y += sh.vy; sh.a -= 0.018;
@@ -92,19 +97,19 @@ function frame(ctx: CanvasRenderingContext2D, mode: Mode, ps: P[], W: number, H:
       const w = p.w!, h = p.h!;
       ctx.save(); ctx.translate(p.x + w / 2, p.y); ctx.scale(1, h / w);
       const g = ctx.createRadialGradient(0, 0, 0, 0, 0, w / 2);
-      const c = mode === "fog" ? "222,226,238" : "201,207,227"; // starch-blue reads on indigo
+      const c = mode === "fog" ? MIST : INDIGO; // fog: indigo mist banks; cloud: faint indigo
       g.addColorStop(0, `rgba(${c},${p.a})`); g.addColorStop(1, `rgba(${c},0)`);
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, w / 2, 0, 6.3); ctx.fill();
       ctx.restore();
     }
   } else if (mode === "harmattan") {
     const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, "rgba(214,160,92,0.13)"); g.addColorStop(1, "rgba(214,160,92,0.04)");
+    g.addColorStop(0, "rgba(214,160,92,0.10)"); g.addColorStop(1, "rgba(214,160,92,0.03)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     for (const p of ps) {
       if (!still) { p.ph += 0.008; p.y += Math.sin(p.ph) * 0.15; }
       move(p);
-      ctx.fillStyle = `rgba(226,182,122,${p.a})`;
+      ctx.fillStyle = `rgba(176,120,58,${p.a})`; // darker dust so it reads on cloud
       ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.3); ctx.fill();
     }
   }
@@ -141,7 +146,8 @@ export default function Ambient() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     type B = { x: number; y: number; vx: number; vy: number; w: number; h: number; c: string; a: number; va: number; life: number };
     let bits: B[] = [], raf = 0, running = false;
-    const cols = ["#E3B45A", "#F2CF86", "#EFE8D8", "#C9CFE3", "#2E4A8F", "#EFE8D8"];
+    // No cloud pieces: they would vanish on the page.
+    const cols = [PALETTE.persimmon, PALETTE.palmGold, PALETTE.indigo, PALETTE.indigoMist, PALETTE.pine];
     const size = () => {
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       c.width = window.innerWidth * dpr; c.height = window.innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

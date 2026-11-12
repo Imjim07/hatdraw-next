@@ -307,8 +307,9 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .starch svg{position:absolute;inset:0;width:100%;height:100%}
 .cracks path{fill:none;stroke:var(--crust-crack);stroke-width:.55;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset .35s ease-out}
 .chunks path{fill:var(--indigo);stroke:var(--crust-crack);stroke-width:1;vector-effect:non-scaling-stroke;opacity:0;transition:opacity .2s .1s}
-.cloth.s1 .starch{opacity:.9}
-.cloth.s2 .starch{opacity:.72}
+/* mostly opaque, so the crust stays warm starch over the indigo cloth (not a grey wash) */
+.cloth.s1 .starch{opacity:.97}
+.cloth.s2 .starch{opacity:.9}
 .cloth.s3 .starch{opacity:0;transition:opacity .7s ease-in}
 .cloth:is(.s1,.s2,.s3) .c1 path,.cloth:is(.s2,.s3) .c2 path{stroke-dashoffset:0}
 .cloth:is(.s2,.s3) .chunks path{opacity:1}
