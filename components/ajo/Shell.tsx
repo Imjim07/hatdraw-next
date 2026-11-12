@@ -3,10 +3,10 @@ import Logo from "@/components/Logo";
 import SpecularButton from "@/components/SpecularButton";
 import AdireLoader from "@/components/AdireLoader";
 
-/** The page frame every ajo screen uses (same as the draw wizard's). */
+/** The page frame every ajo screen uses (same as the draw wizard's), in the ajo mode. */
 export function Shell({ children, toast }: { children: ReactNode; toast?: string }) {
   return (
-    <div className="wrap">
+    <div className="wrap" data-mode="ajo">
       <nav className="top"><Logo /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></nav>
       <main className="app">{children}</main>
       {toast && <div className="toast" role="status">{toast}</div>}

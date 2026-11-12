@@ -160,7 +160,7 @@ export default function DrawPage() {
   const tier = paid ? `Big Hat: ${naira(PRICING.ONE_TIME)}` : `Free · ${Math.max(0, PRICING.FREE_LIMIT - n)} free spots left`;
 
   return (
-    <div className="wrap">
+    <div className="wrap" data-mode="santa">
       <nav className="top"><Logo /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="gift" />}

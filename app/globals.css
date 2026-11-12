@@ -44,6 +44,18 @@ a{color:inherit}
 .rise{animation:rise .5s cubic-bezier(.2,.8,.2,1)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 
+/* ---- Two modes: set data-mode on the root of each flow ----
+   Secret Santa (/draw, /r, the gift-exchange card) and ajo (/ajo/**). Neutral
+   screens use the :root defaults (indigo with cloud). Components that appear in
+   both modes read these variables, never a fixed colour. */
+[data-mode="santa"]{--mode-stripe:var(--pine);--mode-accent:var(--persimmon);--mode-pill-bg:var(--persimmon);--mode-pill-fg:var(--ink);--mode-cta-bg:var(--persimmon);--mode-cta-fg:var(--ink)}
+[data-mode="ajo"]{--mode-stripe:var(--palm-gold);--mode-accent:var(--indigo);--mode-pill-bg:var(--indigo);--mode-pill-fg:var(--cloud);--mode-cta-bg:var(--indigo);--mode-cta-fg:var(--cloud)}
+/* The mode card: a cloud card with a stripe in the mode colour across the top */
+.mode-card{position:relative;overflow:hidden;background:var(--cloud);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px 20px 18px;color:var(--ink)}
+.mode-card::before{content:"";position:absolute;inset:0 0 auto;height:7px;background:var(--mode-stripe)}
+.mode-card h3{font-family:var(--display);font-weight:600;font-size:1.05rem;color:var(--indigo)}
+.mode-pill{display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;background:var(--mode-pill-bg);color:var(--mode-pill-fg);font-size:.85rem;font-weight:700}
+
 /* weather chip */
 .wx-chip{position:fixed;left:16px;bottom:16px;z-index:80;display:flex;align-items:center;gap:10px;padding:7px 8px 7px 14px;border-radius:999px;background:rgba(244,241,234,.92);backdrop-filter:blur(8px);border:1px solid var(--line);font-size:.8rem;color:var(--text-muted);max-width:calc(100vw - 32px)}
 .wx-chip span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -199,6 +211,10 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .seg :is(button,a).on{border-color:var(--indigo);background:var(--indigo-mist)}
 .seg.two{grid-template-columns:1fr 1fr}
 .kind-switch{margin:0 0 22px}
+.kind-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kind-cards .mode-card{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:44px;text-align:center;text-decoration:none;transition:border-color .2s,box-shadow .2s}
+.kind-cards .mode-card:hover{border-color:rgba(20,26,51,.3)}
+.kind-cards .mode-card.on{border-color:var(--indigo);box-shadow:0 0 0 1px var(--indigo)}
 .chips-in{display:flex;gap:10px}.chips-in .pit{flex:1}
 
 /* the ayo board of names */
@@ -307,7 +323,9 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .taps i.on{background:var(--mode-accent);transform:scale(1.2)}
 .match{animation:rise .7s .1s both}
 .details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:28px 0}
-.details div{background:var(--cloud);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:left}
+.details div{position:relative;overflow:hidden;background:var(--cloud);border:1px solid var(--line);border-radius:16px;padding:20px 16px 16px;text-align:left}
+.details div::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:var(--mode-stripe)}
+.details .mode-pill{margin:6px 0 4px}
 .details small{display:block;color:var(--text-muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700}
 .details b{font-size:1.02rem;color:var(--indigo)}
 .details .wide{grid-column:1/-1}

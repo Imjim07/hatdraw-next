@@ -73,7 +73,8 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
         <div className="details">
           <div className="wide">
             <small>Your turn</small>
-            <b>{drawn ? `Turn ${me.turn} · ${shortDate(me.date!)} · ${naira(me.amount!)}` : "Not drawn yet"}</b>
+            {drawn && <span className="mode-pill">Turn {me.turn}: you</span>}
+            <b style={{ display: "block" }}>{drawn ? `${shortDate(me.date!)} · ${naira(me.amount!)}` : "Not drawn yet"}</b>
             {drawn && <span className="hint" style={{ display: "block", marginTop: 4 }}>{longDate(me.date!)}{me.pinned ? " · agreed before the draw" : ""}</span>}
             {!drawn && <span className="hint" style={{ display: "block", marginTop: 4 }}>Your organizer hasn&apos;t drawn the payout order yet. Check back after the draw.</span>}
           </div>

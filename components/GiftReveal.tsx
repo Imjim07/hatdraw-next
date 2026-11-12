@@ -72,7 +72,7 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
   const nameSize = Math.max(26, Math.min(72, 420 / Math.max(1, r.length)));
 
   return (
-    <div className="reveal"><div className="reveal-inner">
+    <div className="reveal" data-mode="santa"><div className="reveal-inner">
       <div className="eyebrow">{e.name}{context === "preview" ? " · preview" : ""}</div>
       <h2 style={{ marginTop: 12 }}>Hi <span className={giver.className}>{giver.text}</span> 👋</h2>
       <p className="sub" style={{ margin: "0 auto" }} aria-live="polite">

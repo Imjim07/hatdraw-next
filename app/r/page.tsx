@@ -12,7 +12,7 @@ const GiftReveal = lazy(loadReveal);
 
 function Opening() {
   return (
-    <div className="reveal"><div className="reveal-inner">
+    <div className="reveal" data-mode="santa"><div className="reveal-inner">
       <AdireLoader label="Opening your cloth" />
       <p className="sub" style={{ margin: "18px auto 0" }} aria-hidden="true">Opening your cloth…</p>
     </div></div>
@@ -44,7 +44,7 @@ export default function RevealPage() {
   if (!state.error) return <Opening />;
 
   return (
-    <div className="reveal"><div className="reveal-inner">
+    <div className="reveal" data-mode="santa"><div className="reveal-inner">
       <h2 className="serif">Hmm</h2><p className="sub" style={{ margin: "0 auto 24px" }}>{state.error}</p><Link href="/" className="btn btn-ghost">Go to {BRAND.name}</Link>
     </div></div>
   );

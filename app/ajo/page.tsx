@@ -103,7 +103,7 @@ export default function AjoSetup() {
     const pub = `${origin}/ajo/${created.publicId}`;
     const admin = `${pub}/admin#${created.adminToken}`;
     return (
-      <div className="wrap">
+      <div className="wrap" data-mode="ajo">
         <nav className="top"><Logo /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></nav>
         <main className="app">
           <div className="panel rise">
@@ -153,7 +153,7 @@ export default function AjoSetup() {
   }
 
   return (
-    <div className="wrap">
+    <div className="wrap" data-mode="ajo">
       <nav className="top"><Logo /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="ajo" />}
