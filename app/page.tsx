@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Logo from "@/components/Logo";
 import HeroShekere from "@/components/HeroShekere";
 import SectionNav from "@/components/SectionNav";
@@ -79,9 +80,31 @@ export default function Home() {
       </div></section>
 
       <div className="wrap">
-        <footer className="foot">
-          <span>© <Year /> {BRAND.name} · by <a href={BRAND.byUrl}>{BRAND.by}</a> · Made in Lagos 🎄</span>
-          <span>Weather data from <a href="https://www.met.no/en">MET Norway</a> (CC BY 4.0)</span>
+        <footer className="site-foot">
+          <div className="sf-top">
+            <p className="sf-tag">{BRAND.name} is the easy way to draw names for gift exchanges and ajo payout orders.</p>
+            <nav className="sf-col" aria-label="Draws">
+              <h3>Draws</h3>
+              <Link href="/draw">Gift exchange</Link>
+              <Link href="/ajo">Ajo payout order</Link>
+            </nav>
+            <nav className="sf-col" aria-label="HatDraw">
+              <h3>{BRAND.name}</h3>
+              <a href="#how">How it works</a>
+              <a href="#features">Features</a>
+              <a href="#pricing">Pricing</a>
+            </nav>
+            <nav className="sf-col" aria-label="Company">
+              <h3>Company</h3>
+              <span className="sf-link-row"><a href={BRAND.byUrl}>{BRAND.by}</a><span className="sf-badge">Made in Lagos</span></span>
+            </nav>
+          </div>
+          {/* the wordmark, cut by the rule below it; each letter is filled with adire cloth */}
+          <div className="sf-mark" aria-hidden="true"><span>caDara</span></div>
+          <div className="sf-bottom">
+            <span>© <Year /> {BRAND.name} · by {BRAND.by}</span>
+            <span>Weather data from <a href="https://www.met.no/en">MET Norway</a> (CC BY 4.0)</span>
+          </div>
         </footer>
       </div>
     </main>

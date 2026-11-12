@@ -226,8 +226,24 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .price-note{min-height:1.3em;margin-top:6px;font-size:.84rem;color:var(--text-muted);animation:note-in .25s ease-out}
 @keyframes note-in{from{opacity:0;transform:translateY(6px)}}
 .btn-off{opacity:.5;cursor:default}
-footer.foot{padding:40px 0 80px;color:var(--text-muted);font-size:.85rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
-footer.foot a{color:var(--indigo)}
+/* site footer: tagline + ruled link columns, then a giant wordmark filled with adire
+   cloth, cut off by the bottom rule and fading into it */
+.site-foot{padding:64px 0 96px;border-top:1px solid var(--line);font-size:.95rem}
+.sf-top{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:40px}
+.sf-tag{font-size:1.1rem;line-height:1.55;color:var(--ink);max-width:22rem}
+.sf-col{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding-top:22px;border-top:1px solid var(--line)}
+.sf-col h3{font-family:var(--display);font-weight:700;font-size:1.15rem;color:var(--indigo);margin-bottom:6px}
+.sf-col a{display:inline-flex;align-items:center;min-height:44px;color:var(--text-muted);text-decoration:none;transition:color .2s}
+.sf-col a:hover{color:var(--ink)}
+.sf-link-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sf-badge{padding:4px 10px;border-radius:999px;background:var(--indigo-mist);color:var(--ink);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.sf-mark{height:calc(var(--sf-size) * .74);margin-top:56px;overflow:hidden;--sf-size:min(calc((100vw - 44px) / 3.45),19.5rem);
+  -webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
+.sf-mark span{display:block;text-align:center;font-family:var(--display);font-weight:800;font-size:var(--sf-size);line-height:.9;letter-spacing:-.04em;
+  color:transparent;background:url(/adire-fill.jpg) center/cover;-webkit-background-clip:text;background-clip:text;
+  -webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 40%,transparent)}
+.sf-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:22px;border-top:1px solid var(--line);color:var(--text-muted);font-size:.85rem}
+.sf-bottom a{color:var(--indigo)}
 
 /* app shell */
 .app{max-width:760px;margin:0 auto;padding:10px 0 90px}
@@ -413,6 +429,7 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .how-steps{grid-template-columns:1fr;max-width:24rem}
   .fg-grid{grid-template-columns:1fr 1fr}
   nav.top .section-nav{display:none}
+  .sf-top{grid-template-columns:1fr 1fr;gap:28px}.sf-tag{grid-column:1/-1}
 }
 @media (max-width:520px){
   .panel{padding:24px 20px}
