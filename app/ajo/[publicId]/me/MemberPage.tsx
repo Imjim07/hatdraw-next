@@ -31,8 +31,14 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
     take(r);
   }, [publicId, take]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- read the fragment and fetch once on mount
-  useEffect(() => { load(); }, [load]);
+  // Read the fragment and fetch on mount, and again if another link is opened in this tab
+  // (only the # part changes, so the page itself doesn't reload).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only value (the URL fragment)
+    load();
+    window.addEventListener("hashchange", load);
+    return () => window.removeEventListener("hashchange", load);
+  }, [load]);
 
   async function save() {
     setBusy(true); setErr("");
@@ -85,18 +91,20 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
         {drawn && (
           <div className="field"><span className="lbl">Swap turns</span>
             <p className="hint" style={{ marginTop: 0 }}>A swap only happens if you <b>both</b> confirm from your own links. Every swap is shown on the schedule.{me.pinned ? " Your turn was agreed before the draw, so it can't be swapped." : ""}</p>
-            {me.swapsIn.map((s) => (
-              <div key={s.id} className="ex" style={{ marginTop: 10 }}>
-                <span>{s.from} wants to swap turns with you</span>
-                <span style={{ display: "flex", gap: 4 }}>
-                  <button onClick={() => swap("decline", { swapId: s.id })} disabled={busy}>Decline</button>
-                  <button onClick={() => swap("confirm", { swapId: s.id })} disabled={busy} style={{ color: "var(--gold-2)" }}>Confirm swap</button>
-                </span>
-              </div>
-            ))}
-            {me.swapsOut.map((s) => (
-              <div key={s.id} className="ex" style={{ marginTop: 10 }}><span>Waiting for {s.to} to confirm your swap request <span className="hint" style={{ display: "inline" }}>· asked {shortDate(s.requestedAt.slice(0, 10))}, expires after 72 hours</span></span></div>
-            ))}
+            <div className="res">
+              {me.swapsIn.map((s) => (
+                <div key={s.id} className="res-row">
+                  <span>{s.from} wants to swap turns with you</span>
+                  <div className="acts">
+                    <SpecularButton className="btn btn-ghost btn-sm" onClick={() => swap("decline", { swapId: s.id })} disabled={busy}>Decline</SpecularButton>
+                    <SpecularButton className="btn btn-gold btn-sm" onClick={() => swap("confirm", { swapId: s.id })} disabled={busy}>Confirm swap</SpecularButton>
+                  </div>
+                </div>
+              ))}
+              {me.swapsOut.map((s) => (
+                <div key={s.id} className="res-row"><span>Waiting for {s.to} to confirm your swap request <span className="hint" style={{ display: "block", marginTop: 2 }}>Asked {shortDate(s.requestedAt.slice(0, 10))}. Requests expire after 72 hours.</span></span></div>
+              ))}
+            </div>
             {!me.pinned && choices.length > 0 && (
               <div className="ex-row" style={{ marginTop: 12, gridTemplateColumns: "1fr auto" }}>
                 <span className="pit"><select className="in" aria-label="Swap with" value={target} onChange={(e) => setSwapWith(e.target.value)}>{choices.map((c) => <option key={c}>{c}</option>)}</select></span>

@@ -97,9 +97,10 @@ export function OrderView({ g, offset, refresh, sowFrom, action }: {
     );
   }
 
+  if (!today) return null; // first frame: the clock hasn't been read yet, so don't flash the schedule before a sowing
   if (sow !== null && sow !== sowed) return <AyoSow names={g.turns.map((t) => t.name)} startAt={sow} onDone={() => setTimeout(() => setSowed(sow), 700)} />;
 
-  const next = today ? nextTurnIndex(g.turns.map((t) => t.date), today) : -2;
+  const next = nextTurnIndex(g.turns.map((t) => t.date), today);
   return (
     <>
       <p className="hint" style={{ marginTop: 14 }}>{drawInfo(g)}</p>

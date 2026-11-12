@@ -34,8 +34,14 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
     take(r);
   }, [base, take]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect -- read the fragment and fetch once on mount
-  useEffect(() => { refresh(); }, [refresh]);
+  // Read the fragment and fetch on mount, and again if another link is opened in this tab
+  // (only the # part changes, so the page itself doesn't reload).
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only value (the URL fragment)
+    refresh();
+    window.addEventListener("hashchange", refresh);
+    return () => window.removeEventListener("hashchange", refresh);
+  }, [refresh]);
 
   // Count down the 10-minute redraw window (server-synced).
   const until = data?.redrawUntil ? Date.parse(data.redrawUntil) - offset : null;

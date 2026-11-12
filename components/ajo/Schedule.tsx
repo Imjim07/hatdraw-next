@@ -4,8 +4,8 @@ import { longDate } from "@/lib/ajo/client";
 import type { PublicTurn } from "@/lib/ajo/types";
 
 // The payout schedule: one row per turn (turn pit · name and date · amount).
-// The next turn to come has the gold edge (next = −1: all paid out; −2: not
-// known yet). On phones each row stacks, so there is never sideways scrolling.
+// The next turn to come has the gold edge (next = −1: all paid out). On phones
+// each row stacks, so there is never sideways scrolling.
 export default function Schedule({ turns, next, action }: { turns: PublicTurn[]; next: number; action?: (t: PublicTurn) => ReactNode }) {
   return (
     <ol className="sched" aria-label="Payout order">

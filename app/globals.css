@@ -169,7 +169,7 @@ footer.foot a{color:var(--starch)}
 .panel{background:var(--indigo-cloth);border:1px solid var(--line);border-radius:var(--r-lg);padding:34px}
 .panel h2{font-size:2.1rem;margin-top:6px}
 .field{margin-top:20px}
-.field label,.field .lbl{display:block;font-size:.85rem;font-weight:600;color:var(--starch-dim);margin-bottom:8px}
+.field label:not(.toggle),.field .lbl{display:block;font-size:.85rem;font-weight:600;color:var(--starch-dim);margin-bottom:8px}
 .field small{color:var(--muted);font-weight:500}
 
 /* ---- Ayo pits: inputs are carved hollows; focus drops a seed in ---- */
