@@ -4,6 +4,7 @@ import Logo from "@/components/Logo";
 import GiftReveal from "@/components/GiftReveal";
 import Shekere from "@/components/Shekere";
 import SpecularButton from "@/components/SpecularButton";
+import DrawKindSwitch from "@/components/DrawKindSwitch";
 import { serifName } from "@/lib/marks";
 import { burst } from "@/components/Ambient";
 import { PRICING, PAYWALL_MODE, naira } from "@/lib/config";
@@ -161,6 +162,7 @@ export default function DrawPage() {
     <div className="wrap">
       <nav className="top"><Logo /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></nav>
       <main className="app">
+        {step === 0 && <DrawKindSwitch current="gift" />}
         <div className="steps" role="img" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((i) => <span key={i === step ? `now-${step}` : i} className={i < step ? "on" : i === step ? "on now" : ""} />)}</div>
 
         {step === 0 && (

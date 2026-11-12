@@ -430,7 +430,8 @@ export default function SpecularButton(props: SpecularButtonProps) {
   if (rest.href !== undefined) {
     const { href, ...a } = rest as AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
     const ref = elRef as React.RefObject<HTMLAnchorElement>;
-    return href.startsWith("/")
+    // Pages go through next/link; files and API routes (downloads) are plain links.
+    return href.startsWith("/") && !href.startsWith("/api/") && a.download === undefined
       ? <Link ref={ref} href={href} className={cls} style={vars} {...a}>{inner}</Link>
       : <a ref={ref} href={href} className={cls} style={vars} {...a}>{inner}</a>;
   }
