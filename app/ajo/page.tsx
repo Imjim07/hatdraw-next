@@ -13,7 +13,8 @@ type Draft = { name: string; amount: string; frequency: Frequency; startDate: st
 type Created = Extract<CreateGroupResponse, { ok: true }>;
 
 const DRAFT_KEY = "hd-ajo-draft-v1";
-const AV = ["#E3B45A", "#EFE8D8", "#C9CFE3", "#F2CF86", "#9AA4C4", "#D9CCB0"];
+// Avatar fills from the palette; initials are ink (≥4.5:1 on each).
+const AV = ["var(--indigo-mist)", "var(--palm-gold)"];
 const FREQS: Frequency[] = ["weekly", "biweekly", "monthly"];
 const blank = (): Draft => ({ name: "", amount: "", frequency: "monthly", startDate: "", members: [], pins: [], researchConsent: false });
 const initials = (s: string) => Array.from(new Intl.Segmenter().segment(s.normalize("NFC")), (x) => x.segment).slice(0, 2).join("").toUpperCase();
@@ -120,7 +121,7 @@ export default function AjoSetup() {
               <div className="res-row" style={{ marginTop: 10 }}><span className="link-text">{admin}</span>
                 <div className="acts">
                   <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(admin)) ? "Admin link copied ✓" : "Couldn't copy")}>Copy</SpecularButton>
-                  <SpecularButton className="btn btn-gold btn-sm" href={`/ajo/${created.publicId}/admin#${created.adminToken}`}>Open admin page</SpecularButton>
+                  <SpecularButton className="btn btn-primary btn-sm" href={`/ajo/${created.publicId}/admin#${created.adminToken}`}>Open admin page</SpecularButton>
                 </div></div></div>
 
             <div className="field"><span className="lbl">Each member&apos;s personal link</span>
@@ -133,7 +134,7 @@ export default function AjoSetup() {
                     <div key={name} className="res-row">
                       <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                       <div className="acts">
-                        <SpecularButton className="btn btn-gold btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</SpecularButton>
+                        <SpecularButton className="btn btn-primary btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</SpecularButton>
                         <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? "Link copied ✓" : "Couldn't copy")}>Copy link</SpecularButton>
                       </div>
                     </div>
@@ -178,7 +179,7 @@ export default function AjoSetup() {
               </div></div>
             <p className="hint" aria-live="polite">{perTurn}</p>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><span /><SpecularButton className="btn btn-gold" onClick={next}>Next: members →</SpecularButton></div>
+            <div className="nav-row"><span /><SpecularButton className="btn btn-primary" onClick={next}>Next: members →</SpecularButton></div>
           </div>
         )}
 
@@ -192,7 +193,7 @@ export default function AjoSetup() {
                 onChange={(e) => setNameIn(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } } }}
                 onPaste={(e) => { const t = e.clipboardData.getData("text"); if (/[\n,;]/.test(t)) { e.preventDefault(); addNames(t); } }} /></span>
-              <SpecularButton className="btn btn-gold" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</SpecularButton>
+              <SpecularButton className="btn btn-primary" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</SpecularButton>
             </div>
             <ul className="board" aria-label="Members">
               {d.members.map((p) => (
@@ -204,7 +205,7 @@ export default function AjoSetup() {
             </ul>
             <div className="counter"><span>{n} {n === 1 ? "member" : "members"} · {n} turns</span>{amount > 0 && n > 0 && <span>Each turn collects {naira(payoutAmount(amount, n))}</span>}</div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>← Back</SpecularButton><SpecularButton className="btn btn-gold" onClick={next}>Next: pins →</SpecularButton></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>← Back</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>Next: pins →</SpecularButton></div>
           </div>
         )}
 
@@ -226,7 +227,7 @@ export default function AjoSetup() {
               </div>
             </div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(1)}>← Back</SpecularButton><SpecularButton className="btn btn-gold" onClick={next}>Next: review →</SpecularButton></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(1)}>← Back</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>Next: review →</SpecularButton></div>
           </div>
         )}
 
@@ -246,7 +247,7 @@ export default function AjoSetup() {
               <span><b>Help us learn how ajo groups run</b><span className="d">Allow HatDraw to use this group&apos;s size, amount band and frequency, anonymously. Nothing else is used. Off unless you switch it on.</span></span></label>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(2)}>← Back</SpecularButton>
-              <SpecularButton className="btn btn-gold" onClick={create} disabled={busy}>{busy ? "Creating…" : "Create group"}</SpecularButton></div>
+              <SpecularButton className="btn btn-primary" onClick={create} disabled={busy}>{busy ? "Creating…" : "Create group"}</SpecularButton></div>
           </div>
         )}
       </main>

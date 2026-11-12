@@ -16,7 +16,7 @@ export type MotifProps = {
   pathLength?: number;
 };
 
-function Svg({ size = 48, color = "var(--starch)", strokeWidth = 3, title, className, style, children }: MotifProps & { children: ReactNode }) {
+function Svg({ size = 48, color = "var(--indigo)", strokeWidth = 3, title, className, style, children }: MotifProps & { children: ReactNode }) {
   const a11y: SVGProps<SVGSVGElement> = title ? { role: "img" } : { "aria-hidden": true, focusable: false };
   return (
     <svg viewBox="0 0 100 100" width={size} height={size} fill="none" stroke={color} strokeWidth={strokeWidth}
@@ -27,21 +27,21 @@ function Svg({ size = 48, color = "var(--starch)", strokeWidth = 3, title, class
   );
 }
 
-/** Tree of life → the Christmas tree. The gold star is fixed. */
+/** Tree of life → the Christmas tree. The palm-gold star is fixed (it only ever sits on indigo). */
 export function IgiIye(p: MotifProps) {
   return (
     <Svg {...p}>
       <path pathLength={p.pathLength} d="M50 90 V 20" />
       <path pathLength={p.pathLength} d="M50 32 L 34 44 M50 32 L 66 44 M50 48 L 28 62 M50 48 L 72 62 M50 64 L 24 78 M50 64 L 76 78" />
       <path pathLength={p.pathLength} d="M38 90 H 62" />
-      <circle cx="50" cy="13" r="6" fill="var(--gold)" stroke="none" />
+      <circle cx="50" cy="13" r="6" fill="var(--palm-gold)" stroke="none" />
     </Svg>
   );
 }
 
 /** Beads on a string → adding names. */
 export function Sunbebe(p: MotifProps) {
-  const c = p.color ?? "var(--starch)";
+  const c = p.color ?? "var(--indigo)";
   return (
     <Svg {...p}>
       <path pathLength={p.pathLength} d="M16 30 C 28 70, 72 70, 84 30" />
@@ -55,7 +55,7 @@ export function Sunbebe(p: MotifProps) {
 
 /** "The world is on its side" → shuffling. */
 export function AyeDegbe(p: MotifProps) {
-  const c = p.color ?? "var(--starch)";
+  const c = p.color ?? "var(--indigo)";
   return (
     <Svg {...p}>
       <path pathLength={p.pathLength} d="M10 40 L 22 18 L 34 40 Z M38 40 L 50 18 L 62 40 Z M66 40 L 78 18 L 90 40 Z" />
@@ -89,7 +89,7 @@ export function Dundun(p: MotifProps) {
 
 /** Flower → gift ideas. */
 export function Ododo(p: MotifProps) {
-  const c = p.color ?? "var(--starch)";
+  const c = p.color ?? "var(--indigo)";
   return (
     <Svg {...p}>
       {[0, 45, 90, 135, 180, 225, 270, 315].map((r) => (
@@ -103,6 +103,7 @@ export function Ododo(p: MotifProps) {
 // A 3×3 adire eleko square: the tree of life at the centre, flowers and
 // "world on its side" triangles alternating around it. Used behind the reveal
 // and by the loader (which draws the strokes in, one square at a time).
+// It always sits on indigo, so its strokes are cloud.
 const ADIRE = [AyeDegbe, Ododo, AyeDegbe, Ododo, IgiIye, Ododo, AyeDegbe, Ododo, AyeDegbe];
 
 export function AdireGrid({ className = "", strokeWidth = 4 }: { className?: string; strokeWidth?: number }) {
@@ -110,7 +111,7 @@ export function AdireGrid({ className = "", strokeWidth = 4 }: { className?: str
     <div className={`adire-grid ${className}`} aria-hidden="true">
       {ADIRE.map((M, i) => (
         <span key={i} style={{ "--i": i } as React.CSSProperties}>
-          <M size="100%" strokeWidth={strokeWidth} pathLength={1} />
+          <M size="100%" color="var(--cloud)" strokeWidth={strokeWidth} pathLength={1} />
         </span>
       ))}
     </div>

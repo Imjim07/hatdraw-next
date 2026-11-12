@@ -14,7 +14,8 @@ type Draft = { ev: EventInfo; people: string[]; ex: [string, string][]; circle: 
 type Result = Extract<DrawResponse, { ok: true }>;
 
 const DRAFT_KEY = "hd-draft-v2";
-const AV = ["#E3B45A", "#EFE8D8", "#C9CFE3", "#F2CF86", "#9AA4C4", "#D9CCB0"];
+// Avatar fills from the palette; initials are ink (≥4.5:1 on each).
+const AV = ["var(--indigo-mist)", "var(--palm-gold)", "var(--persimmon)"];
 const KINDS: { k: Kind; icon: string; label: string }[] = [
   { k: "friends", icon: "🥂", label: "Friends" }, { k: "family", icon: "🏡", label: "Family" }, { k: "company", icon: "💼", label: "Company" },
 ];
@@ -151,7 +152,7 @@ export default function DrawPage() {
   if (view) {
     const done = () => { if (view.context === "phone") setSeen((s) => [...s, view.data.g]); setView(null); };
     return <GiftReveal data={view.data} context={view.context}
-      actions={<SpecularButton className="btn btn-gold" onClick={done}>{view.context === "phone" ? "🙈 Hide & pass the phone" : "← Back to links"}</SpecularButton>} />;
+      actions={<SpecularButton className="btn btn-primary" onClick={done}>{view.context === "phone" ? "🙈 Hide & pass the phone" : "← Back to links"}</SpecularButton>} />;
   }
 
   // An ayo board has two rows of six pits; keep at least that, and fill out the last row.
@@ -188,7 +189,7 @@ export default function DrawPage() {
             <div className="field"><label htmlFor="ev-note">A note for everyone <small>(optional)</small></label>
               <span className="pit ta"><textarea id="ev-note" className="in" maxLength={200} placeholder="e.g. No gift cards! Dress code: something red." value={d.ev.note} onChange={(e) => setEv({ note: e.target.value })} /></span></div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><span /><SpecularButton className="btn btn-gold" onClick={next}>Next: add names →</SpecularButton></div>
+            <div className="nav-row"><span /><SpecularButton className="btn btn-primary" onClick={next}>Next: add names →</SpecularButton></div>
           </div>
         )}
 
@@ -207,7 +208,7 @@ export default function DrawPage() {
                 onChange={(e) => setNameIn(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } } }}
                 onPaste={(e) => { const t = e.clipboardData.getData("text"); if (/[\n,;]/.test(t)) { e.preventDefault(); addNames(t); } }} /></span>
-              <SpecularButton className="btn btn-gold" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</SpecularButton>
+              <SpecularButton className="btn btn-primary" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</SpecularButton>
             </div>
             <ul className="board" aria-label="Names in the hat">
               {d.people.map((p) => (
@@ -220,7 +221,7 @@ export default function DrawPage() {
             <div className="counter"><span>{n} {n === 1 ? "person" : "people"}</span><span className={paid ? "over" : undefined}>{tier}</span></div>
             <div className="meter"><i className={paid ? "over" : ""} style={{ width: `${Math.min(100, (n / PRICING.FREE_LIMIT) * 100)}%` }} /></div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>← Back</SpecularButton><SpecularButton className="btn btn-gold" onClick={next}>Next: rules →</SpecularButton></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>← Back</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>Next: rules →</SpecularButton></div>
           </div>
         )}
 
@@ -245,7 +246,7 @@ export default function DrawPage() {
             </div>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(1)}>← Back</SpecularButton>
-              <SpecularButton className="btn btn-gold" onClick={shake} disabled={drawing}>{drawing ? "Shaking…" : `Shake the hat${paid ? ` · ${naira(PRICING.ONE_TIME)}` : ""}`}</SpecularButton></div>
+              <SpecularButton className="btn btn-primary" onClick={shake} disabled={drawing}>{drawing ? "Shaking…" : `Shake the hat${paid ? ` · ${naira(PRICING.ONE_TIME)}` : ""}`}</SpecularButton></div>
           </div>
         )}
 
@@ -280,7 +281,7 @@ export default function DrawPage() {
                           <div key={name} className="res-row">
                             <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                             <div className="acts">
-                              <SpecularButton className="btn btn-gold btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</SpecularButton>
+                              <SpecularButton className="btn btn-primary btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</SpecularButton>
                               <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? "Link copied ✓" : "Couldn't copy")}>Copy link</SpecularButton>
                               {!d.blind && <SpecularButton className="btn btn-ghost btn-sm" onClick={() => openToken(token, "preview")}>Preview</SpecularButton>}
                             </div>
@@ -302,7 +303,7 @@ export default function DrawPage() {
                         <div key={name} className={`res-row ${seen.includes(name) ? "seen" : ""}`}>
                           <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                           {seen.includes(name) ? <span className="hint" style={{ margin: 0 }}>Unwrapped ✓</span>
-                            : <SpecularButton className="btn btn-gold btn-sm" onClick={() => setConfirmFor(token + "\u0000" + name)}>That&apos;s me</SpecularButton>}
+                            : <SpecularButton className="btn btn-primary btn-sm" onClick={() => setConfirmFor(token + "\u0000" + name)}>That&apos;s me</SpecularButton>}
                         </div>
                       ))}
                     </div>
@@ -321,7 +322,7 @@ export default function DrawPage() {
           <p className="sub" style={{ margin: "0 auto" }}>Make sure nobody&apos;s looking over your shoulder.</p>
           <div className="nav-row" style={{ justifyContent: "center" }}>
             <SpecularButton className="btn btn-ghost" onClick={() => setConfirmFor(null)}>Not me</SpecularButton>
-            <SpecularButton className="btn btn-gold" onClick={() => { setConfirmFor(null); openToken(token, "phone"); }}>Yes, it&apos;s me</SpecularButton>
+            <SpecularButton className="btn btn-primary" onClick={() => { setConfirmFor(null); openToken(token, "phone"); }}>Yes, it&apos;s me</SpecularButton>
           </div>
         </div></div>); })()}
 
@@ -336,7 +337,7 @@ export default function DrawPage() {
               <span className="pit"><input id="pay-email" className="in" type="email" value={payEmail} onChange={(e) => setPayEmail(e.target.value)} placeholder="you@example.com" /></span></div>
           ) : <p className="hint">Demo mode: payments aren&apos;t connected yet, so this unlocks the draw for free.</p>}
           <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => setPayOpen(false)}>Not now</SpecularButton>
-            <SpecularButton className="btn btn-gold" onClick={pay}>{PAYWALL_MODE === "live" ? `Pay ${naira(PRICING.ONE_TIME)} & draw` : "Unlock (demo) & draw"}</SpecularButton></div>
+            <SpecularButton className="btn btn-primary" onClick={pay}>{PAYWALL_MODE === "live" ? `Pay ${naira(PRICING.ONE_TIME)} & draw` : "Unlock (demo) & draw"}</SpecularButton></div>
         </div></div>
       )}
 
@@ -344,8 +345,8 @@ export default function DrawPage() {
         <div className="modal" role="dialog" aria-modal="true"><div className="panel">
           <div className="eyebrow">Organizer view</div>
           <h2 style={{ fontSize: "1.8rem" }}>All matches</h2>
-          <div className="res">{result.pairs.map(([g, r]) => <div key={g} className="res-row"><span>{g}</span><span style={{ color: "var(--gold-2)" }}>→ {r}</span></div>)}</div>
-          <div className="nav-row"><span /><SpecularButton className="btn btn-gold" onClick={() => setPeek(false)}>Hide them</SpecularButton></div>
+          <div className="res">{result.pairs.map(([g, r]) => <div key={g} className="res-row"><span>{g}</span><span style={{ color: "var(--indigo)", fontWeight: 600 }}>→ {r}</span></div>)}</div>
+          <div className="nav-row"><span /><SpecularButton className="btn btn-primary" onClick={() => setPeek(false)}>Hide them</SpecularButton></div>
         </div></div>
       )}
 

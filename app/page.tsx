@@ -45,7 +45,7 @@ export default function Home() {
         <nav className="top">
           <Logo />
           <SectionNav />
-          <SpecularButton href="/draw" className="btn btn-gold btn-sm">Start a draw</SpecularButton>
+          <SpecularButton href="/draw" className="btn btn-primary btn-sm">Start a draw</SpecularButton>
         </nav>
 
         <div className="hero">
@@ -54,7 +54,7 @@ export default function Home() {
             <h1>Drop the names in the hat. <em>Let Christmas pick.</em></h1>
             <p className="lede">Secret Santa for friends, family and teams. Add everyone&apos;s name and {BRAND.name} shuffles them. Each person gets a private link and unwraps who they&apos;re gifting. Nobody else sees it, not even you.</p>
             <div className="hero-cta">
-              <SpecularButton href="/draw" className="btn btn-gold">Start your draw, free →</SpecularButton>
+              <SpecularButton href="/draw" className="btn btn-primary">Start your draw, free →</SpecularButton>
               <SpecularButton className="btn btn-ghost" href="#how">See how it works</SpecularButton>
             </div>
             <div className="trust"><span>No sign-up</span><span>Free up to {PRICING.FREE_LIMIT} people</span><span>Share on WhatsApp</span></div>

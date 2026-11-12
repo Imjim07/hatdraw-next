@@ -74,7 +74,7 @@ function PlanCard({ plan, period }: { plan: Plan; period: Billing }) {
         {!free && <small>{plan.unit[period]}</small>}
       </div>
       <p className="price-note" key={plan.note[period]}>{plan.note[period]}</p>
-      <ul>{plan.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--gold-2)" />{t}</li>)}</ul>
+      <ul>{plan.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--indigo)" />{t}</li>)}</ul>
       {cta.href
         ? <SpecularButton href={cta.href} className={`btn btn-${cta.variant}`}>{cta.label}</SpecularButton>
         : <span className="btn btn-ghost btn-off" aria-disabled="true">{cta.label}</span>}

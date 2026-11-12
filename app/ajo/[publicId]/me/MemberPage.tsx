@@ -85,7 +85,7 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
             <span className="pit"><input id="me-email" className="in" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} /></span></div>
           <label className="toggle"><input type="checkbox" checked={remind} onChange={(e) => setRemind(e.target.checked)} /><span className="sw" />
             <span><b>Remind me</b><span className="d">Email me 3 days before each payout date. You can switch this off any time.</span></span></label>
-          <div className="nav-row" style={{ marginTop: 14 }}><span /><SpecularButton className="btn btn-gold btn-sm" onClick={save} disabled={busy}>Save</SpecularButton></div>
+          <div className="nav-row" style={{ marginTop: 14 }}><span /><SpecularButton className="btn btn-primary btn-sm" onClick={save} disabled={busy}>Save</SpecularButton></div>
         </div>
 
         {drawn && (
@@ -97,7 +97,7 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
                   <span>{s.from} wants to swap turns with you</span>
                   <div className="acts">
                     <SpecularButton className="btn btn-ghost btn-sm" onClick={() => swap("decline", { swapId: s.id })} disabled={busy}>Decline</SpecularButton>
-                    <SpecularButton className="btn btn-gold btn-sm" onClick={() => swap("confirm", { swapId: s.id })} disabled={busy}>Confirm swap</SpecularButton>
+                    <SpecularButton className="btn btn-primary btn-sm" onClick={() => swap("confirm", { swapId: s.id })} disabled={busy}>Confirm swap</SpecularButton>
                   </div>
                 </div>
               ))}

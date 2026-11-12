@@ -55,7 +55,7 @@ function Cord({ wrap }: { wrap: React.RefObject<HTMLDivElement | null> }) {
       </svg>
       {COWRIES.map((t, i) => (
         <span key={t} className="cowrie" style={{ left: `${t * 100}%`, top: sag(t), animationDelay: `${80 + i * 40}ms`, rotate: `${(0.5 - t) * -24}deg` }}>
-          <Owo size={44} color="var(--indigo-deep)" strokeWidth={5} />
+          <Owo size={44} color="var(--cloud)" strokeWidth={5} />
         </span>
       ))}
     </div>

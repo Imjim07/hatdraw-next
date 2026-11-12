@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import GooeyNav from "./GooeyNav";
+import { PALETTE } from "@/lib/palette";
 
 // Landing-page section links. The gold pill follows the section you're reading;
 // after a click it stays on the clicked item until the smooth scroll ends, so it
@@ -11,14 +12,15 @@ const ITEMS = [
   { label: "Pricing", href: "#pricing" },
 ];
 
-// Indigo & Starch instead of the stock grey (passed as style: the component sets its theme inline).
+// The neutral indigo pill on an indigo-mist frame, instead of the stock grey (passed as style: the component sets its theme inline).
 // --gn-y 14px makes each item ≥44px tall.
 const THEME = {
-  "--gn-frame": "rgba(30, 47, 102, 0.55)",
-  "--gn-frame-edge": "rgba(239, 232, 216, 0.12)",
-  "--gn-frame-highlight": "rgba(239, 232, 216, 0.08)",
-  "--gn-ink": "var(--starch)",
-  "--gn-muted": "var(--starch-dim)",
+  "--gn-frame": "rgba(221, 227, 245, 0.75)", // indigo mist
+  "--gn-frame-edge": "rgba(20, 26, 51, 0.12)", // --line
+  "--gn-frame-highlight": "rgba(255, 255, 255, 0.6)",
+  "--gn-frame-shadow": "0 18px 36px -24px rgba(20, 26, 51, 0.35)",
+  "--gn-ink": "var(--ink)",
+  "--gn-muted": "var(--text-muted)",
   "--gn-y": "14px",
 } as React.CSSProperties;
 
@@ -60,10 +62,10 @@ export default function SectionNav() {
         setTimeout(() => { locked.current = false; }, 1500); // in case scrollend never fires
         setActive(i);
       }}
-      theme="dark"
+      theme="light"
       size="md"
-      color="#E3B45A"
-      activeTextColor="#0E1838"
+      color={PALETTE.indigo}
+      activeTextColor={PALETTE.cloud}
       particleCount={15}
       spread={56}
       animationTime={600}

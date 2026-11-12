@@ -89,7 +89,7 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
         <AdireGrid className="cloth-grid" />
         {open && (
           <span className="cloth-name" aria-hidden="true">
-            <IgiIye size={34} color="var(--gold)" strokeWidth={6} />
+            <IgiIye size={34} color="var(--cloud)" strokeWidth={6} />
             <span className={match.className} style={{ fontSize: `calc(min(300px, 80vw) * ${(nameSize / 300).toFixed(3)})` }}>{match.text}</span>
           </span>
         )}
@@ -116,9 +116,9 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
             </div>
           )}
           <div className="idea">
-            <div className="eyebrow idea-head"><Ododo size={22} color="var(--indigo-dip)" strokeWidth={5} />Stuck for ideas?</div>
+            <div className="eyebrow idea-head"><Ododo size={22} color="var(--indigo)" strokeWidth={5} />Stuck for ideas?</div>
             <div className="q" aria-live="polite">{idea}</div>
-            <SpecularButton className="btn btn-indigo btn-sm" onClick={spin}>{idea === IDLE_IDEA ? "Spin" : "Spin again"}</SpecularButton>
+            <SpecularButton className="btn btn-primary btn-sm" onClick={spin}>{idea === IDLE_IDEA ? "Spin" : "Spin again"}</SpecularButton>
           </div>
           {e.note && <p className="note">&ldquo;{e.note}&rdquo; (from the organizer)</p>}
           <div style={{ marginTop: 26, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>{actions}{cta && <SpecularButton href={cta.href} className="btn btn-ghost">{cta.label}</SpecularButton>}</div>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { BRAND } from "@/lib/config";
+import { PALETTE } from "@/lib/palette";
 import { WeatherProvider } from "@/components/WeatherContext";
 import Ambient from "@/components/Ambient";
 import WeatherChip from "@/components/WeatherChip";
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     "Drop everyone's name in the hat. It secretly picks who gifts who this Christmas and sends each person a private link to unwrap their match.",
 };
 
-export const viewport: Viewport = { themeColor: "#0E1838" };
+export const viewport: Viewport = { themeColor: PALETTE.cloud };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

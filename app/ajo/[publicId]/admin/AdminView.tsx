@@ -96,7 +96,7 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
             <div className="err" role="alert">{err}</div>
             <div className="nav-row">
               <SpecularButton className="btn btn-ghost" onClick={() => draw("live")} disabled={busy}>Draw live (starts in {LIVE_SECONDS}s)</SpecularButton>
-              <SpecularButton className="btn btn-gold" onClick={() => draw("instant")} disabled={busy}>{busy ? "Drawing…" : "Draw now"}</SpecularButton>
+              <SpecularButton className="btn btn-primary" onClick={() => draw("instant")} disabled={busy}>{busy ? "Drawing…" : "Draw now"}</SpecularButton>
             </div>
           </>
         ) : (
@@ -132,7 +132,7 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
           <h2 id="redraw-title" style={{ fontSize: "1.8rem" }}>Draw the order again?</h2>
           <p className="sub">Use this only to fix a mistake. Everyone will see on the schedule that the order was redrawn{g.draw?.redrawCount ? ` (it already has been ${g.draw.redrawCount === 1 ? "once" : `${g.draw.redrawCount} times`})` : ""}.</p>
           <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => setConfirmRedraw(false)}>Keep this order</SpecularButton>
-            <SpecularButton className="btn btn-gold" onClick={redraw}>Redraw</SpecularButton></div>
+            <SpecularButton className="btn btn-primary" onClick={redraw}>Redraw</SpecularButton></div>
         </div></div>
       )}
     </Shell>
