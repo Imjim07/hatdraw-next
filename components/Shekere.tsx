@@ -151,32 +151,32 @@ export default function Shekere({ names, maxLabeled = 5, beadsFromNames = false,
     <svg ref={svg} viewBox={`0 0 ${W} ${H}`} className={`shekere ${className}`} aria-hidden="true" focusable="false">
       <defs><clipPath id={clip}><path d={GOURD} /></clipPath></defs>
       <g ref={rot}>
-        <path d={GOURD} fill="var(--shk-fill, var(--indigo))" stroke="var(--cloud)" strokeWidth="2.5" strokeLinejoin="round" />
-        <g clipPath={`url(#${clip})`} stroke="var(--cloud)" fill="none">
+        <path d={GOURD} fill="var(--shk-fill, var(--dye))" stroke="var(--dye-fg)" strokeWidth="2.5" strokeLinejoin="round" />
+        <g clipPath={`url(#${clip})`} stroke="var(--dye-fg)" fill="none">
           <g strokeOpacity=".45" strokeWidth="1.2">{STRANDS.map((d) => <path key={d} d={d} />)}</g>
           <path d={COLLAR} strokeOpacity=".6" strokeWidth="2" />
         </g>
-        <ellipse cx={CX} cy={PIVOT[1]} rx="26" ry="6" fill="var(--ink)" stroke="var(--cloud)" strokeWidth="2" />
+        <ellipse cx={CX} cy={PIVOT[1]} rx="26" ry="6" fill="var(--on-accent)" stroke="var(--dye-fg)" strokeWidth="2" />
         {KNOTS.map(([x, y], k) =>
           beadName.has(k) ? (
             <circle key={`b${k}`} className="shk-bead" data-k={k} data-x={x} data-y={y} data-p={hash(k + 7).toFixed(4)}
-              cx={x} cy={y} r="7" fill={goldBeads.has(k) ? "var(--palm-gold)" : "var(--cloud)"} />
+              cx={x} cy={y} r="7" fill={goldBeads.has(k) ? "var(--palm-gold)" : "var(--dye-fg)"} />
           ) : (
-            <circle key={`k${k}`} cx={x} cy={y} r="2.2" fill="var(--cloud)" fillOpacity=".5" />
+            <circle key={`k${k}`} cx={x} cy={y} r="2.2" fill="var(--dye-fg)" fillOpacity=".5" />
           ),
         )}
         {beadsFromNames && n > SHEKERE_CAPACITY && (
           <g>
             <rect x={CX - 78} y="346" width="156" height="40" rx="20" fill="var(--palm-gold)" />
-            <text x={CX} y="374" textAnchor="middle" fontFamily="var(--sans)" fontWeight="700" fontSize="24" fill="var(--ink)">+{n - SHEKERE_CAPACITY} more</text>
+            <text x={CX} y="374" textAnchor="middle" fontFamily="var(--sans)" fontWeight="700" fontSize="24" fill="var(--on-accent)">+{n - SHEKERE_CAPACITY} more</text>
           </g>
         )}
       </g>
       {tags.map(({ name, k, sx, sy, w }) => (
         <g key={`t${name}${k}`}>
           <line className="shk-string" data-k={k} x1={KNOTS[k][0]} y1={KNOTS[k][1]} x2={sx} y2={sy} stroke="var(--indigo)" strokeOpacity=".45" strokeWidth="1.2" />
-          <rect x={sx - w / 2} y={sy - 15} width={w} height="30" rx="7" fill={isGold(name) ? "var(--palm-gold)" : "var(--cloud)"} stroke={isGold(name) ? "none" : "rgba(20,26,51,.12)"} />
-          <text x={sx} y={sy + 5.5} textAnchor="middle" fontFamily="var(--display)" fontWeight="600" fontSize="15" fill="var(--ink)">{name}</text>
+          <rect x={sx - w / 2} y={sy - 15} width={w} height="30" rx="7" fill={isGold(name) ? "var(--palm-gold)" : "var(--cloud)"} stroke={isGold(name) ? "none" : "var(--line)"} />
+          <text x={sx} y={sy + 5.5} textAnchor="middle" fontFamily="var(--display)" fontWeight="600" fontSize="15" fill={isGold(name) ? "var(--on-accent)" : "var(--ink)"}>{name}</text>
         </g>
       ))}
     </svg>

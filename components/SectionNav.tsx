@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import GooeyNav from "./GooeyNav";
-import { PALETTE } from "@/lib/palette";
+import { DARK, PALETTE } from "@/lib/palette";
+import { useTheme } from "@/lib/theme";
 
 // Landing-page section links. The gold pill follows the section you're reading;
 // after a click it stays on the clicked item until the smooth scroll ends, so it
@@ -12,12 +13,14 @@ const ITEMS = [
   { label: "Pricing", href: "#pricing" },
 ];
 
-// The neutral indigo pill on an indigo-mist frame, instead of the stock grey (passed as style: the component sets its theme inline).
+// The neutral pill (indigo on light, indigo mist on dark) on a tinted frame, instead of
+// the stock grey (passed as style: the component sets its theme inline). The pill is
+// drawn in WebGL, so it takes real colours, not CSS variables.
 // --gn-y 14px makes each item ≥44px tall.
 const THEME = {
-  "--gn-frame": "rgba(221, 227, 245, 0.75)", // indigo mist
-  "--gn-frame-edge": "rgba(20, 26, 51, 0.12)", // --line
-  "--gn-frame-highlight": "rgba(255, 255, 255, 0.6)",
+  "--gn-frame": "color-mix(in srgb, var(--indigo-mist) 75%, transparent)",
+  "--gn-frame-edge": "var(--line)",
+  "--gn-frame-highlight": "color-mix(in srgb, var(--cloud) 40%, transparent)",
   "--gn-frame-shadow": "0 18px 36px -24px rgba(20, 26, 51, 0.35)",
   "--gn-ink": "var(--ink)",
   "--gn-muted": "var(--text-muted)",
@@ -26,6 +29,7 @@ const THEME = {
 
 export default function SectionNav() {
   const [active, setActive] = useState(0);
+  const dark = useTheme() === "dark";
   const locked = useRef(false);
 
   useEffect(() => {
@@ -64,8 +68,8 @@ export default function SectionNav() {
       }}
       theme="light"
       size="md"
-      color={PALETTE.indigo}
-      activeTextColor={PALETTE.cloud}
+      color={dark ? DARK.brand : PALETTE.indigo}
+      activeTextColor={dark ? PALETTE.ink : PALETTE.cloud}
       particleCount={15}
       spread={56}
       animationTime={600}

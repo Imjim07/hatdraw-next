@@ -14,7 +14,8 @@ type Created = Extract<CreateGroupResponse, { ok: true }>;
 
 const DRAFT_KEY = "hd-ajo-draft-v1";
 // Avatar fills from the palette; initials are ink (≥4.5:1 on each).
-const AV = ["var(--indigo-mist)", "var(--palm-gold)"];
+// fixed light fills (dark text in both themes)
+const AV = ["#DDE3F5", "var(--palm-gold)"];
 const FREQS: Frequency[] = ["weekly", "biweekly", "monthly"];
 const blank = (): Draft => ({ name: "", amount: "", frequency: "monthly", startDate: "", members: [], pins: [], researchConsent: false });
 const initials = (s: string) => Array.from(new Intl.Segmenter().segment(s.normalize("NFC")), (x) => x.segment).slice(0, 2).join("").toUpperCase();

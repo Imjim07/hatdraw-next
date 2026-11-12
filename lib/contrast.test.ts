@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { contrast } from "./contrast";
-import { PALETTE as P } from "./palette";
+import { DARK as D, PALETTE as P } from "./palette";
 
 // Text/background pairs the design allows for normal text. Each must stay ≥ 4.5:1,
 // so a future colour edit can't quietly break readability.
@@ -30,6 +30,29 @@ const FORBIDDEN: [string, string, string][] = [
   ["palm gold on cloud", P.palmGold, P.cloud],
   ["persimmon on indigo", P.persimmon, P.indigo],
 ];
+
+// The dark theme: the same roles on the ink page.
+const DARK_ALLOWED: [string, string, string][] = [
+  ["text on page", D.text, D.page],
+  ["headings / brand on page", D.brand, D.page],
+  ["page-coloured text on brand fill (neutral + ajo buttons, pills)", D.page, D.brand],
+  ["text on tint (inputs, rows)", D.text, D.tint],
+  ["brand on tint", D.brand, D.tint],
+  ["muted text on page", D.textMuted, D.page],
+  ["muted text on tint (placeholders)", D.textMuted, D.tint],
+  ["danger on page", D.danger, D.page],
+  ["danger on tint", D.danger, D.tint],
+  ["palm gold on page (heading accent)", P.palmGold, D.page],
+  ["ink on persimmon (Santa buttons)", P.ink, P.persimmon],
+  ["ink on palm gold", P.ink, P.palmGold],
+  ["text on the indigo dye (cloth, gourd)", P.cloud, P.indigo],
+];
+
+describe("dark theme contrast", () => {
+  it.each(DARK_ALLOWED)("%s is at least 4.5:1", (_, fg, bg) => {
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(4.5);
+  });
+});
 
 describe("palette contrast", () => {
   it.each(ALLOWED)("%s is at least 4.5:1", (_, fg, bg) => {

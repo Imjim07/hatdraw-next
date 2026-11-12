@@ -89,7 +89,7 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
         <AdireGrid className="cloth-grid" />
         {open && (
           <span className="cloth-name" aria-hidden="true">
-            <IgiIye size={34} color="var(--cloud)" strokeWidth={6} />
+            <IgiIye size={34} color="var(--dye-fg)" strokeWidth={6} />
             <span className={match.className} style={{ fontSize: `calc(min(300px, 80vw) * ${(nameSize / 300).toFixed(3)})` }}>{match.text}</span>
           </span>
         )}

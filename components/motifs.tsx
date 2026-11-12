@@ -111,7 +111,7 @@ export function AdireGrid({ className = "", strokeWidth = 4 }: { className?: str
     <div className={`adire-grid ${className}`} aria-hidden="true">
       {ADIRE.map((M, i) => (
         <span key={i} style={{ "--i": i } as React.CSSProperties}>
-          <M size="100%" color="var(--cloud)" strokeWidth={strokeWidth} pathLength={1} />
+          <M size="100%" color="var(--dye-fg)" strokeWidth={strokeWidth} pathLength={1} />
         </span>
       ))}
     </div>

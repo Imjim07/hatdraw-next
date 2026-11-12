@@ -15,7 +15,8 @@ type Result = Extract<DrawResponse, { ok: true }>;
 
 const DRAFT_KEY = "hd-draft-v2";
 // Avatar fills from the palette; initials are ink (≥4.5:1 on each).
-const AV = ["var(--indigo-mist)", "var(--palm-gold)", "var(--persimmon)"];
+// fixed light fills (dark text in both themes)
+const AV = ["#DDE3F5", "var(--palm-gold)", "var(--persimmon)"];
 const KINDS: { k: Kind; icon: string; label: string }[] = [
   { k: "friends", icon: "🥂", label: "Friends" }, { k: "family", icon: "🏡", label: "Family" }, { k: "company", icon: "💼", label: "Company" },
 ];

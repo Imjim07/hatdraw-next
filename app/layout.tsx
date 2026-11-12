@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { BRAND } from "@/lib/config";
-import { PALETTE } from "@/lib/palette";
+import { PALETTE, THEME_KEY } from "@/lib/palette";
 import { WeatherProvider } from "@/components/WeatherContext";
 import Ambient from "@/components/Ambient";
 import WeatherChip from "@/components/WeatherChip";
@@ -13,12 +13,23 @@ export const metadata: Metadata = {
     "Drop everyone's name in the hat. It secretly picks who gifts who this Christmas and sends each person a private link to unwrap their match.",
 };
 
-export const viewport: Viewport = { themeColor: PALETTE.cloud };
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: PALETTE.cloud },
+    { media: "(prefers-color-scheme: dark)", color: PALETTE.ink },
+  ],
+};
+
+// Runs before first paint so a saved choice never flashes the other theme. With no
+// saved choice the CSS follows the device setting. A toggle sets data-theme on <html>
+// and saves "light" or "dark" under this key.
+const PRE_PAINT = `try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: PRE_PAINT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/* App Router root layout applies to every page; this Pages-Router rule does not apply */}
