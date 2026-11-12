@@ -96,6 +96,18 @@ a{color:inherit}
 nav.top{display:flex;align-items:center;justify-content:space-between;padding:22px 0}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.35rem;letter-spacing:-.01em;text-decoration:none;color:var(--indigo)}
 .logo svg{width:34px;height:34px}
+.nav-end{display:flex;align-items:center;gap:10px}
+/* theme toggle: moon on the light page, sun on the dark one (swapped by CSS, so no flash) */
+.theme-toggle{position:relative;display:grid;place-items:center;width:44px;height:44px;flex:none;border-radius:50%;color:var(--indigo);border:1.5px solid color-mix(in srgb,var(--ink) 25%,transparent);transition:border-color .2s,background .2s}
+.theme-toggle:hover{border-color:var(--indigo);background:color-mix(in srgb,var(--indigo) 7%,transparent)}
+.theme-toggle svg{grid-area:1/1;transition:transform .4s var(--spring),opacity .25s}
+.theme-toggle .tt-sun{opacity:0;transform:rotate(-90deg) scale(.5)}
+:root[data-theme="dark"] .theme-toggle .tt-sun,:root.dark .theme-toggle .tt-sun{opacity:1;transform:none}
+:root[data-theme="dark"] .theme-toggle .tt-moon,:root.dark .theme-toggle .tt-moon{opacity:0;transform:rotate(90deg) scale(.5)}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]):not(.light) .theme-toggle .tt-sun{opacity:1;transform:none}
+  :root:not([data-theme="light"]):not(.light) .theme-toggle .tt-moon{opacity:0;transform:rotate(90deg) scale(.5)}
+}
 
 /* SpecularButton (React Bits): a light that runs round the rim and follows the
    pointer. Sits before .btn so our variant fills and sizes win. */

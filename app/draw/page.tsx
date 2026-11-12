@@ -4,6 +4,7 @@ import Logo from "@/components/Logo";
 import GiftReveal from "@/components/GiftReveal";
 import Shekere from "@/components/Shekere";
 import SpecularButton from "@/components/SpecularButton";
+import ThemeToggle from "@/components/ThemeToggle";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import { serifName } from "@/lib/marks";
 import { burst } from "@/components/Ambient";
@@ -162,7 +163,7 @@ export default function DrawPage() {
 
   return (
     <div className="wrap" data-mode="santa">
-      <nav className="top"><Logo /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></nav>
+      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></span></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="gift" />}
         <div className="steps" role="img" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((i) => <span key={i === step ? `now-${step}` : i} className={i < step ? "on" : i === step ? "on now" : ""} />)}</div>

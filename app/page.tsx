@@ -1,6 +1,7 @@
 import Logo from "@/components/Logo";
 import HeroShekere from "@/components/HeroShekere";
 import SectionNav from "@/components/SectionNav";
+import ThemeToggle from "@/components/ThemeToggle";
 import PricingTable, { type Plan } from "@/components/PricingTable";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
@@ -45,7 +46,10 @@ export default function Home() {
         <nav className="top">
           <Logo />
           <SectionNav />
-          <SpecularButton href="/draw" className="btn btn-primary btn-sm">Start a draw</SpecularButton>
+          <span className="nav-end">
+            <ThemeToggle />
+            <SpecularButton href="/draw" className="btn btn-primary btn-sm">Start a draw</SpecularButton>
+          </span>
         </nav>
 
         <div className="hero">
