@@ -38,7 +38,7 @@ export default function RevealPage() {
   if (state.data)
     return (
       <Suspense fallback={<Opening />}>
-        <GiftReveal data={state.data} context="link" actions={<Link href="/draw" className="btn btn-ghost">Run your own draw on {BRAND.name}</Link>} />
+        <GiftReveal data={state.data} context="link" cta={{ href: "/draw", label: `Run your own draw on ${BRAND.name}` }} />
       </Suspense>
     );
   if (!state.error) return <Opening />;

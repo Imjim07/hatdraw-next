@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import Logo from "@/components/Logo";
 import GiftReveal from "@/components/GiftReveal";
 import Shekere from "@/components/Shekere";
+import SpecularButton from "@/components/SpecularButton";
 import { serifName } from "@/lib/marks";
 import { burst } from "@/components/Ambient";
 import { PRICING, PAYWALL_MODE, naira } from "@/lib/config";
@@ -150,7 +150,7 @@ export default function DrawPage() {
   if (view) {
     const done = () => { if (view.context === "phone") setSeen((s) => [...s, view.data.g]); setView(null); };
     return <GiftReveal data={view.data} context={view.context}
-      actions={<button className="btn btn-gold" onClick={done}>{view.context === "phone" ? "🙈 Hide & pass the phone" : "← Back to links"}</button>} />;
+      actions={<SpecularButton className="btn btn-gold" onClick={done}>{view.context === "phone" ? "🙈 Hide & pass the phone" : "← Back to links"}</SpecularButton>} />;
   }
 
   // An ayo board has two rows of six pits; keep at least that, and fill out the last row.
@@ -159,7 +159,7 @@ export default function DrawPage() {
 
   return (
     <div className="wrap">
-      <nav className="top"><Logo /><Link href="/" className="btn btn-ghost btn-sm">← Home</Link></nav>
+      <nav className="top"><Logo /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></nav>
       <main className="app">
         <div className="steps" role="img" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((i) => <span key={i === step ? `now-${step}` : i} className={i < step ? "on" : i === step ? "on now" : ""} />)}</div>
 
@@ -186,7 +186,7 @@ export default function DrawPage() {
             <div className="field"><label htmlFor="ev-note">A note for everyone <small>(optional)</small></label>
               <span className="pit ta"><textarea id="ev-note" className="in" maxLength={200} placeholder="e.g. No gift cards! Dress code: something red." value={d.ev.note} onChange={(e) => setEv({ note: e.target.value })} /></span></div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><span /><button className="btn btn-gold" onClick={next}>Next: add names →</button></div>
+            <div className="nav-row"><span /><SpecularButton className="btn btn-gold" onClick={next}>Next: add names →</SpecularButton></div>
           </div>
         )}
 
@@ -205,7 +205,7 @@ export default function DrawPage() {
                 onChange={(e) => setNameIn(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } } }}
                 onPaste={(e) => { const t = e.clipboardData.getData("text"); if (/[\n,;]/.test(t)) { e.preventDefault(); addNames(t); } }} /></span>
-              <button className="btn btn-gold" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</button>
+              <SpecularButton className="btn btn-gold" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</SpecularButton>
             </div>
             <ul className="board" aria-label="Names in the hat">
               {d.people.map((p) => (
@@ -218,7 +218,7 @@ export default function DrawPage() {
             <div className="counter"><span>{n} {n === 1 ? "person" : "people"}</span><span className={paid ? "over" : undefined}>{tier}</span></div>
             <div className="meter"><i className={paid ? "over" : ""} style={{ width: `${Math.min(100, (n / PRICING.FREE_LIMIT) * 100)}%` }} /></div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><button className="btn btn-ghost" onClick={() => go(0)}>← Back</button><button className="btn btn-gold" onClick={next}>Next: rules →</button></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>← Back</SpecularButton><SpecularButton className="btn btn-gold" onClick={next}>Next: rules →</SpecularButton></div>
           </div>
         )}
 
@@ -234,7 +234,7 @@ export default function DrawPage() {
               <div className="ex-row">
                 <span className="pit"><select className="in" aria-label="First person" value={exA || d.people[0]} onChange={(e) => setExA(e.target.value)}>{d.people.map((p) => <option key={p}>{p}</option>)}</select></span>
                 <span className="pit"><select className="in" aria-label="Second person" value={exB || d.people[1]} onChange={(e) => setExB(e.target.value)}>{d.people.map((p) => <option key={p}>{p}</option>)}</select></span>
-                <button className="btn btn-ghost" onClick={addEx}>Add</button>
+                <SpecularButton className="btn btn-ghost" onClick={addEx}>Add</SpecularButton>
               </div>
               <div className="ex-list">
                 {d.ex.map(([a, b], i) => <div key={a + b} className="ex"><span>{a} ✕ {b} <span className="hint" style={{ display: "inline" }}>won&apos;t draw each other</span></span>
@@ -242,8 +242,8 @@ export default function DrawPage() {
               </div>
             </div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><button className="btn btn-ghost" onClick={() => go(1)}>← Back</button>
-              <button className="btn btn-gold" onClick={shake} disabled={drawing}>{drawing ? "Shaking…" : `Shake the hat${paid ? ` · ${naira(PRICING.ONE_TIME)}` : ""}`}</button></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(1)}>← Back</SpecularButton>
+              <SpecularButton className="btn btn-gold" onClick={shake} disabled={drawing}>{drawing ? "Shaking…" : `Shake the hat${paid ? ` · ${naira(PRICING.ONE_TIME)}` : ""}`}</SpecularButton></div>
           </div>
         )}
 
@@ -278,18 +278,18 @@ export default function DrawPage() {
                           <div key={name} className="res-row">
                             <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                             <div className="acts">
-                              <a className="btn btn-gold btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-                              <button className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? "Link copied ✓" : "Couldn't copy")}>Copy link</button>
-                              {!d.blind && <button className="btn btn-ghost btn-sm" onClick={() => openToken(token, "preview")}>Preview</button>}
+                              <SpecularButton className="btn btn-gold btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</SpecularButton>
+                              <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? "Link copied ✓" : "Couldn't copy")}>Copy link</SpecularButton>
+                              {!d.blind && <SpecularButton className="btn btn-ghost btn-sm" onClick={() => openToken(token, "preview")}>Preview</SpecularButton>}
                             </div>
                           </div>
                         );
                       })}
                     </div>
                     <div className="nav-row" style={{ justifyContent: "flex-start" }}>
-                      <button className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(result.givers.map((g) => `${g.name}: ${linkFor(g.token)}`).join("\n\n"))) ? "All links copied ✓" : "Couldn't copy")}>Copy all links</button>
-                      {result.pairs && <button className="btn btn-ghost btn-sm" onClick={() => setPeek(true)}>Show all matches</button>}
-                      <button className="btn btn-ghost btn-sm" onClick={() => { if (paid && PAYWALL_MODE === "live") setPayOpen(true); else runDraw(); }}>↻ Redraw</button>
+                      <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(result.givers.map((g) => `${g.name}: ${linkFor(g.token)}`).join("\n\n"))) ? "All links copied ✓" : "Couldn't copy")}>Copy all links</SpecularButton>
+                      {result.pairs && <SpecularButton className="btn btn-ghost btn-sm" onClick={() => setPeek(true)}>Show all matches</SpecularButton>}
+                      <SpecularButton className="btn btn-ghost btn-sm" onClick={() => { if (paid && PAYWALL_MODE === "live") setPayOpen(true); else runDraw(); }}>↻ Redraw</SpecularButton>
                     </div>
                   </>
                 ) : (
@@ -300,7 +300,7 @@ export default function DrawPage() {
                         <div key={name} className={`res-row ${seen.includes(name) ? "seen" : ""}`}>
                           <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                           {seen.includes(name) ? <span className="hint" style={{ margin: 0 }}>Unwrapped ✓</span>
-                            : <button className="btn btn-gold btn-sm" onClick={() => setConfirmFor(token + "\u0000" + name)}>That&apos;s me</button>}
+                            : <SpecularButton className="btn btn-gold btn-sm" onClick={() => setConfirmFor(token + "\u0000" + name)}>That&apos;s me</SpecularButton>}
                         </div>
                       ))}
                     </div>
@@ -318,8 +318,8 @@ export default function DrawPage() {
           <h2 style={{ fontSize: "2rem" }}>Are you <span className={serifName(name).className}>{serifName(name).text}</span>?</h2>
           <p className="sub" style={{ margin: "0 auto" }}>Make sure nobody&apos;s looking over your shoulder.</p>
           <div className="nav-row" style={{ justifyContent: "center" }}>
-            <button className="btn btn-ghost" onClick={() => setConfirmFor(null)}>Not me</button>
-            <button className="btn btn-gold" onClick={() => { setConfirmFor(null); openToken(token, "phone"); }}>Yes, it&apos;s me</button>
+            <SpecularButton className="btn btn-ghost" onClick={() => setConfirmFor(null)}>Not me</SpecularButton>
+            <SpecularButton className="btn btn-gold" onClick={() => { setConfirmFor(null); openToken(token, "phone"); }}>Yes, it&apos;s me</SpecularButton>
           </div>
         </div></div>); })()}
 
@@ -333,8 +333,8 @@ export default function DrawPage() {
             <div className="field"><label htmlFor="pay-email">Email for your receipt</label>
               <span className="pit"><input id="pay-email" className="in" type="email" value={payEmail} onChange={(e) => setPayEmail(e.target.value)} placeholder="you@example.com" /></span></div>
           ) : <p className="hint">Demo mode: payments aren&apos;t connected yet, so this unlocks the draw for free.</p>}
-          <div className="nav-row"><button className="btn btn-ghost" onClick={() => setPayOpen(false)}>Not now</button>
-            <button className="btn btn-gold" onClick={pay}>{PAYWALL_MODE === "live" ? `Pay ${naira(PRICING.ONE_TIME)} & draw` : "Unlock (demo) & draw"}</button></div>
+          <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => setPayOpen(false)}>Not now</SpecularButton>
+            <SpecularButton className="btn btn-gold" onClick={pay}>{PAYWALL_MODE === "live" ? `Pay ${naira(PRICING.ONE_TIME)} & draw` : "Unlock (demo) & draw"}</SpecularButton></div>
         </div></div>
       )}
 
@@ -343,7 +343,7 @@ export default function DrawPage() {
           <div className="eyebrow">Organizer view</div>
           <h2 style={{ fontSize: "1.8rem" }}>All matches</h2>
           <div className="res">{result.pairs.map(([g, r]) => <div key={g} className="res-row"><span>{g}</span><span style={{ color: "var(--gold-2)" }}>→ {r}</span></div>)}</div>
-          <div className="nav-row"><span /><button className="btn btn-gold" onClick={() => setPeek(false)}>Hide them</button></div>
+          <div className="nav-row"><span /><SpecularButton className="btn btn-gold" onClick={() => setPeek(false)}>Hide them</SpecularButton></div>
         </div></div>
       )}
 

@@ -1,11 +1,9 @@
-// Fraunces has no mark positioning for a combining accent stacked on a dotted
-// letter (ẹ̀, ọ́, ṣ̀…), so the accent drifts off its letter. Precomposed letters
-// (à, é, ẹ, ọ, Ṣ) are fine. Names that still contain a combining mark after
-// NFC normalisation are shown in Noto Serif instead, which positions them.
-const COMBINING = /[̀-ͯ]/;
+// Names are NFC-normalised so precomposed letters are used where they exist.
+// Hanken Grotesk positions combining accents stacked on dotted letters
+// (ẹ̀, ọ́, ṣ̀…), so every name uses the display font. (Fraunces couldn't, which
+// is why this once switched some names to a fallback font.)
 
-/** Normalise a display name and pick the serif that can render it. */
+/** Normalise a display name and pick the display-font class. */
 export function serifName(s: string): { text: string; className: string } {
-  const text = s.normalize("NFC");
-  return { text, className: COMBINING.test(text) ? "serif yo" : "serif" };
+  return { text: s.normalize("NFC"), className: "serif" };
 }

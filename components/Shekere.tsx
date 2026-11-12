@@ -176,7 +176,7 @@ export default function Shekere({ names, maxLabeled = 5, beadsFromNames = false,
         <g key={`t${name}${k}`}>
           <line className="shk-string" data-k={k} x1={KNOTS[k][0]} y1={KNOTS[k][1]} x2={sx} y2={sy} stroke="var(--starch)" strokeOpacity=".7" strokeWidth="1.2" />
           <rect x={sx - w / 2} y={sy - 15} width={w} height="30" rx="7" fill={isGold(name) ? "var(--gold)" : "var(--starch)"} />
-          <text x={sx} y={sy + 5.5} textAnchor="middle" fontFamily="var(--serif)" fontWeight="600" fontSize="15" fill="var(--indigo-deep)">{name}</text>
+          <text x={sx} y={sy + 5.5} textAnchor="middle" fontFamily="var(--display)" fontWeight="600" fontSize="15" fill="var(--indigo-deep)">{name}</text>
         </g>
       ))}
     </svg>

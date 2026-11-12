@@ -8,8 +8,10 @@ export const BRAND = {
 
 export const PRICING = {
   FREE_LIMIT: 15, // draws with this many people or fewer are free
-  ONE_TIME: 3500, // ₦ per draw above the free limit
-  YEARLY: 6000, // ₦ per year (needs accounts — not sold yet)
+  ONE_TIME: 700, // ₦ per draw above the free limit (Big Hat, monthly) — what checkout charges
+  BIG_HAT_YEARLY: 7500, // ₦ per year (needs accounts — not sold yet)
+  CHAIR_MONTHLY: 1500, // ₦ per month, Chair Hat (not sold yet)
+  CHAIR_YEARLY: 15500, // ₦ per year, Chair Hat (not sold yet)
   MAX_PEOPLE: 500,
 };
 

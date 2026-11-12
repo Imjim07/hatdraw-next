@@ -1,4 +1,5 @@
 "use client";
+import SpecularButton from "@/components/SpecularButton";
 import { useRef, useState } from "react";
 import { burst } from "./Ambient";
 import { AdireGrid, IgiIye, Ododo } from "./motifs";
@@ -28,9 +29,11 @@ const CRACKS_1 = ["M50 48 L44 38 L46 28 L40 16", "M50 48 L60 44 L70 47 L82 40", 
 const CRACKS_2 = ["M40 16 L30 12 L20 18", "M82 40 L88 52 L84 64", "M47 70 L36 78 L28 90", "M60 44 L64 30 L74 22", "M44 38 L34 46 L24 50 L14 56", "M52 60 L62 64 L70 72"];
 const CHUNKS = ["M66 13 L71 9 L79 11 L80 15 L85 19 L79 23 L76 28 L71 24 L65 21 Z", "M10 61 L15 57 L22 55 L25 60 L28 66 L23 69 L20 75 L13 74 L9 69 Z", "M58 78 L63 72 L69 73 L72 70 L77 78 L74 83 L70 89 L62 88 L59 84 Z"];
 
-type Props = { data: RevealPayload; context: "link" | "preview" | "phone"; actions?: React.ReactNode };
+type Props = { data: RevealPayload; context: "link" | "preview" | "phone"; actions?: React.ReactNode;
+  /** A link button rendered here, so pages that lazy-load the reveal (/r) don't ship the button code up front. */
+  cta?: { href: string; label: string } };
 
-export default function GiftReveal({ data, context, actions }: Props) {
+export default function GiftReveal({ data, context, actions, cta }: Props) {
   const [taps, setTaps] = useState(0);
   const [idea, setIdea] = useState(IDLE_IDEA);
   const spinning = useRef(false);
@@ -115,10 +118,10 @@ export default function GiftReveal({ data, context, actions }: Props) {
           <div className="idea">
             <div className="eyebrow idea-head"><Ododo size={22} color="var(--indigo-dip)" strokeWidth={5} />Stuck for ideas?</div>
             <div className="q" aria-live="polite">{idea}</div>
-            <button className="btn btn-indigo btn-sm" onClick={spin}>{idea === IDLE_IDEA ? "Spin" : "Spin again"}</button>
+            <SpecularButton className="btn btn-indigo btn-sm" onClick={spin}>{idea === IDLE_IDEA ? "Spin" : "Spin again"}</SpecularButton>
           </div>
           {e.note && <p className="note">&ldquo;{e.note}&rdquo; (from the organizer)</p>}
-          <div style={{ marginTop: 26, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>{actions}</div>
+          <div style={{ marginTop: 26, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>{actions}{cta && <SpecularButton href={cta.href} className="btn btn-ghost">{cta.label}</SpecularButton>}</div>
         </div>
       )}
     </div></div>
