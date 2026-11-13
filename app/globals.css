@@ -282,6 +282,9 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .sf-col h3{font-family:var(--display);font-weight:700;font-size:1.15rem;color:var(--indigo);margin-bottom:6px}
 .sf-col a{display:inline-flex;align-items:center;min-height:44px;color:var(--text-muted);text-decoration:none;transition:color .2s}
 .sf-col a:hover{color:var(--ink)}
+.sf-social{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.sf-social a{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);color:var(--indigo);transition:background .2s,border-color .2s}
+.sf-social a:hover{background:var(--indigo-mist);border-color:transparent}
 .sf-link-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .sf-badge{padding:4px 10px;border-radius:999px;background:var(--indigo-mist);color:var(--ink);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 .sf-mark{height:calc(var(--sf-size) * .74);margin-top:56px;overflow:hidden;--sf-size:min(calc((100vw - 44px) / 3.45),19.5rem);
@@ -481,7 +484,7 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .how-steps{grid-template-columns:1fr;max-width:24rem}
   .fg-grid{grid-template-columns:1fr 1fr}
   nav.top .section-nav{display:none}
-  .sf-top{grid-template-columns:1fr 1fr;gap:28px}.sf-tag{grid-column:1/-1}
+  .sf-top{grid-template-columns:1fr 1fr;gap:28px}.sf-intro{grid-column:1/-1}
   .site-foot{border-radius:24px 24px 0 0;padding-top:48px}
 }
 @media (max-width:520px){

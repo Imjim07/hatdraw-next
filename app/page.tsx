@@ -5,6 +5,7 @@ import SectionNav from "@/components/SectionNav";
 import ThemeToggle from "@/components/ThemeToggle";
 import SmoothScroll from "@/components/SmoothScroll";
 import FooterStack from "@/components/FooterStack";
+import SocialIcons from "@/components/SocialIcons";
 import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
 import PricingTable, { type Plan } from "@/components/PricingTable";
 import HowItWorks from "@/components/HowItWorks";
@@ -95,7 +96,10 @@ export default function Home() {
       <FooterStack under="#pricing">
         <div className="wrap">
           <div className="sf-top">
-            <p className="sf-tag">{BRAND.name} is the easy way to draw names for gift exchanges and ajo payout orders.</p>
+            <div className="sf-intro">
+              <p className="sf-tag">{BRAND.name} is the easy way to draw names for gift exchanges and ajo payout orders.</p>
+              <SocialIcons name={BRAND.name} />
+            </div>
             <nav className="sf-col" aria-label="Draws">
               <h3>Draws</h3>
               <Link href="/draw">Gift exchange</Link>
@@ -112,8 +116,9 @@ export default function Home() {
               <span className="sf-link-row"><a href={BRAND.byUrl}>{BRAND.by}</a><span className="sf-badge">Made in Lagos</span></span>
             </nav>
           </div>
-          {/* the wordmark, cut by the rule below it; each letter is filled with adire cloth */}
-          <div className="sf-mark" aria-hidden="true"><span>caDara</span></div>
+          {/* the wordmark with Yoruba tone marks (kádàrá, destiny), cut by the rule below it;
+              each letter is filled with adire cloth */}
+          <div className="sf-mark" aria-hidden="true"><span>cáDàrá</span></div>
           <div className="sf-bottom">
             <span>© <Year /> {BRAND.name} · by {BRAND.by}</span>
             <span>Weather data from <a href="https://www.met.no/en">MET Norway</a> (CC BY 4.0)</span>

@@ -6,6 +6,15 @@ export const BRAND = {
   byUrl: "https://capricornhub.com",
 };
 
+// Footer social links. Placeholders for now: each points at the platform's home page.
+// Replace with the real profile URLs (e.g. https://www.instagram.com/<handle>).
+export const SOCIAL = [
+  { id: "instagram", label: "Instagram", href: "https://www.instagram.com/" },
+  { id: "tiktok", label: "TikTok", href: "https://www.tiktok.com/" },
+  { id: "snapchat", label: "Snapchat", href: "https://www.snapchat.com/" },
+  { id: "facebook", label: "Facebook", href: "https://www.facebook.com/" },
+] as const;
+
 export const PRICING = {
   FREE_LIMIT: 15, // draws with this many people or fewer are free
   ONE_TIME: 700, // ₦ per draw above the free limit (Big Hat, monthly) — what checkout charges
