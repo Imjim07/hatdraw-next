@@ -218,6 +218,25 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .card p{color:var(--text-muted);font-size:.95rem}
 /* How it works (after shadcn blocks features-2): centred head, centred cards,
    a faded grid behind each step's mark */
+/* "What <brand> offers": four mode cards (Santa and ajo carry their stripe, the rest
+   the neutral one), equal height, then a one-line promise row */
+.of-head{text-align:center;max-width:760px;margin:0 auto}.of-head .sub{margin:0 auto}
+.of-grid{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:48px 0 0;padding:0}
+.of-card{display:flex;flex-direction:column;gap:10px;padding:30px 24px 22px}
+.of-motif{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--indigo-mist)}
+.mode-card.of-card h3{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:1.2rem;margin-top:6px}
+.of-card>p{color:var(--text-muted);font-size:.95rem}
+.of-points{list-style:none;display:grid;gap:6px;margin:2px 0 6px;padding:0;font-size:.9rem}
+.of-points li{display:flex;align-items:baseline;gap:9px}
+.of-points li::before,.of-promise li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--indigo);transform:translateY(-2px)}
+.of-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:auto;font-weight:700;color:var(--indigo);text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;transition:text-decoration-color .2s}
+.of-link:hover{text-decoration-color:currentColor}
+.pill.of-soon{padding:4px 10px;font-size:.72rem;font-family:var(--sans)}
+.of-promise{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;margin:34px 0 0;padding:0;font-size:.88rem;font-weight:600;color:var(--text-muted)}
+.of-promise li{display:flex;align-items:center;gap:9px}
+.of-promise li::before{transform:none}
+@media (max-width:1100px){.of-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.of-grid{grid-template-columns:1fr}}
 .how-head{text-align:center}.how-head .sub{margin:0 auto}
 .how-steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:56px auto 0;padding:0}
 .how-card{background:var(--cloud);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px 26px 32px;text-align:center}

@@ -8,6 +8,7 @@ import FooterStack from "@/components/FooterStack";
 import SocialIcons from "@/components/SocialIcons";
 import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
 import PricingTable, { type Plan } from "@/components/PricingTable";
+import Offers from "@/components/Offers";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
 import SpecularButton from "@/components/SpecularButton";
@@ -80,6 +81,8 @@ export default function Home() {
           <HeroShekere />
         </div>
       </div>
+
+      <Offers />
 
       <HowItWorks />
 
