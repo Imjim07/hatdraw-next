@@ -6,6 +6,11 @@ import { defineConfig } from "@playwright/test";
 // be moved with the x-ajo-now header (honoured only by the memory store).
 // One worker: the reminder cron is global, so tests must not overlap.
 const PORT = 3210;
+const EMPTY_PORT = 3213; // e2e/gifts.spec.ts uses this port for the empty catalogue
+const ENV = {
+  AJO_STORE: "memory", CRON_SECRET: "e2e-cron-secret", DRAW_SECRET: "e2e-only-draw-secret",
+  NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}`, NEXT_PUBLIC_STORE_WHATSAPP: "2348000000000",
+};
 export default defineConfig({
   testDir: "e2e",
   timeout: 90_000,
@@ -19,11 +24,22 @@ export default defineConfig({
     { name: "desktop-reduced", use: { viewport: { width: 1440, height: 900 }, contextOptions: { reducedMotion: "reduce" } } },
     { name: "phone-reduced", use: { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, contextOptions: { reducedMotion: "reduce" } } },
   ],
-  webServer: {
-    command: `npm run build && npx next start -p ${PORT}`,
-    url: `http://localhost:${PORT}/ajo`,
-    timeout: 240_000,
-    reuseExistingServer: false,
-    env: { AJO_STORE: "memory", CRON_SECRET: "e2e-cron-secret", DRAW_SECRET: "e2e-only-draw-secret", NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}` },
-  },
+  // Two servers from one build: the main one (sample gift catalogue, GIFTS_STORE=memory),
+  // then a second with no gifts at all for the Gift Finder's empty state. They start in order.
+  webServer: [
+    {
+      command: `npm run build && npx next start -p ${PORT}`,
+      url: `http://localhost:${PORT}/ajo`,
+      timeout: 240_000,
+      reuseExistingServer: false,
+      env: { ...ENV, GIFTS_STORE: "memory" },
+    },
+    {
+      command: `npx next start -p ${EMPTY_PORT}`,
+      url: `http://localhost:${EMPTY_PORT}/gifts/policy`,
+      timeout: 60_000,
+      reuseExistingServer: false,
+      env: { ...ENV, GIFTS_STORE: "empty" },
+    },
+  ],
 });
