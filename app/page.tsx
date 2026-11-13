@@ -84,55 +84,42 @@ export default function Home() {
 
       <Features />
 
-      <section className="band" id="pricing"><div className="wrap">
+      <section className="band stack-under" id="pricing"><div className="wrap">
         <div className="eyebrow">Pricing</div>
         <h2>Free for small groups. One small fee for big ones.</h2>
         <p className="sub">Any draw with up to {PRICING.FREE_LIMIT} people is free. Bigger groups pay per draw, or once a year.</p>
         <PricingTable plans={PLANS} yearlyBadge={yearlyBadge} />
       </div></section>
 
-      <div className="wrap">
-        {/* Four cards that stack as you scroll into the footer (FooterStack) */}
-        <footer className="site-foot">
-          <FooterStack>
-            <nav className="sf-card" aria-label="Draws">
-              <div className="sf-card-head"><span className="sf-num">01 / 04</span><h3>Draws</h3></div>
-              <div className="sf-card-body">
-                <p className="sf-tag">{BRAND.name} is the easy way to draw names for gift exchanges and ajo payout orders.</p>
-                <Link href="/draw">Gift exchange</Link>
-                <Link href="/ajo">Ajo payout order</Link>
-              </div>
-              <span className="sf-shade" aria-hidden="true" />
+      {/* One sheet that slides up over the pricing section on the last scroll (FooterStack) */}
+      <FooterStack under="#pricing">
+        <div className="wrap">
+          <div className="sf-top">
+            <p className="sf-tag">{BRAND.name} is the easy way to draw names for gift exchanges and ajo payout orders.</p>
+            <nav className="sf-col" aria-label="Draws">
+              <h3>Draws</h3>
+              <Link href="/draw">Gift exchange</Link>
+              <Link href="/ajo">Ajo payout order</Link>
             </nav>
-            <nav className="sf-card sf-card--mist" aria-label={BRAND.name}>
-              <div className="sf-card-head"><span className="sf-num">02 / 04</span><h3>{BRAND.name}</h3></div>
-              <div className="sf-card-body">
-                <a href="#how">How it works</a>
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-              </div>
-              <span className="sf-shade" aria-hidden="true" />
+            <nav className="sf-col" aria-label={BRAND.name}>
+              <h3>{BRAND.name}</h3>
+              <a href="#how">How it works</a>
+              <a href="#features">Features</a>
+              <a href="#pricing">Pricing</a>
             </nav>
-            <nav className="sf-card sf-card--dye" aria-label="Company">
-              <div className="sf-card-head"><span className="sf-num">03 / 04</span><h3>Company</h3></div>
-              <div className="sf-card-body">
-                <a href={BRAND.byUrl}>{BRAND.by}</a>
-                <span className="sf-badge">Made in Lagos</span>
-              </div>
-              <span className="sf-shade" aria-hidden="true" />
+            <nav className="sf-col" aria-label="Company">
+              <h3>Company</h3>
+              <span className="sf-link-row"><a href={BRAND.byUrl}>{BRAND.by}</a><span className="sf-badge">Made in Lagos</span></span>
             </nav>
-            <div className="sf-card sf-card--mark">
-              {/* the wordmark, cut by the rule below it; each letter is filled with adire cloth */}
-              <div className="sf-mark" aria-hidden="true"><span>caDara</span></div>
-              <div className="sf-bottom">
-                <span>© <Year /> {BRAND.name} · by {BRAND.by}</span>
-                <span>Weather data from <a href="https://www.met.no/en">MET Norway</a> (CC BY 4.0)</span>
-              </div>
-              <span className="sf-shade" aria-hidden="true" />
-            </div>
-          </FooterStack>
-        </footer>
-      </div>
+          </div>
+          {/* the wordmark, cut by the rule below it; each letter is filled with adire cloth */}
+          <div className="sf-mark" aria-hidden="true"><span>caDara</span></div>
+          <div className="sf-bottom">
+            <span>© <Year /> {BRAND.name} · by {BRAND.by}</span>
+            <span>Weather data from <a href="https://www.met.no/en">MET Norway</a> (CC BY 4.0)</span>
+          </div>
+        </div>
+      </FooterStack>
     </main>
     </SmoothScroll>
   );
