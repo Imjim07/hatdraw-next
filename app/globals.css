@@ -57,6 +57,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
+html.smooth-on{scroll-behavior:auto} /* GSAP ScrollSmoother is easing the scroll */
 /* clip, not just hide: phone browsers still let you pan sideways onto anything that
    pokes past the edge (e.g. a button's specular light canvas) when only body hides it */
 html,body{overflow-x:clip}

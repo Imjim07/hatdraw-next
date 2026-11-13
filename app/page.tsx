@@ -3,6 +3,7 @@ import Logo from "@/components/Logo";
 import HeroShekere from "@/components/HeroShekere";
 import SectionNav from "@/components/SectionNav";
 import ThemeToggle from "@/components/ThemeToggle";
+import SmoothScroll from "@/components/SmoothScroll";
 import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
 import PricingTable, { type Plan } from "@/components/PricingTable";
 import HowItWorks from "@/components/HowItWorks";
@@ -50,6 +51,7 @@ const MENU = [
 
 export default function Home() {
   return (
+    <SmoothScroll>
     <main>
       <div className="wrap">
         <nav className="top">
@@ -117,5 +119,6 @@ export default function Home() {
         </footer>
       </div>
     </main>
+    </SmoothScroll>
   );
 }

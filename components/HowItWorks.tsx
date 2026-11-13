@@ -22,7 +22,7 @@ export default function HowItWorks() {
       <ol className="how-steps">
         {STEPS.map((s, i) => (
           <li key={s.title} className="how-card">
-            <Decorator>{s.mark}</Decorator>
+            <Decorator lag={0.1 + i * 0.1}>{s.mark}</Decorator>
             <div className="how-num">Step {i + 1}</div>
             <h3>{s.title}</h3>
             <p>{s.text}</p>
@@ -33,9 +33,11 @@ export default function HowItWorks() {
   );
 }
 
-function Decorator({ children }: { children: ReactNode }) {
+// data-lag: with smooth scrolling on, each mark trails the scroll a little more than
+// the one before it.
+function Decorator({ children, lag }: { children: ReactNode; lag: number }) {
   return (
-    <div className="how-deco" aria-hidden="true">
+    <div className="how-deco" aria-hidden="true" data-lag={lag}>
       <div className="how-deco-grid" />
       <div className="how-deco-mark">{children}</div>
     </div>
