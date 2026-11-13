@@ -40,6 +40,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         effects: true,
         smoothTouch: false,
       });
+      dispatchEvent(new Event("smoother:ready")); // FooterStack builds its pins after this
 
       const target = (hash: string) => {
         try { return hash.length > 1 ? document.querySelector<HTMLElement>(decodeURIComponent(hash)) : null; }
