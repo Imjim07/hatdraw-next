@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { ANY, BANDS, bandOf, budgetLabel, matches, parseFilters, toggleCompare, toQuery, widen } from "./filters";
+import { ANY, BANDS, bandOf, budgetLabel, facetCounts, matches, parseFilters, sortGifts, toggleCategory, toggleCompare, toQuery, widen } from "./filters";
 
-const gift = (price: number, forWhom: ("anyone" | "her" | "him" | "kids" | "colleague" | "couple")[] = ["anyone"], category = "home" as const) => ({ price, forWhom, category });
+const gift = (price: number, forWhom: ("anyone" | "her" | "him" | "kids" | "colleague" | "couple")[] = ["anyone"], category: "home" | "beauty" | "tech" = "home") => ({ price, forWhom, category });
 
 describe("budget bands → price filter", () => {
   const band = (id: string) => { const b = BANDS.find((x) => x.id === id)!; return { ...ANY, min: b.min, max: b.max }; };
@@ -36,12 +36,13 @@ describe("budget bands → price filter", () => {
 
 describe("query-string parsing", () => {
   it("reads a shared filtered view", () => {
-    expect(parseFilters({ max: "15000", for: "her", cat: "beauty" })).toEqual({ ...ANY, max: 15000, forWhom: "her", category: "beauty" });
+    expect(parseFilters({ max: "15000", for: "her", cat: "beauty" })).toEqual({ ...ANY, max: 15000, forWhom: "her", categories: ["beauty"] });
   });
   it("bad values fall back to Any", () => {
     for (const v of ["abc", "-5", "0", "1.5", "1e5", "", "999999999", " 100"]) expect(parseFilters({ max: v }).max, v).toBeNull();
     expect(parseFilters({ for: "grandma" }).forWhom).toBeNull();
-    expect(parseFilters({ cat: "cars" }).category).toBeNull();
+    expect(parseFilters({ cat: "cars" }).categories).toEqual([]);
+    expect(parseFilters({ sort: "cheapest" }).sort).toBe("featured");
     expect(parseFilters({ min: "nope" }).min).toBeNull();
   });
   it("an impossible range keeps only the ceiling", () => {
@@ -84,5 +85,59 @@ describe("compare", () => {
   });
   it("Any has an empty query", () => {
     expect(toQuery(ANY)).toBe("");
+  });
+});
+
+describe("categories (the multi-select group)", () => {
+  it("parse as a known, de-duplicated list in a fixed order", () => {
+    expect(parseFilters({ cat: "tech,home,cars,home" }).categories).toEqual(["home", "tech"]);
+  });
+  it("a gift matches any picked category", () => {
+    const f = { ...ANY, categories: ["home", "tech"] as ("home" | "tech")[] };
+    expect(matches(gift(5000, ["anyone"], "home"), f)).toBe(true);
+    expect(matches(gift(5000, ["anyone"], "beauty"), f)).toBe(false);
+  });
+  it("toggle on and off, and round-trip through the URL", () => {
+    expect(toggleCategory(["tech"], "home")).toEqual(["home", "tech"]);
+    expect(toggleCategory(["home", "tech"], "home")).toEqual(["tech"]);
+    expect(toQuery({ ...ANY, categories: ["home", "tech"] })).toBe("?cat=home%2Ctech");
+  });
+});
+
+describe("sorting", () => {
+  const list = [gift(300), gift(100), gift(200)];
+  it("featured keeps the owner's order; price sorts either way", () => {
+    expect(sortGifts(list, "featured").map((g) => g.price)).toEqual([300, 100, 200]);
+    expect(sortGifts(list, "price-asc").map((g) => g.price)).toEqual([100, 200, 300]);
+    expect(sortGifts(list, "price-desc").map((g) => g.price)).toEqual([300, 200, 100]);
+    expect(list.map((g) => g.price)).toEqual([300, 100, 200]);
+  });
+  it("goes in the URL only when it isn't the default", () => {
+    expect(toQuery({ ...ANY, sort: "price-asc" })).toBe("?sort=price-asc");
+    expect(toQuery({ ...ANY, sort: "featured" })).toBe("");
+  });
+});
+
+describe("facet counts", () => {
+  const all = [gift(5000, ["her"], "beauty"), gift(15000, ["anyone"], "home"), gift(60000, ["him"], "tech")];
+  it("count each option with the other filters applied", () => {
+    const c = facetCounts(all, { ...ANY, forWhom: "her" });
+    expect(c.budget["under-10k"]).toBe(1);
+    expect(c.budget["10-25k"]).toBe(1);
+    expect(c.budget["50k-plus"]).toBe(0);
+    expect(c.forWhom.any).toBe(3);
+    expect(c.forWhom.him).toBe(2);
+    expect(c.category.tech).toBe(0);
+  });
+});
+
+describe("the plain form (no JavaScript)", () => {
+  it("budget=<band> sets the range and wins over min/max", () => {
+    expect(parseFilters({ budget: "10-25k", max: "5000" })).toMatchObject({ min: 10000, max: 25000 });
+    expect(parseFilters({ budget: "any", max: "5000" })).toMatchObject({ min: null, max: null });
+    expect(parseFilters({ budget: "nonsense", max: "5000" })).toMatchObject({ min: null, max: 5000 });
+  });
+  it("repeated cat params are all kept", () => {
+    expect(parseFilters({ cat: ["tech", "home"] }).categories).toEqual(["home", "tech"]);
   });
 });

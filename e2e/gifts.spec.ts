@@ -12,6 +12,12 @@ async function shot(page: Page, name: string, target?: Locator) {
   else await page.screenshot({ path, fullPage: true });
 }
 
+/** On phones the filter panel folds behind a "Filters" button; open it if it's closed. */
+async function openFilters(page: Page) {
+  const toggle = page.getByRole("main").getByRole("button", { name: /^Filters/ });
+  if (await toggle.isVisible() && (await toggle.getAttribute("aria-expanded")) === "false") await toggle.click();
+}
+
 /** Scrolls `el` to the middle of the screen. The landing page scrolls through GSAP
  *  ScrollSmoother, which Playwright's own scroll-into-view doesn't move. */
 async function bringIntoView(page: Page, el: Locator) {
@@ -47,9 +53,13 @@ test("gifts: budget and for-whom filters go in the URL and survive a reload", as
   await page.goto("/gifts");
   await expect(page.locator("main .gf-card")).toHaveCount(6);
 
-  await page.getByRole("main").getByRole("navigation", { name: "Budget" }).getByRole("link", { name: "₦10–25k" }).click();
+  const filters = page.getByRole("main").getByRole("complementary", { name: "Filters" });
+  await openFilters(page);
+  await expect(filters.getByRole("radio", { name: /^₦10–25k\W+3 gifts$/ })).toBeVisible();
+  await filters.getByRole("radio", { name: /^₦10–25k/ }).click();
   await page.waitForURL(/\/gifts\?min=10000&max=25000$/);
-  await page.getByRole("main").getByLabel("For").selectOption("her");
+  await openFilters(page);
+  await filters.getByRole("radio", { name: /^Her/ }).click();
   await page.waitForURL(/\/gifts\?min=10000&max=25000&for=her$/);
 
   const names = ["[Sample] Shea butter gift set", "[Sample] Adire scarf", "[Sample] Small chops party box"];
@@ -57,9 +67,32 @@ test("gifts: budget and for-whom filters go in the URL and survive a reload", as
 
   await page.reload();
   await expect(page.locator("main .gf-card .gf-name")).toHaveText(names);
-  await expect(page.getByRole("main").getByRole("link", { name: "₦10–25k" })).toHaveAttribute("aria-current", "true");
-  await expect(page.getByRole("main").getByLabel("For")).toHaveValue("her");
+  await openFilters(page);
+  await expect(filters.getByRole("radio", { name: /^₦10–25k/ })).toBeChecked();
+  await expect(filters.getByRole("radio", { name: /^Her/ })).toBeChecked();
   await shot(page, "gifts-filtered");
+});
+
+test("gifts: pick several categories and sort by price", async ({ page }) => {
+  await page.goto("/gifts");
+  const filters = page.getByRole("main").getByRole("complementary", { name: "Filters" });
+  await openFilters(page);
+  await filters.getByRole("checkbox", { name: /^Home/ }).click();
+  await page.waitForURL(/\/gifts\?cat=home$/);
+  await openFilters(page);
+  await filters.getByRole("checkbox", { name: /^Fashion/ }).click();
+  await page.waitForURL(/\/gifts\?cat=home%2Cfashion$/);
+  await expect(page.locator("main .gf-card .gf-name")).toHaveText(["[Sample] Scented candle", "[Sample] Adire scarf"]);
+
+  await page.getByRole("main").getByLabel("Sort by").selectOption("price-desc");
+  await page.waitForURL(/\/gifts\?cat=home%2Cfashion&sort=price-desc$/);
+  await expect(page.locator("main .gf-card .gf-name")).toHaveText(["[Sample] Adire scarf", "[Sample] Scented candle"]);
+
+  await openFilters(page);
+  await filters.getByRole("link", { name: "Clear all" }).click();
+  await page.waitForURL(/\/gifts\?sort=price-desc$/);
+  await expect(page.locator("main .gf-card")).toHaveCount(6);
+  await shot(page, "gifts-catalogue");
 });
 
 test("gifts: compare up to four side by side", async ({ page }) => {
@@ -127,5 +160,6 @@ test("reveal: gift link carries only the budget, never a name", async ({ page, r
   await link.click();
   await page.waitForURL(/\/gifts\?max=15000$/);
   expect(page.url().toLowerCase()).not.toMatch(/adaeze|bolu|chinedu/);
-  await expect(page.getByRole("main").getByRole("navigation", { name: "Budget" }).locator("[aria-current]")).toHaveText("Under ₦15,000");
+  await openFilters(page);
+  await expect(page.getByRole("main").getByRole("radio", { name: "Under ₦15,000" })).toBeChecked();
 });

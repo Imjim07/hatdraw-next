@@ -2,12 +2,13 @@ import { Suspense } from "react";
 import Link from "next/link";
 import AdireLoader from "@/components/AdireLoader";
 import SpecularButton from "@/components/SpecularButton";
-import FilterBar from "@/components/gifts/FilterBar";
+import FilterPanel, { SortSelect } from "@/components/gifts/FilterPanel";
 import GiftCard from "@/components/gifts/GiftCard";
 import CompareTable from "@/components/gifts/CompareTable";
 import { Ododo } from "@/components/motifs";
 import { naira } from "@/lib/config";
-import { ANY, budgetLabel, matches, parseFilters, toQuery, widen, type Filters } from "@/lib/gifts/filters";
+import { ANY, budgetLabel, facetCounts, matches, parseFilters, sortGifts, toQuery, widen, type Filters } from "@/lib/gifts/filters";
+import { CATEGORIES } from "@/lib/gifts/types";
 import { listGifts } from "@/lib/gifts/store";
 
 // The Gift Finder. The heading is static; the catalogue reads the URL's filters, so it
@@ -30,28 +31,35 @@ export default function GiftsPage({ searchParams }: PageProps<"/gifts">) {
 async function Catalogue({ searchParams }: { searchParams: PageProps<"/gifts">["searchParams"] }) {
   const f = parseFilters(await searchParams);
   const all = await listGifts();
-  const shown = all.filter((p) => matches(p, f));
+  const shown = sortGifts(all.filter((p) => matches(p, f)), f.sort);
   const compared = f.compare.map((s) => all.find((p) => p.slug === s)).filter((p) => p !== undefined);
+  // categories the catalogue actually has, plus any already picked
+  const categories = CATEGORIES.filter((c) => f.categories.includes(c) || all.some((p) => p.category === c));
 
   return (
-    <>
-      <FilterBar f={f} />
-      {compared.length > 0 && <CompareTable items={compared} f={f} />}
-      <p className="gf-count" aria-live="polite">
-        {shown.length === 1 ? "1 gift" : `${shown.length} gifts`} · {budgetLabel(f)}
-      </p>
-      {shown.length ? (
-        <ul className="gf-grid">{shown.map((p) => <GiftCard key={p.slug} p={p} f={f} />)}</ul>
-      ) : (
-        <Empty f={f} catalogueEmpty={all.length === 0} />
-      )}
-    </>
+    <div className="gf-layout">
+      <FilterPanel f={f} counts={facetCounts(all, f)} categories={categories} />
+      <div className="gf-results">
+        {compared.length > 0 && <CompareTable items={compared} f={f} />}
+        <div className="gf-results-head">
+          <p className="gf-count" aria-live="polite">
+            {shown.length === 1 ? "1 gift" : `${shown.length} gifts`} · {budgetLabel(f)}
+          </p>
+          {shown.length > 1 && <SortSelect f={f} />}
+        </div>
+        {shown.length ? (
+          <ul className="gf-grid">{shown.map((p) => <GiftCard key={p.slug} p={p} f={f} />)}</ul>
+        ) : (
+          <Empty f={f} catalogueEmpty={all.length === 0} />
+        )}
+      </div>
+    </div>
   );
 }
 
 function Empty({ f, catalogueEmpty }: { f: Filters; catalogueEmpty: boolean }) {
   const wider = widen(f);
-  const filtered = toQuery({ ...f, compare: [] }) !== "";
+  const filtered = toQuery({ ...f, compare: [], sort: "featured" }) !== "";
   let text: string, action: { href: string; label: string } | null = null;
   if (f.max !== null) {
     text = `Nothing under ${naira(f.max)} yet. Try a higher budget.`;
