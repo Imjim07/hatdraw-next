@@ -3,7 +3,7 @@ import Logo from "@/components/Logo";
 import HeroShekere from "@/components/HeroShekere";
 import SectionNav from "@/components/SectionNav";
 import ThemeToggle from "@/components/ThemeToggle";
-import MobileMenu from "@/components/MobileMenu";
+import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
 import PricingTable, { type Plan } from "@/components/PricingTable";
 import HowItWorks from "@/components/HowItWorks";
 import Features from "@/components/Features";
@@ -41,6 +41,13 @@ const PLANS: Plan[] = [
 const save = Math.max(...PLANS.filter((p) => p.price.monthly > 0).map((p) => 1 - p.price.yearly / (12 * p.price.monthly)));
 const yearlyBadge = `Save up to ${Math.round(save * 100)}%`;
 
+const MENU = [
+  { heading: "How it works", href: "#how" },
+  { heading: "Features", href: "#features" },
+  { heading: "Pricing", href: "#pricing" },
+  { heading: "Ajo", href: "/ajo" },
+];
+
 export default function Home() {
   return (
     <main>
@@ -51,7 +58,7 @@ export default function Home() {
           <span className="nav-end">
             <ThemeToggle />
             <SpecularButton href="/draw" className="btn btn-primary btn-sm nav-cta">Start a draw</SpecularButton>
-            <MobileMenu />
+            <CurvedMenu items={MENU} footer={<StartDrawFooter />} />
           </span>
         </nav>
 
