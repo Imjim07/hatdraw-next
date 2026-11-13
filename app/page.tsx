@@ -50,6 +50,7 @@ const MENU = [
   { heading: "Features", href: "#features" },
   { heading: "Pricing", href: "#pricing" },
   { heading: "Ajo", href: "/ajo" },
+  { heading: "Gifts", href: "/gifts" },
 ];
 
 export default function Home() {
@@ -103,10 +104,11 @@ export default function Home() {
               <p className="sf-tag">{BRAND.name} is the easy way to draw names for gift exchanges and ajo payout orders.</p>
               <SocialIcons name={BRAND.name} />
             </div>
-            <nav className="sf-col" aria-label="Draws">
-              <h3>Draws</h3>
+            <nav className="sf-col" aria-label="Products">
+              <h3>Products</h3>
               <Link href="/draw">Gift exchange</Link>
               <Link href="/ajo">Ajo payout order</Link>
+              <Link href="/gifts">Gift Finder</Link>
             </nav>
             <nav className="sf-col" aria-label={BRAND.name}>
               <h3>{BRAND.name}</h3>

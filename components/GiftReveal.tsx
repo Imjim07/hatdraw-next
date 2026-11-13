@@ -1,6 +1,7 @@
 "use client";
 import SpecularButton from "@/components/SpecularButton";
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { burst } from "./Ambient";
 import { AdireGrid, IgiIye, Ododo } from "./motifs";
 import { serifName } from "@/lib/marks";
@@ -120,6 +121,11 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
             <div className="q" aria-live="polite">{idea}</div>
             <SpecularButton className="btn btn-primary btn-sm" onClick={spin}>{idea === IDLE_IDEA ? "Spin" : "Spin again"}</SpecularButton>
           </div>
+          {/* Only the budget goes in this URL: never the giver's or receiver's name. Not shown in
+              the organizer's preview or pass-the-phone, where leaving would lose the draw. */}
+          {context === "link" && Number(e.budget) > 0 && (
+            <Link href={`/gifts?max=${Number(e.budget)}`} className="idea-shop">See gifts under {naira(e.budget)} <span aria-hidden="true">→</span></Link>
+          )}
           {e.note && <p className="note">&ldquo;{e.note}&rdquo; (from the organizer)</p>}
           <div style={{ marginTop: 26, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>{actions}{cta && <SpecularButton href={cta.href} className="btn btn-ghost">{cta.label}</SpecularButton>}</div>
         </div>

@@ -11,6 +11,7 @@ const ITEMS = [
   { label: "How it works", href: "#how" },
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "#pricing" },
+  { label: "Gifts", href: "/gifts" }, // a page, not a section: the spy below skips it
 ];
 
 // The neutral pill (indigo on light, indigo mist on dark) on a tinted frame, instead of
@@ -33,7 +34,7 @@ export default function SectionNav() {
   const locked = useRef(false);
 
   useEffect(() => {
-    const sections = ITEMS.map((i) => document.getElementById(i.href.slice(1)));
+    const sections = ITEMS.map((i) => (i.href.startsWith("#") ? document.getElementById(i.href.slice(1)) : null));
     let frame = 0;
     const spy = () => {
       frame = 0;

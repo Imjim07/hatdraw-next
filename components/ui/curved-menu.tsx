@@ -21,6 +21,7 @@ export const SITE_MENU: CurvedMenuItem[] = [
   { heading: "Home", href: "/" },
   { heading: "Gift exchange", href: "/draw" },
   { heading: "Ajo payout order", href: "/ajo" },
+  { heading: "Gift Finder", href: "/gifts" },
   { heading: "Pricing", href: "/#pricing" },
 ];
 
