@@ -2,13 +2,14 @@ import type { ReactNode } from "react";
 import Logo from "@/components/Logo";
 import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
+import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
 import AdireLoader from "@/components/AdireLoader";
 
 /** The page frame every ajo screen uses (same as the draw wizard's), in the ajo mode. */
 export function Shell({ children, toast }: { children: ReactNode; toast?: string }) {
   return (
     <div className="wrap" data-mode="ajo">
-      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></span></nav>
+      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
       <main className="app">{children}</main>
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>

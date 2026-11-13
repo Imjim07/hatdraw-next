@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
 import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
+import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import { NO_MONEY } from "@/components/ajo/GroupView";
 import { naira } from "@/lib/config";
@@ -106,7 +107,7 @@ export default function AjoSetup() {
     const admin = `${pub}/admin#${created.adminToken}`;
     return (
       <div className="wrap" data-mode="ajo">
-        <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></span></nav>
+        <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
         <main className="app">
           <div className="panel rise">
             <div className="eyebrow">Group created</div>
@@ -156,7 +157,7 @@ export default function AjoSetup() {
 
   return (
     <div className="wrap" data-mode="ajo">
-      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm">← Home</SpecularButton></span></nav>
+      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="ajo" />}
         <div className="steps" role="img" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((i) => <span key={i === step ? `now-${step}` : i} className={i < step ? "on" : i === step ? "on now" : ""} />)}</div>

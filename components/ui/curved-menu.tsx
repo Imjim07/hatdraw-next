@@ -16,6 +16,14 @@ import SpecularButton from "../SpecularButton";
 
 export type CurvedMenuItem = { heading: string; href: string };
 
+/** Menu for every page except the landing page (which links to its own sections). */
+export const SITE_MENU: CurvedMenuItem[] = [
+  { heading: "Home", href: "/" },
+  { heading: "Gift exchange", href: "/draw" },
+  { heading: "Ajo payout order", href: "/ajo" },
+  { heading: "Pricing", href: "/#pricing" },
+];
+
 const noop = () => () => {};
 
 export default function CurvedMenu({ items, footer }: { items: CurvedMenuItem[]; footer?: React.ReactNode }) {
@@ -30,7 +38,7 @@ export default function CurvedMenu({ items, footer }: { items: CurvedMenuItem[];
     if (!open) return;
     const root = document.documentElement;
     root.classList.add("cm-lock");
-    const wide = matchMedia("(min-width: 1025px)");
+    const wide = matchMedia("(min-width: 1025px) and (hover: hover), (min-width: 1367px)");
     const onWide = () => { if (wide.matches) setOpen(false); };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") { setOpen(false); btn.current?.focus(); return; }

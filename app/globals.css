@@ -460,7 +460,8 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .modal .panel{max-width:460px;width:100%}
 .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cloud);padding:12px 22px;border-radius:999px;font-weight:600;z-index:120;animation:rise .3s;max-width:calc(100vw - 32px);text-align:center}
 
-@media (max-width:1024px){
+/* the menu takes over on phones and tablets: ≤1024px, or any touch screen up to 1366px (iPads in landscape) */
+@media (max-width:1024px),(hover:none) and (pointer:coarse) and (max-width:1366px){
   nav.top .section-nav,nav.top .nav-cta{display:none}
   .menu-btn{display:grid}
 }
