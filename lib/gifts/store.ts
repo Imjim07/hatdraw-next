@@ -16,6 +16,9 @@ import { SAMPLE_PRODUCTS } from "./samples";
 import type { Category, ForWhom, GiftProduct } from "./types";
 
 const BUCKET = "gift-images";
+// The sample products use Unsplash placeholder photos by full URL (next.config allows
+// that host). Real products use paths in the bucket.
+const UNSPLASH = "https://images.unsplash.com/";
 
 type Row = {
   slug: string; name: string; description: string; price_naira: number; images: string[] | null;
@@ -25,7 +28,7 @@ type Row = {
 function fromRow(r: Row, base: string): GiftProduct {
   return {
     slug: r.slug, name: r.name, description: r.description ?? "", price: r.price_naira,
-    images: (r.images ?? []).map((p) => `${base}/storage/v1/object/public/${BUCKET}/${p.split("/").map(encodeURIComponent).join("/")}`),
+    images: (r.images ?? []).map((p) => p.startsWith(UNSPLASH) ? p : `${base}/storage/v1/object/public/${BUCKET}/${p.split("/").map(encodeURIComponent).join("/")}`),
     category: r.category, forWhom: r.for_whom ?? ["anyone"], deliveryAreas: r.delivery_areas ?? ["lagos"],
     leadTimeDays: r.lead_time_days, inStock: r.in_stock,
   };

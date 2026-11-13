@@ -11,6 +11,8 @@ A product only appears on the site when **`active` is on**. Changes show up with
 3. Upload the photos into it. Square photos about 1200 × 1200 px look best; keep each one under about 500 KB.
 4. Note each file's **path inside the bucket**, for example `ankara-tote/front.jpg`.
 
+For real products, use your own photos of what you actually sell, not stock photos.
+
 ## 2. Add the product
 
 Open **Table Editor → gift_products → Insert row** and fill in:
@@ -38,7 +40,7 @@ Open `/gifts` on the site after up to 10 minutes and find the product. Open its 
 
 ## Removing the sample products
 
-The seed file `supabase/seed/gift_products.sql` adds six products named `[Sample] …`. They are inactive and never show on the live site. Delete them before launch:
+The seed file `supabase/seed/gift_products.sql` adds six products named `[Sample] …`, with Unsplash placeholder photos. They are inactive and never show on the live site. Delete them before launch:
 
 ```sql
 delete from gift_products where name like '[Sample]%';

@@ -6,7 +6,11 @@ const nextConfig: NextConfig = {
   partialPrefetching: true,
   images: {
     // Gift Finder product photos, from the public gift-images bucket in Supabase Storage
-    remotePatterns: [{ protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/gift-images/**" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/gift-images/**" },
+      // placeholder photos on the [Sample] products
+      { protocol: "https", hostname: "images.unsplash.com", pathname: "/photo-**" },
+    ],
   },
 };
 

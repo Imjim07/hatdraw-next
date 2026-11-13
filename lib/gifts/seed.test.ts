@@ -6,7 +6,7 @@ import { SAMPLE_PRODUCTS } from "./samples";
 // The production seed must never publish products: every row stays active = false,
 // and the in-memory test store mirrors exactly those rows.
 const sql = readFileSync(join(__dirname, "../../supabase/seed/gift_products.sql"), "utf8");
-const rows = [...sql.matchAll(/^\s*\('([a-z0-9-]+)', '([^']+)', '(?:[^']|'')*', (\d+), '(\w+)', '\{[^}]*\}', '\{[^}]*\}', (\d+), (true|false), (true|false), \d+\)[,;]$/gm)];
+const rows = [...sql.matchAll(/^\s*\('([a-z0-9-]+)', '([^']+)', '(?:[^']|'')*', (\d+), '\{[^}]*\}', '(\w+)', '\{[^}]*\}', '\{[^}]*\}', (\d+), (true|false), (true|false), \d+\)[,;]$/gm)];
 
 describe("gift seed", () => {
   it("has six sample rows", () => {
