@@ -120,7 +120,7 @@ nav.top{position:relative;display:flex;align-items:center;justify-content:space-
 .cm-curve{position:absolute;top:0;left:-99px;width:100px;height:100%;fill:var(--cm-bg);transform-origin:right center;transition:transform .8s cubic-bezier(.76,0,.24,1)}
 .cm-panel.open .cm-curve{transform:scaleX(0);transition-duration:1s}
 .cm-close{display:grid;position:absolute;top:22px;right:22px}
-.cm-body{padding:92px clamp(28px,8vw,96px) 0;overflow-y:auto}
+.cm-body{flex:1 1 auto;min-height:0;padding:92px clamp(28px,8vw,96px) 0;overflow-y:auto;overscroll-behavior:contain}
 .cm-label{padding-bottom:10px;border-bottom:1px solid var(--line);font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
 .cm-link{display:flex;align-items:flex-start;gap:10px;padding:18px 0;border-bottom:1px solid var(--line);color:var(--indigo);text-decoration:none;text-transform:uppercase;font-family:var(--display)}
 .cm-num{font-size:clamp(1.6rem,6vw,2.25rem);font-weight:500;line-height:1;color:var(--text-muted)}
@@ -133,6 +133,8 @@ nav.top{position:relative;display:flex;align-items:center;justify-content:space-
 .cm-link:focus-visible{outline-offset:-2px}
 .cm-foot{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:24px clamp(28px,8vw,96px) 32px}
 .cm-note{text-align:center;font-size:.85rem;color:var(--text-muted)}
+/* short screens (small phones, browser bars, landscape): tighten so every item fits; the list scrolls if it still can't */
+@media (max-height:620px){.cm-body{padding-top:72px}.cm-link{padding:12px 0}.cm-foot{padding-top:14px;padding-bottom:18px}}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.35rem;letter-spacing:-.01em;text-decoration:none;color:var(--indigo)}
 .logo svg{width:34px;height:34px}
 .nav-end{display:flex;align-items:center;gap:10px}
