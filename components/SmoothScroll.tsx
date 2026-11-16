@@ -42,6 +42,9 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       });
       dispatchEvent(new Event("smoother:ready")); // FooterStack builds its pins after this
 
+      // Land a section just below the fixed nav (.site-head) rather than under it.
+      const at = () => `top ${Math.round(document.querySelector(".site-head")?.getBoundingClientRect().height ?? 0) + 16}px`;
+
       const target = (hash: string) => {
         try { return hash.length > 1 ? document.querySelector<HTMLElement>(decodeURIComponent(hash)) : null; }
         catch { return null; }
@@ -54,7 +57,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         const el = target(a.hash);
         if (!el) return;
         e.preventDefault();
-        smoother.scrollTo(el, true, "top 24px");
+        smoother.scrollTo(el, true, at());
         history.pushState(null, "", a.hash);
       };
       // capture: runs before Next's <Link> handler, which would jump natively
@@ -65,7 +68,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       const arrived = target(location.hash);
       if (arrived) {
         wrapper.current.scrollTop = 0;
-        requestAnimationFrame(() => smoother.scrollTo(arrived, false, "top 24px"));
+        requestAnimationFrame(() => smoother.scrollTo(arrived, false, at()));
       }
 
       cleanup = () => {

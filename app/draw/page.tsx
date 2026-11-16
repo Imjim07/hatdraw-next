@@ -7,6 +7,7 @@ import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
+import Stepper from "@/components/Stepper";
 import { serifName } from "@/lib/marks";
 import { burst } from "@/components/Ambient";
 import { PRICING, PAYWALL_MODE, naira } from "@/lib/config";
@@ -19,6 +20,7 @@ const DRAFT_KEY = "hd-draft-v2";
 // Avatar fills from the palette; initials are ink (≥4.5:1 on each).
 // fixed light fills (dark text in both themes)
 const AV = ["#DDE3F5", "var(--palm-gold)", "var(--persimmon)"];
+const STEPS = ["Occasion", "Names", "Rules", "Draw"];
 const KINDS: { k: Kind; icon: string; label: string }[] = [
   { k: "friends", icon: "🥂", label: "Friends" }, { k: "family", icon: "🏡", label: "Family" }, { k: "company", icon: "💼", label: "Company" },
 ];
@@ -163,15 +165,14 @@ export default function DrawPage() {
   const tier = paid ? `Big Hat: ${naira(PRICING.ONE_TIME)}` : `Free · ${Math.max(0, PRICING.FREE_LIMIT - n)} free spots left`;
 
   return (
-    <div className="wrap" data-mode="santa">
+    <div className="wrap ob" data-mode="santa">
       <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="gift" />}
-        <div className="steps" role="img" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((i) => <span key={i === step ? `now-${step}` : i} className={i < step ? "on" : i === step ? "on now" : ""} />)}</div>
+        <Stepper steps={STEPS} current={step} />
 
         {step === 0 && (
           <div className="panel rise">
-            <div className="eyebrow">Step 1 of 4</div>
             <h2>What&apos;s the occasion?</h2>
             <div className="field"><span className="lbl">Who&apos;s playing?</span>
               <div className="seg" role="radiogroup">
@@ -200,7 +201,6 @@ export default function DrawPage() {
           <div className="panel rise">
             <div className="names-head">
               <div>
-                <div className="eyebrow">Step 2 of 4</div>
                 <h2>Drop the names in the hat</h2>
                 <p className="hint">Press Enter after each name, or paste a whole list (one per line or comma-separated). Each name becomes a bead on the {"\u1E63\u1EB9\u0300k\u1EB9\u0300r\u1EB9\u0300"}.</p>
               </div>
@@ -230,7 +230,6 @@ export default function DrawPage() {
 
         {step === 2 && (
           <div className="panel rise">
-            <div className="eyebrow">Step 3 of 4</div>
             <h2>House rules</h2>
             <label className="toggle"><input type="checkbox" checked={d.circle} onChange={(e) => setD((x) => ({ ...x, circle: e.target.checked }))} /><span className="sw" />
               <span><b>One big circle</b><span className="d">Gifts pass along a single chain (A→B→C→…→A), so the reveal goes round the room. If your rules make that impossible, we use a normal shuffle.</span></span></label>
@@ -262,7 +261,7 @@ export default function DrawPage() {
               </div>
             ) : (
               <>
-                <div className="eyebrow">Step 4 of 4 · The hat has spoken</div>
+                <div className="eyebrow">The hat has spoken</div>
                 <h2>{n} names drawn 🎄</h2>
                 <div className="summary">
                   {[d.ev.name, d.ev.budget && `Budget ${naira(d.ev.budget)}`, d.ev.date, d.ev.where && `📍 ${d.ev.where}`].filter(Boolean).map((b) => <span key={String(b)}>{b}</span>)}

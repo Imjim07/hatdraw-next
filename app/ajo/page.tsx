@@ -5,6 +5,7 @@ import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
+import Stepper from "@/components/Stepper";
 import { NO_MONEY } from "@/components/ajo/GroupView";
 import { naira } from "@/lib/config";
 import { FREQ_LABEL, api, copyText, longDate } from "@/lib/ajo/client";
@@ -18,6 +19,7 @@ const DRAFT_KEY = "hd-ajo-draft-v1";
 // Avatar fills from the palette; initials are ink (≥4.5:1 on each).
 // fixed light fills (dark text in both themes)
 const AV = ["#DDE3F5", "var(--palm-gold)"];
+const STEPS = ["Group", "Members", "Turns", "Review"];
 const FREQS: Frequency[] = ["weekly", "biweekly", "monthly"];
 const blank = (): Draft => ({ name: "", amount: "", frequency: "monthly", startDate: "", members: [], pins: [], researchConsent: false });
 const initials = (s: string) => Array.from(new Intl.Segmenter().segment(s.normalize("NFC")), (x) => x.segment).slice(0, 2).join("").toUpperCase();
@@ -106,7 +108,7 @@ export default function AjoSetup() {
     const pub = `${origin}/ajo/${created.publicId}`;
     const admin = `${pub}/admin#${created.adminToken}`;
     return (
-      <div className="wrap" data-mode="ajo">
+      <div className="wrap ob" data-mode="ajo">
         <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
         <main className="app">
           <div className="panel rise">
@@ -156,15 +158,14 @@ export default function AjoSetup() {
   }
 
   return (
-    <div className="wrap" data-mode="ajo">
+    <div className="wrap ob" data-mode="ajo">
       <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="ajo" />}
-        <div className="steps" role="img" aria-label={`Step ${step + 1} of 4`}>{[0, 1, 2, 3].map((i) => <span key={i === step ? `now-${step}` : i} className={i < step ? "on" : i === step ? "on now" : ""} />)}</div>
+        <Stepper steps={STEPS} current={step} />
 
         {step === 0 && (
           <div className="panel rise">
-            <div className="eyebrow">Step 1 of 4</div>
             <h2>Set up your ajo</h2>
             <div className="field"><label htmlFor="aj-name">Group name</label>
               <span className="pit"><input id="aj-name" className="in" maxLength={60} placeholder="e.g. Ikoyi Wives Monthly" value={d.name} onChange={(e) => set({ name: e.target.value })} /></span></div>
@@ -188,7 +189,6 @@ export default function AjoSetup() {
 
         {step === 1 && (
           <div className="panel rise">
-            <div className="eyebrow">Step 2 of 4</div>
             <h2>Who&apos;s in the group?</h2>
             <p className="hint">Press Enter after each name, or paste a whole list (one per line or comma-separated). Each name takes one turn.</p>
             <div className="field chips-in">
@@ -214,7 +214,7 @@ export default function AjoSetup() {
 
         {step === 2 && (
           <div className="panel rise">
-            <div className="eyebrow">Step 3 of 4 · optional</div>
+            <div className="eyebrow">Optional</div>
             <h2>Any turns already agreed?</h2>
             <p className="hint">If the group agreed before the draw that someone takes a particular turn, pin them here. Pinned members keep their turn; everyone else is drawn into the remaining turns. Skip this if nothing was agreed.</p>
             <div className="field"><span className="lbl">Pin a member to a turn</span>
@@ -236,7 +236,6 @@ export default function AjoSetup() {
 
         {step === 3 && (
           <div className="panel rise">
-            <div className="eyebrow">Step 4 of 4</div>
             <h2>Check and create</h2>
             <div className="summary">
               <span>{d.name}</span><span>{naira(amount)} each</span><span>{FREQ_LABEL[d.frequency]}</span>

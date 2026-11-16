@@ -55,8 +55,9 @@ const MENU = [
 
 export default function Home() {
   return (
-    <SmoothScroll>
-    <main>
+    <>
+    {/* Outside the smooth-scroll wrapper so it stays fixed on screen while the page scrolls */}
+    <header className="site-head">
       <div className="wrap">
         <nav className="top">
           <Logo />
@@ -67,7 +68,11 @@ export default function Home() {
             <CurvedMenu items={MENU} footer={<StartDrawFooter />} />
           </span>
         </nav>
-
+      </div>
+    </header>
+    <SmoothScroll>
+    <main className="home">
+      <div className="wrap">
         <div className="hero">
           <div>
             <Countdown />
@@ -132,5 +137,6 @@ export default function Home() {
       </FooterStack>
     </main>
     </SmoothScroll>
+    </>
   );
 }

@@ -100,7 +100,14 @@ a{color:inherit}
 .wx-chip button{flex:none;padding:5px 11px;min-height:32px;border-radius:999px;background:var(--indigo);color:var(--cloud);font-weight:700;font-size:.75rem}
 
 /* nav */
-nav.top{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px 0}
+/* the top bar stays on screen while the page scrolls: sticky on the app pages (its background
+   runs edge to edge), fixed on the landing page (.site-head, outside the smooth-scroll wrapper) */
+nav.top{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:22px 0;background:var(--cloud);box-shadow:0 0 0 100vmax var(--cloud);clip-path:inset(0 -100vmax)}
+.site-head{position:fixed;inset:0 0 auto;z-index:60;background:var(--cloud)}
+.site-head nav.top{position:relative;box-shadow:none;clip-path:none;background:none}
+main.home{padding-top:88px}
+@media (min-width:1025px) and (hover:hover),(min-width:1367px){main.home{padding-top:101px}} /* the section pills make the bar taller */
+html{scroll-padding-top:104px}
 /* mobile menu (landing page, ≤860px) */
 .menu-btn{display:none;place-items:center;width:44px;height:44px;flex:none;border-radius:50%;color:var(--indigo);border:1.5px solid color-mix(in srgb,var(--ink) 25%,transparent);transition:border-color .2s,background .2s}
 .menu-btn:hover,.menu-btn[aria-expanded="true"]{border-color:var(--indigo);background:color-mix(in srgb,var(--indigo) 7%,transparent)}
@@ -121,8 +128,8 @@ nav.top{position:relative;display:flex;align-items:center;justify-content:space-
 .cm-panel.open .cm-curve{transform:scaleX(0);transition-duration:1s}
 .cm-close{display:grid;position:absolute;top:22px;right:22px}
 .cm-body{flex:1 1 auto;min-height:0;padding:92px clamp(28px,8vw,96px) 0;overflow-y:auto;overscroll-behavior:contain}
-.cm-label{padding-bottom:10px;border-bottom:1px solid var(--line);font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
-.cm-link{display:flex;align-items:flex-start;gap:10px;padding:18px 0;border-bottom:1px solid var(--line);color:var(--indigo);text-decoration:none;text-transform:uppercase;font-family:var(--display)}
+.cm-label{padding-bottom:10px;font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+.cm-link{display:flex;align-items:flex-start;gap:10px;padding:18px 0;color:var(--indigo);text-decoration:none;text-transform:uppercase;font-family:var(--display)}
 .cm-num{font-size:clamp(1.6rem,6vw,2.25rem);font-weight:500;line-height:1;color:var(--text-muted)}
 .cm-word{display:block;font-size:clamp(1.6rem,6vw,2.25rem);font-weight:500;line-height:1;letter-spacing:-.01em;white-space:nowrap;transition:transform .5s var(--spring)}
 .cm-word>span{display:inline-block;transition:transform .5s var(--spring)}
@@ -209,7 +216,7 @@ h1 em{font-style:italic}
 @keyframes cord-fade{0%,75%{opacity:1}100%{opacity:0}}
 
 /* sections */
-section.band{padding:80px 0;border-top:1px solid var(--line)}
+section.band{padding:80px 0}
 .eyebrow{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);font-weight:700}
 h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);letter-spacing:-.02em;line-height:1.08;margin:12px 0 14px;color:var(--indigo)}
 .sub{color:var(--text-muted);max-width:560px}
@@ -231,8 +238,8 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .of-points{list-style:none;display:grid;gap:6px;margin:2px 0 6px;padding:0;font-size:.9rem}
 .of-points li{display:flex;align-items:baseline;gap:9px}
 .of-points li::before,.of-promise li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--indigo);transform:translateY(-2px)}
-.of-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:auto;font-weight:700;color:var(--indigo);text-decoration:underline;text-decoration-color:transparent;text-underline-offset:4px;transition:text-decoration-color .2s}
-.of-link:hover{text-decoration-color:currentColor}
+.of-link{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:auto;font-weight:700;color:var(--indigo);text-decoration:none;transition:gap .2s}
+.of-link:hover{gap:10px}
 .pill.of-soon{padding:4px 10px;font-size:.72rem;font-family:var(--sans)}
 .of-promise{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;margin:34px 0 0;padding:0;font-size:.88rem;font-weight:600;color:var(--text-muted)}
 .of-promise li{display:flex;align-items:center;gap:9px}
@@ -314,7 +321,8 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
   color:transparent;background:url(/adire-fill.jpg) center/cover;-webkit-background-clip:text;background-clip:text;
   -webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 40%,transparent)}
 .sf-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:22px;border-top:1px solid var(--line);color:var(--text-muted);font-size:.85rem}
-.sf-bottom a{color:var(--indigo)}
+.sf-bottom a{color:var(--indigo);text-decoration:none}
+.sf-bottom a:hover{color:var(--ink)}
 
 /* ---- Gift Finder (/gifts): neutral styling, no data-mode ---- */
 .store{padding:4px 0 120px}
@@ -323,7 +331,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .store-loading{display:grid;place-items:center;min-height:320px}
 /* catalogue: filter sidebar beside the results (after React Bits Pro "Ecommerce 2") */
 .gf-layout{display:grid;grid-template-columns:240px minmax(0,1fr);gap:36px;align-items:start;padding-top:22px;border-top:1px solid var(--line)}
-.gf-side{position:sticky;top:20px}
+.gf-side{position:sticky;top:104px} /* below the sticky top bar */
 .gf-side-toggle{display:none}
 .gf-side-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px}
 .gf-side-head h2{margin:0;font-size:1.15rem}
@@ -614,3 +622,143 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .cloth.shake-a,.cloth.shake-b{animation:none}.starch,.cracks path,.chunks path{transition:none!important}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media (prefers-reduced-motion:reduce){.billing-pill,.roll-col,.billing button,.billing-badge{transition:none}.price-note{animation:none}}
+
+/* ---- Setup wizards (/draw, /ajo): React Bits Pro App UI theme "Sorbet", scoped to .ob ----
+   Onboarding 7 layout: a top stepper over a form card. The rb tokens are the theme as given;
+   the ob tokens map them onto this site's components. The ayo board keeps its pits and seeds
+   in the theme's neutrals. --ob-solid sits behind white text: the darker blue in both themes,
+   because white on the lighter dark-theme accent is under 4.5:1. */
+.ob{
+  --rb-radius:26px;
+  --rb-r-xs:max(0px,calc(var(--rb-radius) - 6px));
+  --rb-r-sm:max(0px,calc(var(--rb-radius) - 4px));
+  --rb-r-md:max(0px,calc(var(--rb-radius) - 2px));
+  --rb-r-lg:var(--rb-radius);
+  --rb-r-xl:calc(var(--rb-radius) + min(2px,var(--rb-radius)));
+  --rb-r-2xl:calc(var(--rb-radius) + min(4px,var(--rb-radius)));
+  --rb-r-3xl:calc(var(--rb-radius) + min(6px,var(--rb-radius)));
+  --rb-r-full:max(var(--rb-radius) * 1.5,(var(--rb-radius) - 8px) * 999);
+  --color-neutral-50:oklch(98.4% 0.003 247.858);
+  --color-neutral-100:oklch(96.8% 0.007 247.896);
+  --color-neutral-200:oklch(92.9% 0.013 255.508);
+  --color-neutral-300:oklch(86.9% 0.022 252.894);
+  --color-neutral-400:oklch(70.4% 0.04 256.788);
+  --color-neutral-500:oklch(55.4% 0.046 257.417);
+  --color-neutral-600:oklch(44.6% 0.043 257.281);
+  --color-neutral-700:oklch(37.2% 0.044 257.287);
+  --color-neutral-800:oklch(27.9% 0.041 260.031);
+  --color-neutral-900:oklch(20.8% 0.042 265.755);
+  --color-neutral-950:oklch(12.9% 0.042 264.695);
+  --rb-accent:oklch(54.6% 0.245 262.881);
+  --rb-accent-fg:oklch(100% 0 0);
+  --rb-font-sans:"Inter",ui-sans-serif,system-ui,sans-serif;
+
+  --ob-solid:oklch(54.6% 0.245 262.881);
+  --ob-card:oklch(100% 0 0);
+  --ob-fg:var(--color-neutral-900);
+  --ob-muted:var(--color-neutral-600);
+  --ob-placeholder:var(--color-neutral-500);
+  --ob-line:var(--color-neutral-200);
+  --ob-field:var(--color-neutral-50);
+  --ob-field-line:var(--color-neutral-300);
+  --ob-soft:var(--color-neutral-100);
+  --ob-pit:inset 0 2px 4px oklch(20.8% 0.042 265.755 / .12);
+  --ob-ring:color-mix(in oklch,var(--rb-accent) 24%,transparent);
+  --ob-shadow:0 1px 2px oklch(20.8% 0.042 265.755 / .05),0 16px 40px -24px oklch(20.8% 0.042 265.755 / .18);
+  /* the site's own components read these */
+  --mode-accent:var(--rb-accent);--mode-cta-bg:var(--ob-solid);--mode-cta-fg:var(--rb-accent-fg);
+}
+:root[data-theme="dark"] .ob,:root.dark .ob{
+  --rb-accent:oklch(62.3% 0.214 259.815);
+  --ob-card:var(--color-neutral-900);--ob-fg:var(--color-neutral-50);--ob-muted:var(--color-neutral-400);--ob-placeholder:var(--color-neutral-400);
+  --ob-line:oklch(100% 0 0 / .1);--ob-field:oklch(100% 0 0 / .04);--ob-field-line:oklch(100% 0 0 / .16);--ob-soft:var(--color-neutral-800);
+  --ob-pit:inset 0 2px 4px oklch(0% 0 0 / .45);--ob-shadow:0 16px 40px -24px oklch(0% 0 0 / .6);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) .ob{
+  --rb-accent:oklch(62.3% 0.214 259.815);
+  --ob-card:var(--color-neutral-900);--ob-fg:var(--color-neutral-50);--ob-muted:var(--color-neutral-400);--ob-placeholder:var(--color-neutral-400);
+  --ob-line:oklch(100% 0 0 / .1);--ob-field:oklch(100% 0 0 / .04);--ob-field-line:oklch(100% 0 0 / .16);--ob-soft:var(--color-neutral-800);
+  --ob-pit:inset 0 2px 4px oklch(0% 0 0 / .45);--ob-shadow:0 16px 40px -24px oklch(0% 0 0 / .6);
+}}
+.ob .app,.ob .modal{font-family:var(--rb-font-sans);color:var(--ob-fg)}
+.ob .app :is(h1,h2,h3),.ob .modal :is(h1,h2,h3){font-family:var(--rb-font-sans);color:var(--ob-fg)}
+
+/* top stepper */
+.ob-steps{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:4px 0 22px;padding:0}
+.ob-steps li{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;min-width:0}
+.ob-steps li:not(:first-child)::before{content:"";position:absolute;top:17px;left:calc(-50% + 26px);right:calc(50% + 26px);height:2px;border-radius:2px;background:var(--ob-field-line);transition:background .3s}
+.ob-steps li:is(.done,.now):not(:first-child)::before{background:var(--rb-accent)}
+.ob-dot{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--ob-card);border:1.5px solid var(--ob-field-line);color:var(--ob-muted);font-size:.88rem;font-weight:600;font-variant-numeric:tabular-nums;transition:background .25s,border-color .25s,box-shadow .25s,color .25s}
+.ob-steps .now .ob-dot{border-color:var(--rb-accent);color:var(--rb-accent);box-shadow:0 0 0 4px var(--ob-ring)}
+.ob-steps .done .ob-dot{background:var(--ob-solid);border-color:var(--ob-solid);color:var(--rb-accent-fg)}
+.ob-lbl{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;font-weight:500;color:var(--ob-muted)}
+.ob-steps .now .ob-lbl{color:var(--ob-fg);font-weight:600}
+
+/* the form card */
+.ob .panel{background:var(--ob-card);border:1px solid var(--ob-line);border-radius:var(--rb-r-3xl);padding:32px;box-shadow:var(--ob-shadow);color:var(--ob-fg)}
+.ob .panel h2{margin-top:2px;font-size:1.6rem;font-weight:600;line-height:1.2;letter-spacing:-.02em}
+.ob .eyebrow{font-size:.8rem;font-weight:600;letter-spacing:0;text-transform:none;color:var(--rb-accent)}
+.ob :is(.hint,.sub,.field small,.toggle .d,.counter,.board-empty){color:var(--ob-muted)}
+.ob .counter .over{color:var(--ob-fg)}
+.ob .field label:not(.toggle),.ob .field .lbl{font-size:.875rem;font-weight:500;color:var(--ob-fg)}
+
+/* fields: the pit's seed still drops in on focus */
+.ob .in{min-height:46px;background:var(--ob-field);border:1px solid var(--ob-field-line);border-radius:var(--rb-r-md);box-shadow:0 1px 2px oklch(20.8% 0.042 265.755 / .05);color:var(--ob-fg);transition:border-color .15s,box-shadow .15s}
+.ob .in::placeholder{color:var(--ob-placeholder)}
+.ob .in:hover{border-color:var(--color-neutral-400)}
+.ob .in:focus{outline:none;border-color:var(--rb-accent);box-shadow:0 0 0 4px var(--ob-ring)}
+.ob textarea.in{border-radius:var(--rb-r-xs)}
+.ob .pit::before{background:var(--rb-accent);box-shadow:none}
+.ob .in[type="date"]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
+:root[data-theme="dark"] .ob .in[type="date"],:root.dark .ob .in[type="date"]{color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) .ob .in[type="date"]{color-scheme:dark}}
+
+/* choices */
+.ob .seg :is(button,a){background:var(--ob-card);border:1px solid var(--ob-field-line);border-radius:var(--rb-r-sm);color:var(--ob-fg);font-weight:500}
+.ob .seg :is(button,a):hover{border-color:var(--color-neutral-400)}
+.ob .seg :is(button,a).on{border-color:var(--rb-accent);background:color-mix(in oklch,var(--rb-accent) 8%,var(--ob-card));box-shadow:0 0 0 1px var(--rb-accent)}
+.ob .seg :is(button,a):focus-visible{outline:none;box-shadow:0 0 0 4px var(--ob-ring);border-color:var(--rb-accent)}
+.ob .kind-switch .lbl{color:var(--ob-fg)}
+.ob .kind-cards .mode-card{background:var(--ob-card);border:1px solid var(--ob-line);border-radius:var(--rb-r-2xl);color:var(--ob-fg);box-shadow:0 1px 2px oklch(20.8% 0.042 265.755 / .05)}
+.ob .kind-cards .mode-card h3{font-family:var(--rb-font-sans);font-weight:600;color:var(--ob-fg)}
+.ob .kind-cards .mode-card:hover{border-color:var(--color-neutral-400)}
+.ob .kind-cards .mode-card.on{border-color:var(--rb-accent);box-shadow:0 0 0 1px var(--rb-accent)}
+.ob .toggle{background:var(--ob-card);border:1px solid var(--ob-line);border-radius:var(--rb-r-lg)}
+.ob .toggle .sw{background:var(--ob-field-line);box-shadow:none}
+.ob .toggle .sw::after{background:oklch(100% 0 0);box-shadow:0 1px 3px oklch(0% 0 0 / .25)}
+.ob .toggle input:checked+.sw{background:var(--ob-solid)}
+.ob .toggle input:checked+.sw::after{background:oklch(100% 0 0)}
+.ob .toggle input:focus-visible+.sw{outline:none;box-shadow:0 0 0 4px var(--ob-ring)}
+
+/* the ayo board: same pits and seeds, in the theme's neutrals */
+.ob .board{background:var(--ob-soft);border:1px solid var(--ob-line);border-radius:var(--rb-r-2xl)}
+.ob .hole{background:var(--ob-card);border:1px solid var(--ob-line);box-shadow:var(--ob-pit);color:var(--ob-fg);font-weight:500}
+.ob .hole .seed{background:var(--rb-accent)}
+.ob .hole button{background:var(--ob-card);border-color:var(--ob-field-line);color:var(--ob-muted)}
+.ob .hole button:hover{background:var(--ob-fg);color:var(--ob-card)}
+.ob .meter{background:var(--ob-soft);box-shadow:none}
+
+/* lists, results and notes */
+.ob .ex{background:var(--ob-soft);border-radius:var(--rb-r-md)}
+.ob .ex button{color:var(--ob-muted)}.ob .ex button:hover{color:var(--ob-fg)}
+.ob .res-row{background:var(--ob-card);border:1px solid var(--ob-line);border-radius:var(--rb-r-lg)}
+.ob .summary span{background:var(--ob-soft);color:var(--ob-fg)}
+.ob .notice{background:color-mix(in oklch,var(--rb-accent) 7%,var(--ob-card));border:1px solid color-mix(in oklch,var(--rb-accent) 22%,transparent);border-radius:var(--rb-r-xs);color:var(--ob-fg)}
+.ob .tabs{background:var(--ob-soft)}
+.ob .tabs button{color:var(--ob-muted)}
+.ob .tabs button.on{background:var(--ob-card);color:var(--ob-fg);box-shadow:0 1px 3px oklch(20.8% 0.042 265.755 / .15)}
+
+/* buttons: solid accent and a quiet outline */
+.ob .app .btn,.ob .modal .btn{font-family:var(--rb-font-sans);font-weight:600}
+.ob .btn-primary{box-shadow:0 1px 2px oklch(20.8% 0.042 265.755 / .1),0 10px 22px -12px var(--ob-solid)}
+.ob :is(.app,.modal) .btn-ghost{--sb-base:var(--color-neutral-400);--sb-line:var(--rb-accent);--sb-text-color:var(--ob-fg);background:var(--ob-card);border-color:transparent;color:var(--ob-fg);box-shadow:0 1px 2px oklch(20.8% 0.042 265.755 / .08)}
+.ob :is(.app,.modal) .btn-ghost:hover{background:var(--ob-soft)}
+.ob .btn-primary{--sb-line:oklch(100% 0 0);--sb-base:color-mix(in oklch,var(--ob-solid) 60%,white)}
+
+@media (max-width:520px){
+  .ob .panel{padding:24px 18px;border-radius:var(--rb-r-2xl)}
+  .ob .panel h2{font-size:1.4rem}
+  .ob-dot{width:32px;height:32px;font-size:.8rem}
+  .ob-steps li:not(:first-child)::before{top:15px;left:calc(-50% + 22px);right:calc(50% + 22px)}
+  .ob-lbl{font-size:.74rem}
+}
