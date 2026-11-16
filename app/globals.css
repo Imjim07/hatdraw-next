@@ -709,9 +709,6 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .ob .in:focus{outline:none;border-color:var(--rb-accent);box-shadow:0 0 0 4px var(--ob-ring)}
 .ob textarea.in{border-radius:var(--rb-r-xs)}
 .ob .pit::before{background:var(--rb-accent);box-shadow:none}
-.ob .in[type="date"]::-webkit-calendar-picker-indicator{opacity:.6;cursor:pointer}
-:root[data-theme="dark"] .ob .in[type="date"],:root.dark .ob .in[type="date"]{color-scheme:dark}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) .ob .in[type="date"]{color-scheme:dark}}
 
 /* choices */
 .ob .seg :is(button,a){background:var(--ob-card);border:1px solid var(--ob-field-line);border-radius:var(--rb-r-sm);color:var(--ob-fg);font-weight:500}
@@ -762,3 +759,41 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .ob-steps li:not(:first-child)::before{top:15px;left:calc(-50% + 22px);right:calc(50% + 22px)}
   .ob-lbl{font-size:.74rem}
 }
+
+/* ---- Date picker (components/ui/DatePicker.tsx, React Aria): a segmented field like the
+   other inputs, and a calendar in a popover. The popover renders outside the wizard, so it
+   has the .ob class itself for the theme tokens. Day cells are 44px touch targets. ---- */
+.dp-group{display:flex;align-items:center;gap:4px;min-height:46px;padding:0 4px 0 36px;background:var(--ob-field);border:1px solid var(--ob-field-line);border-radius:var(--rb-r-md);box-shadow:0 1px 2px oklch(20.8% 0.042 265.755 / .05);color:var(--ob-fg);cursor:text;transition:border-color .15s,box-shadow .15s}
+.dp-group:hover{border-color:var(--color-neutral-400)}
+.dp-group:focus-within{border-color:var(--rb-accent);box-shadow:0 0 0 4px var(--ob-ring)}
+.dp-group[data-invalid]{border-color:var(--danger)}
+.dp-input{display:flex;align-items:center;flex:1;min-width:0;font-variant-numeric:tabular-nums}
+.dp-seg{padding:2px 3px;border-radius:6px;outline:none;caret-color:transparent;font-variant-numeric:tabular-nums}
+.dp-seg[data-type="literal"]{padding:0;color:var(--ob-muted)}
+.dp-seg[data-placeholder]{color:var(--ob-placeholder)}
+.dp-seg[data-focused]{background:var(--ob-solid);color:var(--rb-accent-fg)}
+.dp-btn{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--ob-muted);cursor:pointer;outline:none;transition:background .15s,color .15s}
+.dp-btn[data-hovered],.dp-btn[data-pressed]{background:var(--ob-soft);color:var(--ob-fg)}
+.dp-btn[data-focus-visible]{box-shadow:0 0 0 3px var(--rb-accent)}
+.dp-pop{z-index:110;padding:12px;background:var(--ob-card);border:1px solid var(--ob-line);border-radius:var(--rb-r-2xl);box-shadow:0 24px 60px -24px oklch(20.8% 0.042 265.755 / .4);color:var(--ob-fg);font-family:var(--rb-font-sans);outline:none}
+.dp-pop[data-entering]{animation:dp-in .18s ease-out}
+.dp-pop[data-exiting]{animation:dp-in .12s ease-in reverse}
+@keyframes dp-in{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+.dp-dialog{outline:none}
+.dp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 0 8px}
+.dp-title{margin:0;font-size:.95rem;font-weight:600;color:var(--ob-fg)}
+.dp-nav{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--ob-fg);cursor:pointer;outline:none}
+.dp-nav[data-hovered]{background:var(--ob-soft)}
+.dp-nav[data-focus-visible]{box-shadow:0 0 0 3px var(--rb-accent)}
+.dp-nav[data-disabled]{opacity:.35;cursor:default}
+.dp-grid{border-collapse:collapse}
+.dp-grid td{padding:1px}
+.dp-dow{padding:4px 0 6px;font-size:.75rem;font-weight:500;color:var(--ob-muted)}
+.dp-cell{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;font-size:.9rem;font-variant-numeric:tabular-nums;color:var(--ob-fg);cursor:pointer;outline:none;transition:background .12s}
+.dp-cell[data-outside-month]{visibility:hidden}
+.dp-cell[data-hovered]{background:var(--ob-soft)}
+.dp-cell[data-pressed]{background:var(--ob-field-line)}
+.dp-cell[data-selected]{background:var(--ob-solid);color:var(--rb-accent-fg);font-weight:600}
+.dp-cell[data-focus-visible]{box-shadow:0 0 0 2px var(--ob-card),0 0 0 4px var(--rb-accent)}
+.dp-cell[data-disabled],.dp-cell[data-unavailable]{opacity:.35;cursor:default}
+@media (max-width:380px){.dp-cell,.dp-nav{width:40px;height:40px}}

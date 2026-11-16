@@ -6,6 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import Stepper from "@/components/Stepper";
+import DatePicker from "@/components/ui/DatePicker";
 import { NO_MONEY } from "@/components/ajo/GroupView";
 import { naira } from "@/lib/config";
 import { FREQ_LABEL, api, copyText, longDate } from "@/lib/ajo/client";
@@ -174,8 +175,7 @@ export default function AjoSetup() {
                 <span className="pit"><input id="aj-amount" className="in" inputMode="numeric" placeholder="e.g. 20,000"
                   value={d.amount ? Number(d.amount).toLocaleString("en-NG") : ""}
                   onChange={(e) => set({ amount: e.target.value.replace(/\D/g, "").slice(0, 8) })} /></span></div>
-              <div className="field"><label htmlFor="aj-start">First payout date</label>
-                <span className="pit"><input id="aj-start" className="in" type="date" value={d.startDate} onChange={(e) => set({ startDate: e.target.value })} /></span></div>
+              <DatePicker id="aj-start" label="First payout date" value={d.startDate} onChange={(startDate) => set({ startDate })} />
             </div>
             <div className="field"><span className="lbl" id="aj-freq">How often?</span>
               <div className="seg" role="radiogroup" aria-labelledby="aj-freq">

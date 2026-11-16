@@ -36,7 +36,10 @@ test("instant draw with pins, redraw within the window, refused after it", async
   // Setup wizard
   await page.locator("#aj-name").fill("Ikoyi Wives Monthly");
   await page.locator("#aj-amount").fill("20000");
-  await page.locator("#aj-start").fill(lagosDate(10));
+  // the date field is segmented (day / month / year): type into it
+  const [yy, mm, dd] = lagosDate(10).split("-");
+  await page.getByRole("group", { name: "First payout date" }).getByRole("spinbutton").first().click();
+  await page.keyboard.type(dd + mm + yy);
   await page.getByRole("radio", { name: "Monthly" }).click();
   await expect(page.getByText("Each turn collects ₦20,000 × the number of members.")).toBeVisible();
   await shot(page, "01-setup");

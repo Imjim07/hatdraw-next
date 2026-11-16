@@ -8,6 +8,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import Stepper from "@/components/Stepper";
+import DatePicker from "@/components/ui/DatePicker";
 import { serifName } from "@/lib/marks";
 import { burst } from "@/components/Ambient";
 import { PRICING, PAYWALL_MODE, naira } from "@/lib/config";
@@ -185,8 +186,7 @@ export default function DrawPage() {
                 <span className="pit"><input id="ev-budget" className="in" inputMode="numeric" placeholder="e.g. 15,000"
                   value={d.ev.budget ? Number(d.ev.budget).toLocaleString("en-NG") : ""}
                   onChange={(e) => setEv({ budget: e.target.value.replace(/\D/g, "").slice(0, 9) })} /></span></div>
-              <div className="field"><label htmlFor="ev-date">Exchange date</label>
-                <span className="pit"><input id="ev-date" className="in" type="date" value={d.ev.date} onChange={(e) => setEv({ date: e.target.value })} /></span></div>
+              <DatePicker id="ev-date" label="Exchange date" value={d.ev.date} onChange={(date) => setEv({ date })} />
             </div>
             <div className="field"><label htmlFor="ev-where">Where are gifts exchanged? <small>(optional)</small></label>
               <span className="pit"><input id="ev-where" className="in" maxLength={90} placeholder="e.g. Grandma's house, Surulere" value={d.ev.where} onChange={(e) => setEv({ where: e.target.value })} /></span></div>
