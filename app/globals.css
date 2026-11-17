@@ -849,7 +849,9 @@ select.in option{background:var(--cloud);color:var(--ink)}
 /* mode cards: the card no longer clips (the glow spills past it), so the stripe is
    drawn inside a full-size rounded layer instead of a 7px bar */
 .kind-cards .border-glow-card.mode-card{overflow:visible}
-.kind-cards .border-glow-card.mode-card::before{inset:0;height:auto;border-radius:inherit;background:linear-gradient(var(--mode-stripe) 0 7px,transparent 7px)}
+.kind-cards .border-glow-card.mode-card::before{content:none}
+.ob .kind-cards .border-glow-card.mode-card:not(.on){border-color:color-mix(in srgb,var(--mode-stripe) 70%,transparent)}
+.ob .kind-cards .border-glow-card.mode-card:not(.on):hover{border-color:var(--mode-stripe)}
 /* the chosen card: the blended border all the way round, in place of the flat ring */
 .ob .kind-cards .border-glow-card.mode-card.on{border-color:transparent;box-shadow:none}
 .kind-cards .border-glow-card.on>.bg-edge{inset:-1px;border-width:2px;opacity:1;mask-image:none}
