@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { BRAND } from "@/lib/config";
-import { Dundun, IgiIye, Ododo, Owo } from "./motifs";
 import BorderGlow from "./ui/BorderGlow";
 import SpecularButton from "./SpecularButton";
 
@@ -8,9 +7,10 @@ import SpecularButton from "./SpecularButton";
 // wizards. Each card is bordered in its own colour (green for Secret Santa, gold for ajo,
 // blue for Gift Finder, indigo for the giveaway picker), and the border glows near the
 // pointer (BorderGlow). The giveaway picker isn't built yet, so its card has no button at
-// all (not a disabled one).
+// all (not a disabled one). Icons by Icons8, tinted with the text colour so they follow
+// the theme.
 type Tone = "santa" | "ajo" | "gift" | "give";
-type Offer = { title: string; motif: ReactNode; tone: Tone; text: string; points: string[]; link?: { href: string; label: string } };
+type Offer = { title: string; motif: string; tone: Tone; text: string; points: string[]; link?: { href: string; label: string } };
 
 const GLOW: Record<Tone, { colors: string[]; glow: string }> = {
   santa: { colors: ["var(--pine)", "#6FBF95", "#2F6B52"], glow: "155 45 62" },
@@ -20,16 +20,16 @@ const GLOW: Record<Tone, { colors: string[]; glow: string }> = {
 };
 
 const OFFERS: Offer[] = [
-  { title: "Secret Santa", tone: "santa", motif: <IgiIye size={34} color="var(--indigo)" strokeWidth={5} />,
+  { title: "Secret Santa", tone: "santa", motif: "santa",
     text: "Everyone gets a private link and beats the starch to see who they're gifting.",
     points: ["Private reveal links", "Keep-apart rules", "Pass-the-phone mode"], link: { href: "/draw", label: "Start a gift exchange" } },
-  { title: "Ajo payout order", tone: "ajo", motif: <Owo size={34} color="var(--indigo)" strokeWidth={5} />,
+  { title: "Ajo payout order", tone: "ajo", motif: "ajo",
     text: "Draw the payout order once, in front of everyone, and share one schedule.",
     points: ["Locked or live draw", "Reminders before every turn", "Swaps both members agree to"], link: { href: "/ajo", label: "Draw a payout order" } },
-  { title: "Gift Finder", tone: "gift", motif: <Ododo size={34} color="var(--indigo)" strokeWidth={5} />,
+  { title: "Gift Finder", tone: "gift", motif: "giftfinder",
     text: "Gifts that fit your budget, delivered.",
     points: ["Browse by budget", "Picked for Nigerian gifting", "Order in a tap"], link: { href: "/gifts", label: "Find a gift" } },
-  { title: "Giveaway picker for vendors", tone: "give", motif: <Dundun size={34} color="var(--indigo)" strokeWidth={5} />,
+  { title: "Giveaway picker for vendors", tone: "give", motif: "giveaway",
     text: "Pick your giveaway winner fairly, with a link your followers can check.",
     points: ["One fair pick", "A result anyone can check"] },
 ];
@@ -48,7 +48,7 @@ export default function Offers() {
         {OFFERS.map((o) => (
           <li key={o.title} className="of-item">
             <BorderGlow className={`of-card of-${o.tone}`} colors={GLOW[o.tone].colors} glowColor={GLOW[o.tone].glow}>
-              <span className="of-motif" aria-hidden="true">{o.motif}</span>
+              <span className="of-motif" aria-hidden="true"><i className="tint-ico of-ico" style={{ "--ico": `url(/icons/of-${o.motif}.png)` } as CSSProperties} /></span>
               <h3>{o.title}{!o.link && <span className="pill of-soon">Coming soon</span>}</h3>
               <p>{o.text}</p>
               <ul className="of-points">{o.points.map((p) => <li key={p}>{p}</li>)}</ul>

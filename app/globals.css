@@ -936,3 +936,5 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .ob .of-card .pill.of-soon{background:var(--ob-soft);color:var(--ob-fg);border:1px solid var(--ob-line);font-family:var(--rb-font-sans);font-weight:500}
 .ob .of-btn{margin-top:auto;align-self:flex-start}
 @media (max-width:600px){.ob .of-card{padding:24px 20px 20px}.ob .of-btn{align-self:stretch}}
+.ob .of-motif{display:grid;place-items:center}
+.ob .of-motif .of-ico{width:32px;height:32px;margin:0;vertical-align:0;color:var(--ob-fg)}
