@@ -857,9 +857,8 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .kind-cards .border-glow-card.on>.bg-edge{inset:-1px;border-width:2px;opacity:1;mask-image:none}
 @media (prefers-reduced-motion:reduce){.border-glow-card>:is(.bg-edge,.bg-fill,.edge-light){transition:none}}
 
-/* "Who's playing?" icons (Icons8 PNGs used as masks, so they take the text colour in either theme) */
-.seg .kind-ico{display:block;width:30px;height:30px;margin:0 auto 6px;background:currentColor;-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
-.ob .seg .on .kind-ico{background:var(--rb-accent)}
+/* "Who's playing?" icons (Icons8 glass PNGs) */
+.seg .kind-ico{display:block;width:32px;height:32px;margin:0 auto 6px;background:var(--ico) center/contain no-repeat}
 
 /* Detail cards on the reveal (/r) and the ajo member page, in the Sorbet style of the
    setup wizards: Inter, card surface, rounder corners, and a border in the mode's colour
@@ -886,3 +885,11 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .details.ob b{font-size:1rem}
 }
 @media (max-width:359px){.details.ob{grid-template-columns:1fr}}
+
+/* Icons8 glass icons: a person in each avatar on the draw results, and "keep it secret" on the reveal */
+.av-ico,.hush-ico{display:inline-block;background:center/contain no-repeat}
+.av-ico{width:24px;height:24px;background-image:url(/icons/person.png);filter:brightness(0)}
+.hush-ico{width:1.6em;height:1.6em;margin-left:4px;vertical-align:-.45em;background-image:url(/icons/secret.png)}
+/* the Icons8 glass icons are white: darken them on light surfaces, keep them as drawn on dark */
+:root:not(.dark):not([data-theme="dark"]) :is(.seg .kind-ico,.hush-ico){filter:brightness(0)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) :is(.seg .kind-ico,.hush-ico){filter:none}}

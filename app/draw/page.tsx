@@ -18,11 +18,11 @@ type Draft = { ev: EventInfo; people: string[]; ex: [string, string][]; circle: 
 type Result = Extract<DrawResponse, { ok: true }>;
 
 const DRAFT_KEY = "hd-draft-v2";
-// Avatar fills from the palette; initials are ink (≥4.5:1 on each).
+// Avatar fills from the palette; the person icon (Icons8) inside is ink (≥4.5:1 on each).
 // fixed light fills (dark text in both themes)
 const AV = ["#DDE3F5", "var(--palm-gold)", "var(--persimmon)"];
 const STEPS = ["Occasion", "Names", "Rules", "Draw"];
-// Icons by Icons8 (icons8.com), served from /public/icons and tinted with the text colour.
+// Icons by Icons8 (icons8.com), served from /public/icons (white glass icons, darkened on light surfaces in CSS).
 const KINDS: { k: Kind; label: string }[] = [
   { k: "friends", label: "Friends" }, { k: "family", label: "Family" }, { k: "company", label: "Company" },
 ];
@@ -32,7 +32,6 @@ const blankDraft = (): Draft => ({
 });
 
 // First two letters, counting a letter plus its tone marks as one (Ọ̀pẹ́ → Ọ̀P).
-const initials = (s: string) => Array.from(new Intl.Segmenter().segment(s.normalize("NFC")), (x) => x.segment).slice(0, 2).join("").toUpperCase();
 
 async function copyText(t: string) {
   try { await navigator.clipboard.writeText(t); return true; } catch {
@@ -282,7 +281,7 @@ export default function DrawPage() {
                         const wa = "https://wa.me/?text=" + encodeURIComponent(`🎅 Hi ${name}! You're in the "${d.ev.name}" Secret Santa.\nOpen this link to find out who you're gifting. It's only for you, so don't share it:\n${url}`);
                         return (
                           <div key={name} className="res-row">
-                            <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
+                            <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}><i className="av-ico" aria-hidden="true" /></span>{name}</div>
                             <div className="acts">
                               <SpecularButton className="btn btn-primary btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</SpecularButton>
                               <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? "Link copied ✓" : "Couldn't copy")}>Copy link</SpecularButton>
@@ -304,7 +303,7 @@ export default function DrawPage() {
                     <div className="res">
                       {result.givers.map(({ name, token }, i) => (
                         <div key={name} className={`res-row ${seen.includes(name) ? "seen" : ""}`}>
-                          <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
+                          <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}><i className="av-ico" aria-hidden="true" /></span>{name}</div>
                           {seen.includes(name) ? <span className="hint" style={{ margin: 0 }}>Unwrapped ✓</span>
                             : <SpecularButton className="btn btn-primary btn-sm" onClick={() => setConfirmFor(token + "\u0000" + name)}>That&apos;s me</SpecularButton>}
                         </div>
