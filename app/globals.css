@@ -860,3 +860,12 @@ select.in option{background:var(--cloud);color:var(--ink)}
 /* "Who's playing?" icons (Icons8 PNGs used as masks, so they take the text colour in either theme) */
 .seg .kind-ico{display:block;width:30px;height:30px;margin:0 auto 6px;background:currentColor;-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat}
 .ob .seg .on .kind-ico{background:var(--rb-accent)}
+
+/* Detail cards on the reveal (/r) and the ajo member page, in the Sorbet style of the
+   setup wizards: Inter, card surface, rounder corners, and a border in the mode's colour
+   (green for gift exchanges, gold for ajo) in place of the top stripe. */
+.details.ob>div{background:var(--ob-card);border:1px solid color-mix(in srgb,var(--mode-stripe) 70%,transparent);border-radius:var(--rb-r-2xl);padding:20px 22px;font-family:var(--rb-font-sans);color:var(--ob-fg);box-shadow:var(--ob-shadow)}
+.details.ob>div::before{content:none}
+.details.ob small{color:var(--ob-muted);font-weight:600;font-size:.72rem;letter-spacing:.08em;margin-bottom:6px}
+.details.ob b{font-family:var(--rb-font-sans);font-weight:600;font-size:1.08rem;color:var(--ob-fg)}
+.details.ob .hint{color:var(--ob-muted);font-family:var(--rb-font-sans)}

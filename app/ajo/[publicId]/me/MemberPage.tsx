@@ -70,7 +70,7 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
       <div className="panel rise">
         <GroupHead g={g} eyebrow={`Ajo · ${me.name}`} />
 
-        <div className="details">
+        <div className="details ob">
           <div className="wide">
             <small>Your turn</small>
             {drawn && <span className="mode-pill">Turn {me.turn}: you</span>}

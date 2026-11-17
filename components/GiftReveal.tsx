@@ -112,7 +112,7 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
         <div className="match">
           <p className="sub" style={{ margin: "0 auto" }}>Keep it to yourself 🤫</p>
           {details.length > 0 && (
-            <div className="details">
+            <div className="details ob">
               {details.map((d) => <div key={d.k} className={d.wide ? "wide" : undefined}>{d.body}</div>)}
             </div>
           )}
