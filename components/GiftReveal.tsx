@@ -75,7 +75,7 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
   return (
     <div className="reveal" data-mode="santa"><div className="reveal-inner">
       <div className="eyebrow">{e.name}{context === "preview" ? " · preview" : ""}</div>
-      <h2 style={{ marginTop: 12 }}>Hi <span className={giver.className}>{giver.text}</span> 👋</h2>
+      <h2 style={{ marginTop: 12 }}>Hi <span className={giver.className}>{giver.text}</span> <i className="hush-ico hi-ico" aria-hidden="true" /></h2>
       <p className="sub" style={{ margin: "0 auto" }} aria-live="polite">
         {open ? <>This Christmas, you&apos;re gifting <span className="sr-only">{r}</span></> : "Someone\u2019s name is under the starch."}
       </p>

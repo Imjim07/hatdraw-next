@@ -893,3 +893,4 @@ select.in option{background:var(--cloud);color:var(--ink)}
 /* the Icons8 glass icons are white: darken them on light surfaces, keep them as drawn on dark */
 :root:not(.dark):not([data-theme="dark"]) :is(.seg .kind-ico,.hush-ico){filter:brightness(0)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) :is(.seg .kind-ico,.hush-ico){filter:none}}
+.hush-ico.hi-ico{width:1.1em;height:1.1em;margin-left:.1em;vertical-align:-.15em}
