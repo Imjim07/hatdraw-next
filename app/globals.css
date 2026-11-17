@@ -797,3 +797,60 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .dp-cell[data-focus-visible]{box-shadow:0 0 0 2px var(--ob-card),0 0 0 4px var(--rb-accent)}
 .dp-cell[data-disabled],.dp-cell[data-unavailable]{opacity:.35;cursor:default}
 @media (max-width:380px){.dp-cell,.dp-nav{width:40px;height:40px}}
+
+/* BorderGlow (after React Bits): a blended mesh-gradient border that lights up near the
+   pointer. Child spans instead of pseudo-elements so .mode-card keeps its stripe. */
+.border-glow-card{
+  --edge-proximity:0;--cursor-angle:45deg;--edge-sensitivity:30;
+  --color-sensitivity:calc(var(--edge-sensitivity) + 20);--glow-padding:40px;--cone-spread:25;
+  --bg-card:var(--ob-card,var(--cloud));--bg-blend:multiply;--bg-fill-blend:normal;--bg-fill-show:0;
+  position:relative;isolation:isolate;overflow:visible;
+}
+:root[data-theme="dark"] .border-glow-card,:root.dark .border-glow-card{--bg-blend:plus-lighter;--bg-fill-blend:soft-light;--bg-fill-show:1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) .border-glow-card{--bg-blend:plus-lighter;--bg-fill-blend:soft-light;--bg-fill-show:1}}
+.border-glow-card>:is(.bg-edge,.bg-fill,.edge-light){position:absolute;inset:0;border-radius:inherit;pointer-events:none;transition:opacity .25s ease-out;z-index:-1}
+.border-glow-card:not(:hover)>:is(.bg-edge,.bg-fill,.edge-light){opacity:0;transition:opacity .75s ease-in-out}
+/* the coloured border */
+.border-glow-card>.bg-edge{
+  border:1px solid transparent;
+  background:linear-gradient(var(--bg-card) 0 100%) padding-box,
+    var(--mesh-1) border-box,var(--mesh-2) border-box,var(--mesh-3) border-box,var(--mesh-4) border-box,
+    var(--mesh-5) border-box,var(--mesh-6) border-box,var(--mesh-7) border-box,var(--mesh-base) border-box;
+  opacity:calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
+  mask-image:conic-gradient(from var(--cursor-angle) at center,black calc(var(--cone-spread) * 1%),transparent calc((var(--cone-spread) + 15) * 1%),transparent calc((100 - var(--cone-spread) - 15) * 1%),black calc((100 - var(--cone-spread)) * 1%));
+}
+/* a soft wash of the same colours just inside the edge */
+.border-glow-card>.bg-fill{
+  border:1px solid transparent;
+  background:var(--mesh-1) padding-box,var(--mesh-2) padding-box,var(--mesh-3) padding-box,var(--mesh-4) padding-box,
+    var(--mesh-5) padding-box,var(--mesh-6) padding-box,var(--mesh-7) padding-box,var(--mesh-base) padding-box;
+  mask-image:linear-gradient(to bottom,black,black),radial-gradient(ellipse at 50% 50%,black 40%,transparent 65%),
+    radial-gradient(ellipse at 66% 66%,black 5%,transparent 40%),radial-gradient(ellipse at 33% 33%,black 5%,transparent 40%),
+    radial-gradient(ellipse at 66% 33%,black 5%,transparent 40%),radial-gradient(ellipse at 33% 66%,black 5%,transparent 40%),
+    conic-gradient(from var(--cursor-angle) at center,transparent 5%,black 15%,black 85%,transparent 95%);
+  mask-composite:subtract,add,add,add,add,add;
+  opacity:calc(var(--fill-opacity,.5) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)) * .5 * var(--bg-fill-show));
+  mix-blend-mode:var(--bg-fill-blend);
+}
+/* the outer glow */
+.border-glow-card>.edge-light{
+  inset:calc(var(--glow-padding) * -1);z-index:1;
+  mask-image:conic-gradient(from var(--cursor-angle) at center,black 2.5%,transparent 10%,transparent 90%,black 97.5%);
+  opacity:calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
+  mix-blend-mode:var(--bg-blend);
+}
+.border-glow-card>.edge-light::before{
+  content:"";position:absolute;inset:var(--glow-padding);border-radius:inherit;
+  box-shadow:inset 0 0 0 1px var(--glow-color),inset 0 0 1px 0 var(--glow-color-60),inset 0 0 3px 0 var(--glow-color-50),
+    inset 0 0 6px 0 var(--glow-color-40),inset 0 0 15px 0 var(--glow-color-30),inset 0 0 25px 2px var(--glow-color-20),
+    inset 0 0 50px 2px var(--glow-color-10),0 0 1px 0 var(--glow-color-60),0 0 3px 0 var(--glow-color-50),
+    0 0 6px 0 var(--glow-color-40),0 0 15px 0 var(--glow-color-30),0 0 25px 2px var(--glow-color-20),0 0 50px 2px var(--glow-color-10);
+}
+/* mode cards: the card no longer clips (the glow spills past it), so the stripe is
+   drawn inside a full-size rounded layer instead of a 7px bar */
+.kind-cards .border-glow-card.mode-card{overflow:visible}
+.kind-cards .border-glow-card.mode-card::before{inset:0;height:auto;border-radius:inherit;background:linear-gradient(var(--mode-stripe) 0 7px,transparent 7px)}
+/* the chosen card: the blended border all the way round, in place of the flat ring */
+.ob .kind-cards .border-glow-card.mode-card.on{border-color:transparent;box-shadow:none}
+.kind-cards .border-glow-card.on>.bg-edge{inset:-1px;border-width:2px;opacity:1;mask-image:none}
+@media (prefers-reduced-motion:reduce){.border-glow-card>:is(.bg-edge,.bg-fill,.edge-light){transition:none}}
