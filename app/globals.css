@@ -895,3 +895,8 @@ select.in option{background:var(--cloud);color:var(--ink)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) :is(.seg .kind-ico,.hush-ico){filter:none}}
 .hush-ico.hi-ico{width:1.1em;height:1.1em;margin-left:.1em;vertical-align:-.15em}
 .hush-ico.hi-ico{background-image:url(/icons/person.png)}
+/* reveal icons take the colour of the text beside them, so they follow the theme switch:
+   the glass art is multiplied over that colour (keeping its shading) and clipped to its shape,
+   stacked three times so the see-through glass reads as solid */
+.reveal .hush-ico{--ico:url(/icons/secret.png);filter:none!important;background:var(--ico) center/contain no-repeat,currentColor;background-blend-mode:multiply;-webkit-mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat}
+.reveal .hush-ico.hi-ico{--ico:url(/icons/person.png)}
