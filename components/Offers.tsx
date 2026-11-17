@@ -38,7 +38,7 @@ const PROMISES = ["Fair & recorded draws", "No sign-up", "WhatsApp-first", "Free
 
 export default function Offers() {
   return (
-    <section className="band" id="offers"><div className="wrap">
+    <section className="band" id="features"><div className="wrap">
       <div className="of-head">
         <div className="eyebrow">What {BRAND.name} offers</div>
         <h2>Fair draws for whatever needs one</h2>

@@ -10,7 +10,8 @@ import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
 import PricingTable, { type Plan } from "@/components/PricingTable";
 import Offers from "@/components/Offers";
 import HowItWorks from "@/components/HowItWorks";
-import Features from "@/components/Features";
+// Old features section, replaced by "What <brand> offers" (Offers) in its place.
+// import Features from "@/components/Features";
 import SpecularButton from "@/components/SpecularButton";
 import Countdown, { Year } from "@/components/Countdown";
 import { BRAND, PRICING, naira } from "@/lib/config";
@@ -88,11 +89,14 @@ export default function Home() {
         </div>
       </div>
 
-      <Offers />
-
       <HowItWorks />
 
+      {/* "What <brand> offers" now sits where the features section was (it carries id="features"). */}
+      <Offers />
+
+      {/* Old features section, kept for reference:
       <Features />
+      */}
 
       <section className="band stack-under" id="pricing"><div className="wrap">
         <div className="eyebrow">Pricing</div>
