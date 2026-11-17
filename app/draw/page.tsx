@@ -158,7 +158,7 @@ export default function DrawPage() {
   if (view) {
     const done = () => { if (view.context === "phone") setSeen((s) => [...s, view.data.g]); setView(null); };
     return <GiftReveal data={view.data} context={view.context}
-      actions={<SpecularButton className="btn btn-primary" onClick={done}>{view.context === "phone" ? "🙈 Hide & pass the phone" : "← Back to links"}</SpecularButton>} />;
+      actions={<SpecularButton className="btn btn-primary" onClick={done}>{view.context === "phone" ? <><i className="tint-ico hide-ico" aria-hidden="true" />Hide &amp; pass the phone</> : "← Back to links"}</SpecularButton>} />;
   }
 
   // An ayo board has two rows of six pits; keep at least that, and fill out the last row.
