@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Logo from "@/components/Logo";
 import GiftReveal from "@/components/GiftReveal";
 import Shekere from "@/components/Shekere";
@@ -22,8 +22,9 @@ const DRAFT_KEY = "hd-draft-v2";
 // fixed light fills (dark text in both themes)
 const AV = ["#DDE3F5", "var(--palm-gold)", "var(--persimmon)"];
 const STEPS = ["Occasion", "Names", "Rules", "Draw"];
-const KINDS: { k: Kind; icon: string; label: string }[] = [
-  { k: "friends", icon: "🥂", label: "Friends" }, { k: "family", icon: "🏡", label: "Family" }, { k: "company", icon: "💼", label: "Company" },
+// Icons by Icons8 (icons8.com), served from /public/icons and tinted with the text colour.
+const KINDS: { k: Kind; label: string }[] = [
+  { k: "friends", label: "Friends" }, { k: "family", label: "Family" }, { k: "company", label: "Company" },
 ];
 const blankDraft = (): Draft => ({
   ev: { name: "", kind: "friends", budget: "", date: "", where: "", note: "" },
@@ -177,7 +178,7 @@ export default function DrawPage() {
             <h2>What&apos;s the occasion?</h2>
             <div className="field"><span className="lbl">Who&apos;s playing?</span>
               <div className="seg" role="radiogroup">
-                {KINDS.map((k) => <button key={k.k} role="radio" aria-checked={d.ev.kind === k.k} className={d.ev.kind === k.k ? "on" : ""} onClick={() => setEv({ kind: k.k })}><b>{k.icon}</b>{k.label}</button>)}
+                {KINDS.map((k) => <button key={k.k} role="radio" aria-checked={d.ev.kind === k.k} className={d.ev.kind === k.k ? "on" : ""} onClick={() => setEv({ kind: k.k })}><span className="kind-ico" aria-hidden="true" style={{ "--ico": `url(/icons/${k.k}.png)` } as CSSProperties} />{k.label}</button>)}
               </div></div>
             <div className="field"><label htmlFor="ev-name">Name your exchange</label>
               <span className="pit"><input id="ev-name" className="in" maxLength={60} placeholder="e.g. Adeyemi Family Christmas" value={d.ev.name} onChange={(e) => setEv({ name: e.target.value })} /></span></div>

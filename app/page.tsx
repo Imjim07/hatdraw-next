@@ -132,6 +132,7 @@ export default function Home() {
           <div className="sf-bottom">
             <span>© <Year /> {BRAND.name} · by {BRAND.by}</span>
             <span>Weather data from <a href="https://www.met.no/en">MET Norway</a> (CC BY 4.0)</span>
+            <span>Icons by <a href="https://icons8.com">Icons8</a></span>
           </div>
         </div>
       </FooterStack>
