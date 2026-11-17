@@ -869,3 +869,20 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .details.ob small{color:var(--ob-muted);font-weight:600;font-size:.72rem;letter-spacing:.08em;margin-bottom:6px}
 .details.ob b{font-family:var(--rb-font-sans);font-weight:600;font-size:1.08rem;color:var(--ob-fg)}
 .details.ob .hint{color:var(--ob-muted);font-family:var(--rb-font-sans)}
+/* spacing on an 8px grid: room scales down with the screen, label → value → note stay a tight group */
+.details.ob{gap:16px;margin:32px 0}
+.details.ob>div{padding:24px 20px;display:flex;flex-direction:column;justify-content:flex-start;min-width:0}
+.details.ob small{margin:0 0 8px;line-height:1.2}
+.details.ob b{line-height:1.3;overflow-wrap:anywhere;text-wrap:balance}
+.details.ob br{display:none}
+.details.ob .hint{display:block;margin:4px 0 0!important;font-size:.88rem;line-height:1.4}
+@media (max-width:1024px){
+  .details.ob{gap:12px;margin:28px 0}
+  .details.ob>div{padding:20px 18px}
+}
+@media (max-width:520px){
+  .details.ob{grid-template-columns:1fr 1fr;gap:10px;margin:24px 0}
+  .details.ob>div{padding:16px;border-radius:var(--rb-r-xl)}
+  .details.ob b{font-size:1rem}
+}
+@media (max-width:359px){.details.ob{grid-template-columns:1fr}}
