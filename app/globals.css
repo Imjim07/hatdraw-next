@@ -938,3 +938,9 @@ select.in option{background:var(--cloud);color:var(--ink)}
 @media (max-width:600px){.ob .of-card{padding:24px 20px 20px}.ob .of-btn{align-self:stretch}}
 .ob .of-motif{display:grid;place-items:center}
 .ob .of-motif .of-ico{width:32px;height:32px;margin:0;vertical-align:0;color:var(--ob-fg)}
+
+/* Who's playing? icons take the theme blue when their card is chosen, focused or hovered.
+   The white glass icon is multiplied with currentColor and masked to its own shape. */
+.ob .seg :is(button,a) .kind-ico{color:var(--rb-accent);transition:filter .2s}
+.ob .seg :is(button,a):is(.on,:focus-visible) .kind-ico{background:var(--ico) center/contain no-repeat,currentColor;background-blend-mode:multiply;-webkit-mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;filter:none!important}
+@media (hover:hover){.ob .seg :is(button,a):hover .kind-ico{background:var(--ico) center/contain no-repeat,currentColor;background-blend-mode:multiply;-webkit-mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;filter:none!important}}
