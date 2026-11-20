@@ -134,6 +134,17 @@ export default function DrawPage() {
 
   const shake = () => { if (paid) setPayOpen(true); else runDraw(); };
 
+  // Back to the first step with an empty wizard. The drawn links aren't kept anywhere, so
+  // ask first unless everyone has already unwrapped in pass-the-phone.
+  const startAgain = () => {
+    const allSeen = !!result && result.givers.every((g) => seen.includes(g.name));
+    if (!allSeen && !window.confirm(S.results.startAgainConfirm)) return;
+    const fresh = blankDraft();
+    fresh.ev = { ...fresh.ev, date: `${new Date().getFullYear()}-12-24` };
+    setD(fresh); setResult(null); setSeen([]); setTab("links"); setPayRef(""); setNameIn(""); setExA(""); setExB("");
+    go(0);
+  };
+
   async function pay() {
     if (PAYWALL_MODE !== "live") { setPayOpen(false); runDraw(); return; }
     if (!/^\S+@\S+\.\S+$/.test(payEmail)) { say(S.paywall.badEmail); return; }
@@ -300,6 +311,7 @@ export default function DrawPage() {
                       <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(result.givers.map((g) => `${g.name}: ${linkFor(g.token)}`).join("\n\n"))) ? S.results.allCopied : common.couldntCopy)}>{S.results.copyAll}</SpecularButton>
                       {result.pairs && <SpecularButton className="btn btn-ghost btn-sm" onClick={() => setPeek(true)}>{S.results.showAll}</SpecularButton>}
                       <SpecularButton className="btn btn-ghost btn-sm" onClick={() => { if (!window.confirm(S.results.redrawConfirm)) return; if (paid && PAYWALL_MODE === "live") setPayOpen(true); else runDraw(); }}>{S.results.redraw}</SpecularButton>
+                      <SpecularButton className="btn btn-ghost btn-sm" onClick={startAgain}>{S.results.startAgain}</SpecularButton>
                     </div>
                   </>
                 ) : (
@@ -313,6 +325,10 @@ export default function DrawPage() {
                             : <SpecularButton className="btn btn-primary btn-sm" onClick={() => setConfirmFor(token + "\u0000" + name)}>{S.phone.button}</SpecularButton>}
                         </div>
                       ))}
+                    </div>
+                    {result.givers.every((g) => seen.includes(g.name)) && <p className="hint" role="status">{S.phone.allDone}</p>}
+                    <div className="nav-row" style={{ justifyContent: "flex-start" }}>
+                      <SpecularButton className={`btn btn-sm ${result.givers.every((g) => seen.includes(g.name)) ? "btn-primary" : "btn-ghost"}`} onClick={startAgain}>{S.results.startAgain}</SpecularButton>
                     </div>
                   </>
                 )}

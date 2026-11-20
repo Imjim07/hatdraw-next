@@ -82,6 +82,8 @@ export const santa = {
     redraw: "↻ Redraw",
     redrawConfirm: "Redraw? Everyone's links will change.",
     circleFallback: "Your rules blocked a single circle, so we used a normal shuffle",
+    startAgain: "Start a new draw",
+    startAgainConfirm: "Start a new draw? You'll go back to the first step, and these links won't show here again. Links you've already sent keep working.",
     /** The WhatsApp message each person gets with their link. */
     message: (name: string, event: string, link: string) =>
       `🎄 Hi ${name}, you're in "${event}" Secret Santa. Open your link to see who you're gifting. It's only for you, so don't forward it. ${link}`,
@@ -91,6 +93,7 @@ export const santa = {
     helper: "Each person taps their name, unwraps in private, then passes it on.",
     button: "That's me",
     unwrapped: "Unwrapped ✓",
+    allDone: "Everyone's unwrapped. Enjoy gift day!",
     // "Are you [Name]? Make sure nobody's looking." The name sits between the two parts.
     areYou: "Are you ",
     nobodyLooking: "Make sure nobody's looking.",
