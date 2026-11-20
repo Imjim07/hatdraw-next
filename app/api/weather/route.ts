@@ -1,3 +1,4 @@
+import { BRAND } from "@/lib/config";
 import { modeFromMet, type WeatherInfo } from "@/lib/weather";
 
 type Geo = { lat: number; lon: number; city?: string; country?: string };
@@ -38,7 +39,7 @@ export async function GET(req: Request) {
 
   // Round to ~1 km: better upstream cache hits and less precise location.
   const lat = geo.lat.toFixed(2), lon = geo.lon.toFixed(2);
-  const ua = process.env.MET_USER_AGENT || "HatDraw/0.1 https://capricornhub.com";
+  const ua = process.env.MET_USER_AGENT || `${BRAND.domain}/0.1 ${BRAND.url}`; // HTTP headers must be plain ASCII
 
   try {
     const res = await fetch(

@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ANY, BANDS, SORTS, bandOf, budgetLabel, toggleCategory, toQuery, type FacetCounts, type Filters, type SortId } from "@/lib/gifts/filters";
 import { CATEGORY_LABEL, FOR_WHOM, FOR_WHOM_LABEL, type Category, type ForWhom } from "@/lib/gifts/types";
+import { gifts } from "@/lib/copy/gifts";
+
+const T = gifts.filters;
 
 // The catalogue's filter sidebar, after the React Bits Pro "Ecommerce 2" catalogue with
 // brand filters, rebuilt in the site's CSS. Our multi-select group is Category (the store
@@ -19,20 +22,20 @@ export default function FilterPanel({ f, counts, categories }: { f: Filters; cou
   const active = (f.min !== null || f.max !== null ? 1 : 0) + (f.forWhom ? 1 : 0) + f.categories.length;
 
   return (
-    <aside className="gf-side" aria-label="Filters">
+    <aside className="gf-side" aria-label={T.title}>
       <button type="button" className="btn btn-ghost btn-sm gf-side-toggle" aria-expanded={open} aria-controls="gf-filter-form" onClick={() => setOpen((o) => !o)}>
-        Filters{active > 0 && ` · ${active}`}
+        {T.title}{active > 0 && ` · ${active}`}
       </button>
       <form id="gf-filter-form" action="/gifts" method="get" className={`gf-side-form${open ? " open" : ""}`} onSubmit={(e) => e.preventDefault()}>
         {f.sort !== "featured" && <input type="hidden" name="sort" value={f.sort} />}
         {f.compare.length > 0 && <input type="hidden" name="compare" value={f.compare.join(",")} />}
         <div className="gf-side-head">
-          <h2>Filters</h2>
-          {active > 0 && <Link href={`/gifts${toQuery(ANY, { sort: f.sort, compare: f.compare })}`} scroll={false} className="gf-text-link">Clear all</Link>}
+          <h2>{T.title}</h2>
+          {active > 0 && <Link href={`/gifts${toQuery(ANY, { sort: f.sort, compare: f.compare })}`} scroll={false} className="gf-text-link">{T.clearAll}</Link>}
         </div>
 
         <fieldset className="gf-group">
-          <legend>Budget</legend>
+          <legend>{T.budget}</legend>
           {band === null && (
             <label className="gf-opt">
               <input type="radio" name="budget" value="" checked readOnly />
@@ -50,10 +53,10 @@ export default function FilterPanel({ f, counts, categories }: { f: Filters; cou
         </fieldset>
 
         <fieldset className="gf-group">
-          <legend>For</legend>
+          <legend>{T.for}</legend>
           <label className="gf-opt">
             <input type="radio" name="for" value="" checked={f.forWhom === null} onChange={() => go({ forWhom: null })} />
-            <span>Anyone</span><Count n={counts.forWhom.any} />
+            <span>{T.anyone}</span><Count n={counts.forWhom.any} />
           </label>
           {FOR_WHOM.filter((w): w is Exclude<ForWhom, "anyone"> => w !== "anyone").map((w) => (
             <label key={w} className="gf-opt">
@@ -65,7 +68,7 @@ export default function FilterPanel({ f, counts, categories }: { f: Filters; cou
 
         {categories.length > 0 && (
           <fieldset className="gf-group">
-            <legend>Category</legend>
+            <legend>{T.category}</legend>
             {categories.map((c) => (
               <label key={c} className="gf-opt">
                 <input type="checkbox" name="cat" value={c} checked={f.categories.includes(c)} onChange={() => go({ categories: toggleCategory(f.categories, c) })} />
@@ -74,7 +77,7 @@ export default function FilterPanel({ f, counts, categories }: { f: Filters; cou
             ))}
           </fieldset>
         )}
-        <noscript><button type="submit" className="btn btn-primary btn-sm">Apply</button></noscript>
+        <noscript><button type="submit" className="btn btn-primary btn-sm">{T.apply}</button></noscript>
       </form>
     </aside>
   );
@@ -85,7 +88,7 @@ export function SortSelect({ f }: { f: Filters }) {
   const router = useRouter();
   return (
     <label className="gf-sort">
-      <span>Sort by</span>
+      <span>{T.sortBy}</span>
       <select className="in" value={f.sort} onChange={(e) => router.push(`/gifts${toQuery(f, { sort: e.target.value as SortId })}`, { scroll: false })}>
         {SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
       </select>
@@ -94,5 +97,5 @@ export function SortSelect({ f }: { f: Filters }) {
 }
 
 const Count = ({ n }: { n: number }) => (
-  <span className="gf-n"><span className="sr-only">, </span>{n}<span className="sr-only">{n === 1 ? " gift" : " gifts"}</span></span>
+  <span className="gf-n"><span className="sr-only">, </span>{n}<span className="sr-only">{T.giftsCount(n)}</span></span>
 );

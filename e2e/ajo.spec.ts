@@ -41,14 +41,14 @@ test("instant draw with pins, redraw within the window, refused after it", async
   await page.getByRole("group", { name: "First payout date" }).getByRole("spinbutton").first().click();
   await page.keyboard.type(dd + mm + yy);
   await page.getByRole("radio", { name: "Monthly" }).click();
-  await expect(page.getByText("Each turn collects ₦20,000 × the number of members.")).toBeVisible();
+  await expect(page.getByText("Each turn pays ₦20,000")).toBeVisible();
   await shot(page, "01-setup");
   await page.getByRole("button", { name: /next: members/i }).click();
   const box = page.getByRole("textbox", { name: "Member name" });
   await box.fill(MEMBERS.join(", "));
   await box.press("Enter");
-  await expect(page.getByText("Each turn collects ₦160,000")).toBeVisible();
-  await page.getByRole("button", { name: /next: pins/i }).click();
+  await expect(page.getByText("Each turn pays ₦160,000")).toBeVisible();
+  await page.getByRole("button", { name: /next: agreed turns/i }).click();
   await page.getByLabel("Member", { exact: true }).selectOption("Chidi");
   await page.getByLabel("Turn", { exact: true }).selectOption("3");
   await page.getByRole("button", { name: "Pin", exact: true }).click();
@@ -56,18 +56,18 @@ test("instant draw with pins, redraw within the window, refused after it", async
   await page.getByLabel("Turn", { exact: true }).selectOption("1");
   await page.getByRole("button", { name: "Pin", exact: true }).click();
   await page.getByRole("button", { name: /next: review/i }).click();
-  await expect(page.getByText(/never holds or moves money/)).toBeVisible();
-  await expect(page.getByRole("checkbox", { name: /help us learn/i })).not.toBeChecked(); // research consent is off by default
+  await expect(page.getByText(/never holds or moves your money/)).toBeVisible();
+  await expect(page.getByRole("checkbox", { name: /for research/i })).not.toBeChecked(); // research consent is off by default
 
   const createdP = page.waitForResponse((r) => r.url().endsWith("/api/ajo/groups") && r.request().method() === "POST");
   await page.getByRole("button", { name: /create group/i }).click();
   const created: Created = await (await createdP).json();
-  await expect(page.getByText("Group created")).toBeVisible();
+  await expect(page.getByText("Your group is ready")).toBeVisible();
   await expect(page.locator(".res-row .who")).toHaveCount(8);
   await shot(page, "02-handoff");
 
   // Admin: draw now
-  await page.getByRole("link", { name: /open admin page/i }).click();
+  await page.getByRole("link", { name: /open organiser page/i }).click();
   await page.getByRole("button", { name: "Draw now" }).waitFor();
   await shot(page, "03-admin");
   await page.getByRole("button", { name: "Draw now" }).click();
@@ -80,13 +80,13 @@ test("instant draw with pins, redraw within the window, refused after it", async
   expect(names).toHaveLength(8);
   expect(names[0]).toBe("Kemi"); // pinned to turn 1
   expect(names[2]).toBe("Chidi"); // pinned to turn 3
-  await expect(page.locator(".sched-row").nth(0)).toContainText("agreed before the draw");
+  await expect(page.locator(".sched-row").nth(0)).toContainText("Agreed before the draw");
 
   // Redraw inside the 10-minute window
   await page.getByRole("button", { name: /^Redraw \(/ }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Redraw", exact: true }).click();
   // The new order sows in, then the schedule (with its "redrawn once" line) replaces it.
-  await expect(page.getByText(/instant draw · redrawn once/)).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByText(/redrawn once/)).toBeVisible({ timeout: 10_000 });
   names = await scheduleNames(page);
   expect([names[0], names[2]]).toEqual(["Kemi", "Chidi"]);
 
@@ -126,7 +126,8 @@ test("live draw: no order before the reveal, the same order for everyone after",
   const [a, b] = await Promise.all(pages.map(scheduleNames));
   expect(a).toHaveLength(5);
   expect(a).toEqual(b);
-  await expect(pages[0].getByText(/live draw/)).toBeVisible();
+  await expect(pages[0].getByText(/Order locked/)).toBeVisible();
+  await expect(pages[0].getByText(/never redrawn/)).toBeVisible();
   // Live draws can't be redrawn
   expect((await request.post(`/api/ajo/groups/${c.publicId}/redraw`, { data: { token: c.adminToken } })).status()).toBe(409);
   await Promise.all(viewers.map((v) => v.close()));
@@ -139,9 +140,9 @@ test("reminders: one email for a turn 3 days away, none on a rerun", async ({ pa
 
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Sola")}`);
   await page.locator("#me-email").fill("sola@example.com");
-  await page.getByText("Remind me", { exact: true }).click();
+  await page.getByText("Remind me by email", { exact: true }).click();
   await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Reminders on ✓")).toBeVisible();
+  await expect(page.getByText("Saved. We'll remind you 3 days before.")).toBeVisible();
 
   const first = await (await request.get("/api/cron/ajo-reminders", { headers: CRON })).json();
   expect(first.sent).toBe(1);
@@ -155,15 +156,16 @@ test("swaps: both confirm to swap; a decline changes nothing", async ({ page, re
   const order = async () => (await (await request.get(`/api/ajo/groups/${c.publicId}`)).json()).group.turns.map((t: { name: string }) => t.name) as string[];
   const start = await order();
 
+  page.on("dialog", (d) => d.accept()); // "Swap your turn with Bayo?"
   // Amaka asks Bayo; Bayo confirms from his own link.
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Amaka")}`);
   await page.getByLabel("Swap with").selectOption("Bayo");
   await page.getByRole("button", { name: "Ask to swap" }).click();
-  await expect(page.getByText("Waiting for Bayo to confirm")).toBeVisible();
+  await expect(page.getByText("Swap request sent to Bayo. Nothing changes until they agree.").first()).toBeVisible();
   await shot(page, "06-member");
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Bayo")}`);
-  await page.getByRole("button", { name: "Confirm swap" }).click();
-  await expect(page.getByText("Swap confirmed ✓")).toBeVisible();
+  await page.getByRole("button", { name: "Accept" }).click();
+  await expect(page.getByText(/^Done\. You now collect on /)).toBeVisible();
 
   const swapped = await order();
   const ia = start.indexOf("Amaka"), ib = start.indexOf("Bayo");
@@ -176,6 +178,7 @@ test("swaps: both confirm to swap; a decline changes nothing", async ({ page, re
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Chika")}`);
   await page.getByLabel("Swap with").selectOption("Dami");
   await page.getByRole("button", { name: "Ask to swap" }).click();
+  await expect(page.getByText("Swap request sent to Dami. Nothing changes until they agree.").first()).toBeVisible();
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Dami")}`);
   await page.getByRole("button", { name: "Decline" }).click();
   await expect(page.getByText("Swap declined")).toBeVisible();
@@ -191,5 +194,5 @@ test("calendar.ics has one event per turn", async ({ request }) => {
   expect(res.headers()["content-type"]).toContain("text/calendar");
   const ics = await res.text();
   expect(ics.match(/BEGIN:VEVENT/g)).toHaveLength(MEMBERS.length);
-  expect(ics).toMatch(/SUMMARY:Ajo turn 1: \S+ collects ₦160\\,000/);
+  expect(ics).toMatch(/SUMMARY:Turn 1: \S+ collects ₦160\\,000/);
 });

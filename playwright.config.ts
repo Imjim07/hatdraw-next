@@ -9,7 +9,9 @@ const PORT = 3210;
 const EMPTY_PORT = 3213; // e2e/gifts.spec.ts uses this port for the empty catalogue
 const ENV = {
   AJO_STORE: "memory", CRON_SECRET: "e2e-cron-secret", DRAW_SECRET: "e2e-only-draw-secret",
-  NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}`, NEXT_PUBLIC_STORE_WHATSAPP: "2348000000000",
+  NEXT_PUBLIC_SITE_URL: `http://localhost:${PORT}`, NEXT_PUBLIC_KADARA_WHATSAPP: "10000000009", LEGAL_REVIEWED: "false",
+  // Hermetic: blank anything .env.local might set, so the in-memory stores and outbox are used.
+  SUPABASE_URL: "", SUPABASE_SERVICE_ROLE_KEY: "", SUPABASE_ANON_KEY: "", RESEND_API_KEY: "", PAYSTACK_SECRET_KEY: "", NEXT_PUBLIC_PAYWALL_MODE: "demo",
 };
 export default defineConfig({
   testDir: "e2e",

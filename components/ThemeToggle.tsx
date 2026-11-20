@@ -1,6 +1,7 @@
 "use client";
 import { THEME_KEY } from "@/lib/palette";
 import { useTheme } from "@/lib/theme";
+import { common } from "@/lib/copy/common";
 
 // Light/dark switch for the top nav. The icon is picked by CSS (moon on the light
 // page, sun on the dark one) so it's right from the first paint; the choice is
@@ -13,7 +14,7 @@ export default function ThemeToggle() {
     try { localStorage.setItem(THEME_KEY, next); } catch {}
   };
   return (
-    <button type="button" className="theme-toggle" onClick={flip} aria-label={dark ? "Switch to light theme" : "Switch to dark theme"}>
+    <button type="button" className="theme-toggle" onClick={flip} aria-label={dark ? common.theme.toLight : common.theme.toDark}>
       <svg className="tt-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
         <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
       </svg>

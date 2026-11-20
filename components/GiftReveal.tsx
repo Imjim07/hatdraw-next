@@ -8,11 +8,8 @@ import { serifName } from "@/lib/marks";
 import { naira } from "@/lib/config";
 import type { RevealPayload } from "@/lib/types";
 
-const IDEAS = {
-  low: ["A scented candle", "A fun mug + their favourite tea", "Custom keychain with their name", "Chocolate & a handwritten card", "Phone stand or ring holder", "Fancy socks", "A plant in a cute pot", "Notebook + nice pen"],
-  mid: ["Bluetooth speaker", "A book you think they'd love", "Perfume oil or body mist", "Wireless charger", "Ankara tote bag", "Skincare set", "Desk organiser", "Board game for game night"],
-  high: ["Wireless earbuds", "Smartwatch or fitness band", "A nice bottle of wine", "Leather wallet or bag", "Spa day voucher", "Power bank + fast charger", "Instant camera", "Dinner for two"],
-};
+import { revealScreen as T } from "@/lib/copy/revealScreen";
+import { ideas as IDEAS } from "@/lib/copy/ideas";
 
 function fmtDate(d: string) {
   try { return new Date(d + "T00:00:00").toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "long", year: "numeric" }); } catch { return d; }
@@ -22,7 +19,7 @@ function daysTo(d: string) {
   return Math.ceil((t - now.getTime()) / 864e5);
 }
 
-const IDLE_IDEA = "Spin for a gift idea";
+const IDLE_IDEA = T.idea.idle;
 
 // Crack lines in the dried starch (viewBox 0 0 100 100). Tap 1 shows the first set,
 // tap 2 adds the second set and knocks three chunks of crust off.
@@ -64,9 +61,9 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
 
   const dd = e.date ? daysTo(e.date) : null;
   const details: { k: string; wide?: boolean; body: React.ReactNode }[] = [];
-  if (e.budget) details.push({ k: "b", body: <><small>Budget</small><b>{naira(e.budget)}</b></> });
-  if (e.date) details.push({ k: "d", body: <><small>Gift day</small><b>{fmtDate(e.date)}</b><br /><span className="hint" style={{ margin: 0 }}>{dd! > 1 ? `${dd} days to go` : dd === 1 ? "Tomorrow!" : dd === 0 ? "Today!" : "Already passed"}</span></> });
-  if (e.where) details.push({ k: "w", wide: true, body: <><small>Where</small><b>📍 {e.where}</b></> });
+  if (e.budget) details.push({ k: "b", body: <><small>{T.budget}</small><b>{naira(e.budget)}</b></> });
+  if (e.date) details.push({ k: "d", body: <><small>{T.giftDay}</small><b>{fmtDate(e.date)}</b><br /><span className="hint" style={{ margin: 0 }}>{T.daysToGo(dd!)}</span></> });
+  if (e.where) details.push({ k: "w", wide: true, body: <><small>{T.where}</small><b>📍 {e.where}</b></> });
   if (details.length === 1) details[0].wide = true;
 
   // ~72px for short names, shrinking so long ones still fit across the cloth.
@@ -74,16 +71,16 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
 
   return (
     <div className="reveal" data-mode="santa"><div className="reveal-inner">
-      <div className="eyebrow">{e.name}{context === "preview" ? " · preview" : ""}</div>
-      <h2 style={{ marginTop: 12 }}>Hi <span className={giver.className}>{giver.text}</span> <i className="hush-ico hi-ico" aria-hidden="true" /></h2>
+      <div className="eyebrow">{e.name}{context === "preview" ? ` · ${T.preview}` : ""}</div>
+      <h2 style={{ marginTop: 12 }}>{T.hi} <span className={giver.className}>{giver.text}</span>. <i className="hush-ico hi-ico" aria-hidden="true" /></h2>
       <p className="sub" style={{ margin: "0 auto" }} aria-live="polite">
-        {open ? <>This Christmas, you&apos;re gifting <span className="sr-only">{r}</span></> : "Someone\u2019s name is under the starch."}
+        {open ? <>{T.gifting} <span className="sr-only">{r}.</span></> : taps === 0 ? T.before : T.midTaps(3 - taps)}
       </p>
 
       <button
         type="button"
         className={`cloth s${Math.min(taps, 3)} ${taps > 0 && !open ? (taps % 2 ? "shake-a" : "shake-b") : ""}`}
-        aria-label={open ? `You're gifting ${r}` : `Tap to beat the starch, ${3 - taps} left`}
+        aria-label={open ? T.clothOpen(r) : T.clothLabel(3 - taps)}
         aria-disabled={open || undefined}
         onClick={tap}
       >
@@ -106,27 +103,27 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
       {!open ? (
         <div className="cloth-copy">
           <div className="taps" aria-hidden="true">{[0, 1, 2].map((i) => <i key={i} className={i < taps ? "on" : ""} />)}</div>
-          <p className="hint">Adire makers beat dried starch off the cloth to reveal the pattern. Three taps and yours is revealed.</p>
+          <p className="hint">{T.explainer}</p>
         </div>
       ) : (
         <div className="match">
-          <p className="sub" style={{ margin: "0 auto" }}>Keep it to yourself <i className="hush-ico" aria-hidden="true" /></p>
+          <p className="sub" style={{ margin: "0 auto" }}>{T.keepIt} <i className="hush-ico" aria-hidden="true" /></p>
           {details.length > 0 && (
             <div className="details ob">
               {details.map((d) => <div key={d.k} className={d.wide ? "wide" : undefined}>{d.body}</div>)}
             </div>
           )}
           <div className="idea">
-            <div className="eyebrow idea-head"><Ododo size={22} color="var(--indigo)" strokeWidth={5} />Stuck for ideas?</div>
+            <div className="eyebrow idea-head"><Ododo size={22} color="var(--indigo)" strokeWidth={5} />{T.idea.head}</div>
             <div className="q" aria-live="polite">{idea}</div>
-            <SpecularButton className="btn btn-primary btn-sm" onClick={spin}>{idea === IDLE_IDEA ? "Spin" : "Spin again"}</SpecularButton>
+            <SpecularButton className="btn btn-primary btn-sm" onClick={spin}>{idea === IDLE_IDEA ? T.idea.spin : T.idea.again}</SpecularButton>
           </div>
           {/* Only the budget goes in this URL: never the giver's or receiver's name. Not shown in
-              the organizer's preview or pass-the-phone, where leaving would lose the draw. */}
+              the organiser's preview or pass-the-phone, where leaving would lose the draw. */}
           {context === "link" && Number(e.budget) > 0 && (
-            <Link href={`/gifts?max=${Number(e.budget)}`} className="idea-shop">See gifts under {naira(e.budget)} <span aria-hidden="true">→</span></Link>
+            <Link href={`/gifts?max=${Number(e.budget)}`} className="idea-shop">{T.seeGifts(e.budget)} <span aria-hidden="true">→</span></Link>
           )}
-          {e.note && <p className="note">&ldquo;{e.note}&rdquo; (from the organizer)</p>}
+          {e.note && <p className="note">&ldquo;{e.note}&rdquo; {T.fromOrganiser}</p>}
           <div style={{ marginTop: 26, display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>{actions}{cta && <SpecularButton href={cta.href} className="btn btn-ghost">{cta.label}</SpecularButton>}</div>
         </div>
       )}

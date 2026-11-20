@@ -1,29 +1,30 @@
 import type { ReactNode } from "react";
 import { AyeDegbe, Dundun, Sunbebe } from "./motifs";
+import { landing } from "@/lib/copy/landing";
 
 // "How it works", laid out after the shadcn blocks "features-2" block: centred
 // heading, three centred cards, each with a faded grid behind a small framed
 // mark. Rebuilt in plain CSS (no Tailwind, card or icon library); our adire
 // motifs stand in for the lucide icons.
-const STEPS = [
-  { mark: <Sunbebe size={30} />, title: "Add the names", text: "Type them in or paste a list from your WhatsApp group. Set the budget, the date and where the exchange is happening." },
-  { mark: <AyeDegbe size={30} />, title: "Shake the hat", text: "Nobody draws themselves, and couples or housemates can be kept apart if you set that rule." },
-  { mark: <Dundun size={30} />, title: "Everyone unwraps", text: "Send each person their own link, or pass one phone around the room. They beat the starch off an adire cloth to see who they're buying for." },
-];
+// Words follow the Secret Santa column of the deck's "How it works" (the ajo column is in
+// copy.landing.how.ajo, for when the section follows a mode toggle).
+const MARKS = [<Sunbebe key="a" size={30} />, <AyeDegbe key="b" size={30} />, <Dundun key="c" size={30} />];
+const H = landing.how;
+const STEPS = H.santa.map((s, i) => ({ ...s, mark: MARKS[i] }));
 
 export default function HowItWorks() {
   return (
     <section className="band how" id="how"><div className="wrap">
       <div className="how-head">
-        <div className="eyebrow">How it works</div>
-        <h2>Three steps. Two minutes.</h2>
-        <p className="sub">No apps to install and no accounts. Everyone keeps their surprise until gift day.</p>
+        <div className="eyebrow">{H.eyebrow}</div>
+        <h2>{H.heading}</h2>
+        <p className="sub">{H.subline}</p>
       </div>
       <ol className="how-steps">
         {STEPS.map((s, i) => (
           <li key={s.title} className="how-card">
             <Decorator lag={0.1 + i * 0.1}>{s.mark}</Decorator>
-            <div className="how-num">Step {i + 1}</div>
+            <div className="how-num">{H.step(i + 1)}</div>
             <h3>{s.title}</h3>
             <p>{s.text}</p>
           </li>

@@ -3,15 +3,17 @@ import { useEffect, useRef, useState } from "react";
 import GooeyNav from "./GooeyNav";
 import { DARK, PALETTE } from "@/lib/palette";
 import { useTheme } from "@/lib/theme";
+import { landing } from "@/lib/copy/landing";
 
 // Landing-page section links. The gold pill follows the section you're reading;
 // after a click it stays on the clicked item until the smooth scroll ends, so it
 // doesn't hop through the sections in between.
+const N = landing.nav;
 const ITEMS = [
-  { label: "How it works", href: "#how" },
-  { label: "Features", href: "#features" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "Gifts", href: "/gifts" }, // a page, not a section: the spy below skips it
+  { label: N.how, href: "#how" },
+  { label: N.offers, href: "#features" },
+  { label: N.pricing, href: "#pricing" },
+  { label: N.gifts, href: "/gifts" }, // a page, not a section: the spy below skips it
 ];
 
 // The neutral pill (indigo on light, indigo mist on dark) on a tinted frame, instead of
@@ -58,7 +60,7 @@ export default function SectionNav() {
 
   return (
     <GooeyNav
-      aria-label="Sections"
+      aria-label={N.sections}
       className="section-nav"
       items={ITEMS}
       activeIndex={active}

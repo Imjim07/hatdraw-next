@@ -1,8 +1,11 @@
-import { randomInt } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import { draw } from "@/lib/draw";
 import { seal } from "@/lib/seal";
 import { PRICING, PAYWALL_MODE } from "@/lib/config";
 import { verifyPayment } from "@/lib/paystack";
+import { claimPayment } from "@/lib/payments";
+import { common } from "@/lib/copy/common";
+import { santa } from "@/lib/copy/santa";
 import type { DrawRequest, DrawResponse, EventInfo, RevealPayload } from "@/lib/types";
 
 const clip = (s: unknown, n: number) => String(s ?? "").trim().slice(0, n);
@@ -11,7 +14,7 @@ const fail = (error: string, status = 400, extra: object = {}) =>
 
 export async function POST(req: Request) {
   let body: DrawRequest;
-  try { body = await req.json(); } catch { return fail("Invalid request."); }
+  try { body = await req.json(); } catch { return fail(common.invalidRequest); }
 
   const event: EventInfo = {
     name: clip(body.event?.name, 60),
@@ -21,15 +24,15 @@ export async function POST(req: Request) {
     where: clip(body.event?.where, 90),
     note: clip(body.event?.note, 200),
   };
-  if (!event.name) return fail("Give your exchange a name.");
+  if (!event.name) return fail(santa.errors.noName);
 
   const people = [...new Map(
     (Array.isArray(body.people) ? body.people : [])
       .map((p) => clip(p, 40)).filter(Boolean)
       .map((p) => [p.toLowerCase(), p] as const),
   ).values()];
-  if (people.length < 3) return fail("You need at least 3 people.");
-  if (people.length > PRICING.MAX_PEOPLE) return fail(`Maximum ${PRICING.MAX_PEOPLE} people per draw.`);
+  if (people.length < 3) return fail(santa.errors.tooFew);
+  if (people.length > PRICING.MAX_PEOPLE) return fail(santa.errors.tooMany);
 
   const names = new Set(people);
   const ex = (Array.isArray(body.ex) ? body.ex : [])
@@ -40,14 +43,17 @@ export async function POST(req: Request) {
   if (people.length > PRICING.FREE_LIMIT) {
     if (PAYWALL_MODE === "live") {
       const paid = await verifyPayment(clip(body.reference, 100), PRICING.ONE_TIME);
-      if (!paid) return fail("This draw needs payment.", 402, { needsPayment: true });
+      if (!paid) return fail(santa.errors.needsPayment, 402, { needsPayment: true });
+      // One payment, one draw. Only the reference, amount, status, a draw id and the time are kept.
+      const claim = await claimPayment({ reference: paid.reference, amount_naira: paid.amountNaira, status: paid.status, draw_id: randomUUID() });
+      if (claim === "used") return fail(santa.errors.paymentUsed, 402, { needsPayment: true });
     } else {
       demoUnlock = true;
     }
   }
 
   const result = draw(people, ex, body.circle !== false, (n) => randomInt(n));
-  if (!result) return fail("Those keep-apart rules make a fair draw impossible. Remove one and try again.", 422);
+  if (!result) return fail(santa.errors.rulesTooStrict, 422);
 
   const map = new Map(result.pairs);
   const givers = people.map((g) => ({

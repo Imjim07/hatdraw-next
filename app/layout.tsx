@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { BRAND } from "@/lib/config";
+import { landing } from "@/lib/copy/landing";
 import { PALETTE, THEME_KEY } from "@/lib/palette";
 import { WeatherProvider } from "@/components/WeatherContext";
 import Ambient from "@/components/Ambient";
@@ -8,9 +9,10 @@ import WeatherChip from "@/components/WeatherChip";
 import TransitionLayer from "@/components/TransitionLayer";
 
 export const metadata: Metadata = {
-  title: `${BRAND.name}: Secret Santa for friends, family & teams`,
-  description:
-    "Drop everyone's name in the hat. It secretly picks who gifts who this Christmas and sends each person a private link to unwrap their match.",
+  metadataBase: new URL(BRAND.url),
+  title: landing.meta.title,
+  description: landing.meta.description,
+  applicationName: BRAND.name,
 };
 
 export const viewport: Viewport = {
@@ -27,7 +29,7 @@ const PRE_PAINT = `try{var t=localStorage.getItem(${JSON.stringify(THEME_KEY)});
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en-NG" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: PRE_PAINT }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -4,6 +4,10 @@ import SpecularButton from "@/components/SpecularButton";
 import { Shell } from "@/components/ajo/Shell";
 import AdireLoader from "@/components/AdireLoader";
 import { api, fragment } from "@/lib/ajo/client";
+import { ajo } from "@/lib/copy/ajo";
+import { common } from "@/lib/copy/common";
+
+const U = ajo.unsubscribe;
 
 // One-click unsubscribe from ajo reminder emails: /ajo/unsubscribe#<member>.<signature>
 export default function Unsubscribe() {
@@ -15,13 +19,11 @@ export default function Unsubscribe() {
   return (
     <Shell>
       <div className="panel rise" style={{ textAlign: "center" }}>
-        {state === "working" ? <div className="loading-screen" style={{ minHeight: 200 }}><AdireLoader label="Switching reminders off" /></div> : (
+        {state === "working" ? <div className="loading-screen" style={{ minHeight: 200 }}><AdireLoader label={U.working} /></div> : (
           <>
-            <h2>{state === "done" ? "Reminders off" : "Hmm"}</h2>
-            <p className="sub" style={{ margin: "0 auto 24px" }}>{state === "done"
-              ? "You won't get any more ajo reminder emails. You can switch them back on from your personal link."
-              : "This unsubscribe link doesn't work. You can switch reminders off from your personal link instead."}</p>
-            <SpecularButton href="/" className="btn btn-ghost">Go to HatDraw</SpecularButton>
+            <h2>{state === "done" ? U.done : common.hmm}</h2>
+            <p className="sub" style={{ margin: "0 auto 24px" }}>{state === "done" ? U.doneText : U.error}</p>
+            <SpecularButton href="/" className="btn btn-ghost">{common.goHome}</SpecularButton>
           </>
         )}
       </div>

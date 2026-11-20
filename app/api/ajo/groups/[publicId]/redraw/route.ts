@@ -1,3 +1,4 @@
+import { ajo as A } from "@/lib/copy/ajo";
 import { randomInt } from "node:crypto";
 import { adminGroup } from "@/lib/ajo/admin";
 import { canRedraw, drawOrder } from "@/lib/ajo/logic";
@@ -10,13 +11,13 @@ export async function POST(req: Request, ctx: RouteContext<"/api/ajo/groups/[pub
   const body = await readJson(req);
   return withStore(async (s) => {
     const group = await adminGroup(s, publicId, body?.token);
-    if (!group) return fail("This admin link doesn't work. Check you copied all of it.", 403);
+    if (!group) return fail(A.errors.adminLink, 403);
     const at = now(req);
     const l = await load(s, group, at);
-    if (!l.draw || !l.revealed) return fail("There's nothing to redraw yet.", 409);
-    if (l.draw.mode === "live") return fail("Live draws can't be redrawn.", 409);
-    if (!canRedraw({ mode: l.draw.mode, drawn_at: l.firstDrawnAt! }, at)) return fail("The 10-minute redraw window has closed. This order is final.", 409);
-    if (l.swaps.some((x) => x.status === "confirmed")) return fail("Members have already swapped turns, so this order is final.", 409);
+    if (!l.draw || !l.revealed) return fail(A.errors.nothingToRedraw, 409);
+    if (l.draw.mode === "live") return fail(A.errors.liveNoRedraw, 409);
+    if (!canRedraw({ mode: l.draw.mode, drawn_at: l.firstDrawnAt! }, at)) return fail(A.errors.windowClosed, 409);
+    if (l.swaps.some((x) => x.status === "confirmed")) return fail(A.errors.swappedFinal, 409);
 
     for (const sw of l.swaps) if (sw.status === "pending") await s.resolveSwap(sw.id, "expired", at.toISOString());
     const order = drawOrder(

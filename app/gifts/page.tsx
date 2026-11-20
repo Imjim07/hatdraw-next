@@ -6,10 +6,12 @@ import FilterPanel, { SortSelect } from "@/components/gifts/FilterPanel";
 import GiftCard from "@/components/gifts/GiftCard";
 import CompareTable from "@/components/gifts/CompareTable";
 import { Ododo } from "@/components/motifs";
-import { naira } from "@/lib/config";
 import { ANY, budgetLabel, facetCounts, matches, parseFilters, sortGifts, toQuery, widen, type Filters } from "@/lib/gifts/filters";
 import { CATEGORIES } from "@/lib/gifts/types";
 import { listGifts } from "@/lib/gifts/store";
+import { gifts } from "@/lib/copy/gifts";
+
+const E = gifts.empty;
 
 // The Gift Finder. The heading is static; the catalogue reads the URL's filters, so it
 // renders on the server per request (under Suspense) from data cached for 10 minutes.
@@ -17,11 +19,11 @@ export default function GiftsPage({ searchParams }: PageProps<"/gifts">) {
   return (
     <>
       <header className="store-head">
-        <div className="eyebrow">Gift Finder</div>
-        <h1>Gifts that fit your budget</h1>
-        <p className="sub">Delivered in Lagos. Order on WhatsApp, and we confirm the price, delivery fee and date before you pay.</p>
+        <div className="eyebrow">{gifts.eyebrow}</div>
+        <h1>{gifts.heading}</h1>
+        <p className="sub">{gifts.subline}</p>
       </header>
-      <Suspense fallback={<div className="store-loading"><AdireLoader label="Finding gifts" /></div>}>
+      <Suspense fallback={<div className="store-loading"><AdireLoader label={gifts.loading} /></div>}>
         <Catalogue searchParams={searchParams} />
       </Suspense>
     </>
@@ -43,7 +45,7 @@ async function Catalogue({ searchParams }: { searchParams: PageProps<"/gifts">["
         {compared.length > 0 && <CompareTable items={compared} f={f} />}
         <div className="gf-results-head">
           <p className="gf-count" aria-live="polite">
-            {shown.length === 1 ? "1 gift" : `${shown.length} gifts`} · {budgetLabel(f)}
+            {gifts.count(shown.length)} · {budgetLabel(f)}
           </p>
           {shown.length > 1 && <SortSelect f={f} />}
         </div>
@@ -62,20 +64,20 @@ function Empty({ f, catalogueEmpty }: { f: Filters; catalogueEmpty: boolean }) {
   const filtered = toQuery({ ...f, compare: [], sort: "featured" }) !== "";
   let text: string, action: { href: string; label: string } | null = null;
   if (f.max !== null) {
-    text = `Nothing under ${naira(f.max)} yet. Try a higher budget.`;
-    action = { href: `/gifts${toQuery(wider ?? ANY)}`, label: wider?.max ? `Show gifts under ${naira(wider.max)}` : "Show any budget" };
+    text = E.under(f.max);
+    action = { href: `/gifts${toQuery(wider ?? ANY)}`, label: wider?.max ? E.showUnder(wider.max) : E.anyBudget };
   } else if (filtered && !catalogueEmpty) {
-    text = "No gifts match these filters yet.";
-    action = { href: "/gifts", label: "Clear filters" };
+    text = E.noMatch;
+    action = { href: "/gifts", label: E.clear };
   } else {
-    text = "No gifts here yet. Check back soon.";
+    text = E.none;
   }
   return (
     <div className="card gf-empty">
       <Ododo size={40} color="var(--indigo)" strokeWidth={5} />
       <p>{text}</p>
       {action && <SpecularButton href={action.href} className="btn btn-primary btn-sm">{action.label}</SpecularButton>}
-      {!action && <Link href="/" className="gf-text-link">Back to the home page</Link>}
+      {!action && <Link href="/" className="gf-text-link">{E.home}</Link>}
     </div>
   );
 }

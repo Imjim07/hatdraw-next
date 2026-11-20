@@ -1,25 +1,16 @@
-import { timingSafeEqual } from "node:crypto";
 import { REMIND_DAYS_BEFORE, daysBetween, lagosToday } from "@/lib/ajo/logic";
 import { dailyLimit, sendBatch, signMember, type Email } from "@/lib/ajo/mail";
 import { fail, load, now, ok, siteUrl, withStore } from "@/lib/ajo/server";
-import { naira } from "@/lib/config";
+import { cronAuthorised } from "@/lib/cron";
+import { ajo } from "@/lib/copy/ajo";
 
 // Daily cron: emails opted-in members about turns whose payout date is 3 days
 // away (or closer, if an earlier run ran out of daily sends). Each (group, turn)
 // is recorded in ajo_reminders_sent, so reruns never send twice.
 // Requires: Authorization: Bearer $CRON_SECRET
-function authorised(req: Request) {
-  const secret = process.env.CRON_SECRET;
-  const got = req.headers.get("authorization") ?? "";
-  if (!secret) return false;
-  const a = Buffer.from(`Bearer ${secret}`), b = Buffer.from(got);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
-
-const longDate = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short", timeZone: "UTC" });
 
 export async function GET(req: Request) {
-  if (!authorised(req)) return fail("Unauthorised.", 401);
+  if (!cronAuthorised(req)) return fail("Unauthorised.", 401);
   return withStore(async (s) => {
     const at = now(req);
     const today = lagosToday(at);
@@ -33,7 +24,7 @@ export async function GET(req: Request) {
       const recipients = l.members.filter((m) => m.remind && m.email);
       if (!recipients.length) continue;
       const names = new Map(l.members.map((m) => [m.id, m.name]));
-      const total = naira(group.amount_naira * l.members.length);
+      const total = group.amount_naira * l.members.length;
 
       for (let i = 0; i < l.order.length; i++) {
         const days = daysBetween(today, l.dates[i]);
@@ -45,17 +36,13 @@ export async function GET(req: Request) {
           const unsubscribeUrl = `${site}/api/ajo/unsubscribe?m=${m.id}&s=${signMember(m.id)}`;
           return {
             to: m.email!,
-            subject: `${group.name} ajo: turn ${i + 1} is on ${longDate(l.dates[i])}`,
+            subject: ajo.reminderEmail.subject(group.name, who ?? "", l.dates[i]),
             unsubscribeUrl,
-            text: [
-              `Contributions for the ${group.name} ajo are due by ${longDate(l.dates[i])}.`,
-              `This turn, ${who} collects ${total}.`,
-              `HatDraw doesn't handle money; pay the way your group agreed.`,
-              ``,
-              `Schedule: ${site}/ajo/${group.public_id}`,
-              ``,
-              `Stop these reminders: ${site}/ajo/unsubscribe#${m.id}.${signMember(m.id)}`,
-            ].join("\n"),
+            text: ajo.reminderEmail.body({
+              group: group.name, date: l.dates[i], name: who ?? "", amount: total,
+              schedule: `${site}/ajo/${group.public_id}`,
+              stop: `${site}/ajo/unsubscribe#${m.id}.${signMember(m.id)}`,
+            }),
           };
         });
         const n = await sendBatch(emails);

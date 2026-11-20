@@ -36,6 +36,7 @@ type Props = {
   href?: string;
   "aria-current"?: "page" | undefined;
   "data-mode"?: string;
+  "aria-disabled"?: true;
   edgeSensitivity?: number;
   /** "H S L", e.g. "40 80 80" */
   glowColor?: string;

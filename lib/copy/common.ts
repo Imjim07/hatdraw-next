@@ -1,0 +1,52 @@
+import { BRAND, CONTACT, PRICING } from "@/lib/config";
+
+// Words shared by every page. Source: docs/copy-deck.md ("Microcopy library", "Footer").
+export const common = {
+  home: "← Home",
+  back: "← Back",
+  menu: { open: "Open menu", close: "Close menu", label: "Navigation", dialog: "Menu" },
+  menuItems: {
+    home: "Home",
+    santa: "Secret Santa",
+    ajo: "Ajo payout order",
+    gifts: "Gift Finder",
+    pricing: "Pricing",
+    how: "How it works",
+    offers: "What we offer",
+  },
+  startDraw: "Start a draw",
+  menuNote: `Free up to ${PRICING.FREE_LIMIT} people · Made in Lagos`,
+  logoHome: `${BRAND.name} home`,
+  copied: "Link copied",
+  couldntCopy: "Couldn't copy",
+  saved: "Saved",
+  loading: "Dyeing the cloth…",
+  networkError: `Couldn't reach ${BRAND.name}. Check your connection and try again.`,
+  somethingWrong: "Something went wrong. Try again.",
+  invalidRequest: "Invalid request.",
+  hmm: "Hmm",
+  goHome: `Go to ${BRAND.name}`,
+  stepOf: (n: number, of: number) => `Step ${n} of ${of}`,
+  done: " (done)",
+  theme: { toLight: "Switch to light theme", toDark: "Switch to dark theme", light: "Light", dark: "Dark" },
+  footer: {
+    line: `${BRAND.name} · by ${BRAND.by} · Made in Lagos`,
+    tag: `${BRAND.name} runs fair draws for gift exchanges and ajo payout orders.`,
+    products: "Products",
+    company: "Company",
+    links: { santa: "Secret Santa", ajo: "Ajo", gifts: "Gifts", vendors: `Sell on ${BRAND.name}`, privacy: "Privacy", terms: "Terms", policy: "Buying policy" },
+    contact: "Contact",
+    help: "Help",
+    madeIn: "Made in Lagos",
+    credit: "Motifs drawn in tribute to Yoruba adire makers",
+    weather: "Weather data from",
+    icons: "Icons by",
+  },
+  mail: {
+    enquiry: `${BRAND.name} enquiry`,
+    support: `${BRAND.name} support`,
+  },
+  /** Shown at the top of /privacy and /terms until LEGAL_REVIEWED=true. */
+  legalDraft: "Draft, pending legal review",
+  contact: CONTACT,
+};

@@ -1,5 +1,5 @@
 -- Ajo payout-order draw.
--- HatDraw never holds or moves money: these tables store a payout ORDER,
+-- The site never holds or moves money: these tables store a payout ORDER,
 -- dates, optional reminder emails and swap records. Nothing else.
 --
 -- Access: RLS is on for every table with NO policies, so the anon and

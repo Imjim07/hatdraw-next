@@ -2,6 +2,7 @@
 // injected (crypto.randomInt on the server, anything in tests), like lib/draw.ts.
 import { shuffle, type Rng } from "@/lib/draw";
 import type { DrawMode, Frequency, PublicTurn } from "./types";
+import { ajo } from "@/lib/copy/ajo";
 
 export const REDRAW_WINDOW_MS = 10 * 60 * 1000;
 export const SWAP_EXPIRY_MS = 72 * 60 * 60 * 1000;
@@ -19,10 +20,10 @@ export function validatePins(members: string[], pins: Pin[]): void {
   const turns = new Set<number>();
   const pinned = new Set<string>();
   for (const p of pins) {
-    if (!ids.has(p.member)) throw new Error("A pinned member isn't in the group.");
-    if (!Number.isInteger(p.turn) || p.turn < 1 || p.turn > n) throw new Error(`Pinned turns must be between 1 and ${n}.`);
-    if (turns.has(p.turn)) throw new Error(`Turn ${p.turn} is pinned twice.`);
-    if (pinned.has(p.member)) throw new Error("A member can only be pinned to one turn.");
+    if (!ids.has(p.member)) throw new Error(ajo.errors.pinNotMember);
+    if (!Number.isInteger(p.turn) || p.turn < 1 || p.turn > n) throw new Error(ajo.errors.pinRange(n));
+    if (turns.has(p.turn)) throw new Error(ajo.errors.pinTwice(p.turn));
+    if (pinned.has(p.member)) throw new Error(ajo.errors.pinOnce);
     turns.add(p.turn);
     pinned.add(p.member);
   }

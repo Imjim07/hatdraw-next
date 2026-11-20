@@ -1,3 +1,5 @@
+import { ajo as A } from "@/lib/copy/ajo";
+import { common } from "@/lib/copy/common";
 // SERVER ONLY. Helpers shared by the ajo route handlers.
 import { getStore, isMemoryStore, StoreMissing, type AjoStore } from "./store";
 import { applySwaps, buildTurns, payoutDates, swapExpired } from "./logic";
@@ -30,9 +32,9 @@ export async function withStore(fn: (s: AjoStore) => Promise<Response>): Promise
   try {
     return await fn(await getStore());
   } catch (e) {
-    if (e instanceof StoreMissing) return fail("Ajo isn't switched on for this site yet.", 503);
+    if (e instanceof StoreMissing) return fail(A.errors.notSwitchedOn, 503);
     console.error("[ajo]", e instanceof Error ? e.message : "unknown error"); // never log request bodies (tokens, emails)
-    return fail("Something went wrong. Try again.", 500);
+    return fail(common.somethingWrong, 500);
   }
 }
 

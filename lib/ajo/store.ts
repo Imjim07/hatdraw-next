@@ -2,7 +2,7 @@
 // Production: Supabase (service-role key, server route handlers only).
 // Local development and automated tests: an in-memory store, used ONLY when
 // AJO_STORE=memory is set explicitly. Without either, ajo routes refuse to run.
-import type { DrawRow, GroupRow, MemberRow, SwapRow } from "./types";
+import type { DrawRow, GroupRow, MemberRow, ResearchRow, SwapRow } from "./types";
 
 export type NewGroup = Omit<GroupRow, "id" | "created_at" | "status" | "live_reveal_at">;
 export type NewMember = Pick<MemberRow, "name" | "token_hash" | "pinned_turn">;
@@ -14,6 +14,12 @@ export interface AjoStore {
   updateGroup(id: string, patch: Partial<Pick<GroupRow, "status" | "live_reveal_at">>): Promise<void>;
   /** Groups with a draw (for the reminder cron). */
   drawnGroups(): Promise<GroupRow[]>;
+  /** Every group with its member count (for the cleanup cron). */
+  groupsForCleanup(): Promise<{ id: string; start_date: string; frequency: GroupRow["frequency"]; members: number }[]>;
+  /** Deletes a group; its members, draws, swaps and reminder records go with it (cascade). */
+  deleteGroup(id: string): Promise<void>;
+  /** Opt-in research numbers, in their own table with no link to the group. */
+  recordResearch(row: ResearchRow): Promise<void>;
 
   members(groupId: string): Promise<MemberRow[]>;
   memberByTokenHash(hash: string): Promise<MemberRow | null>;

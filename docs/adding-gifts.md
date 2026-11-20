@@ -38,6 +38,27 @@ Leave `id` and `created_at` empty; they fill themselves in.
 
 Open `/gifts` on the site after up to 10 minutes and find the product. Open its page and tap **Order on WhatsApp** to check the message.
 
+## Vendors
+
+Every gift belongs to a vendor, and the order button opens **that vendor's** WhatsApp with the gift, its price and a ref (`CDR-XXXXXX`) typed in. Add the vendor first, in the Supabase dashboard (Table editor → `vendors`):
+
+| Column | What to enter |
+| --- | --- |
+| `slug`, `name` | e.g. `ada-candles`, `Ada's Candles` |
+| `whatsapp` | international format, digits only: `2348012345678` (no `+`, no spaces, no `0` after `234`) |
+| `delivery_areas` | e.g. `{Lagos Mainland,Lekki}` |
+| `delivery_time` | e.g. `2–4 days` |
+| `refund_line` | the vendor's own refund policy, one sentence |
+| `verified_at` | leave empty until you've checked the vendor; the "Checked by" badge shows only once it's set |
+
+Then set each product's `vendor_id` to the vendor's `id`. Switching a vendor's `active` off hides all their gifts.
+
+Each click on the order button adds a row to `gift_clicks` (ref, product, vendor, time; nothing about the buyer). Count a vendor's orders with:
+
+```sql
+select v.name, count(*) from gift_clicks c join vendors v on v.id = c.vendor_id group by v.name;
+```
+
 ## Removing the sample products
 
 The seed file `supabase/seed/gift_products.sql` adds six products named `[Sample] …`, with Unsplash placeholder photos. They are inactive and never show on the live site. Delete them before launch:
@@ -48,6 +69,7 @@ delete from gift_products where name like '[Sample]%';
 
 ## Also needed before launch
 
-- `NEXT_PUBLIC_STORE_WHATSAPP`: the store's WhatsApp number in international format, digits only (e.g. `2348012345678`). Until it's set, the order button says ordering isn't open yet.
+- At least one real, active vendor (see above). Delete the sample vendors with the sample products: `delete from vendors where name like '[Sample]%';`
+- `SUPABASE_SERVICE_ROLE_KEY`: the order button records refs in `gift_clicks`, which only the server can write.
 - `SUPABASE_ANON_KEY`: the project's anon (public) key, so the site reads the catalogue under the "active products only" rule.
-- The store policies at `/gifts/policy` (delivery, payment, returns and refunds, contact). Every section is marked `[OWNER TO WRITE]` until you write it.
+- `/gifts/policy` (the buying policy) is written from the copy deck: who sells, payment, delivery, refunds, report a vendor. Edit it in `lib/copy/gifts.ts`.

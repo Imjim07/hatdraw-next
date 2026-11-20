@@ -1,3 +1,4 @@
+import { ajo as A } from "@/lib/copy/ajo";
 import { randomInt } from "node:crypto";
 import { adminGroup } from "@/lib/ajo/admin";
 import { drawOrder } from "@/lib/ajo/logic";
@@ -10,14 +11,14 @@ export async function POST(req: Request, ctx: RouteContext<"/api/ajo/groups/[pub
   const { publicId } = await ctx.params;
   const body = await readJson(req);
   const mode = body?.mode === "live" ? "live" : body?.mode === "instant" ? "instant" : null;
-  if (!mode) return fail("Choose an instant or a live draw.");
+  if (!mode) return fail(A.errors.chooseMode);
   const secs = Number(body?.startInSeconds ?? 30);
-  if (mode === "live" && (!Number.isInteger(secs) || secs < 10 || secs > 60)) return fail("A live draw starts in 10 to 60 seconds.");
+  if (mode === "live" && (!Number.isInteger(secs) || secs < 10 || secs > 60)) return fail(A.errors.liveSeconds);
 
   return withStore(async (s) => {
     const group = await adminGroup(s, publicId, body?.token);
-    if (!group) return fail("This admin link doesn't work. Check you copied all of it.", 403);
-    if (group.status !== "setup") return fail("This group has already been drawn.", 409);
+    if (!group) return fail(A.errors.adminLink, 403);
+    if (group.status !== "setup") return fail(A.errors.alreadyDrawn, 409);
 
     const at = now(req);
     const members = await s.members(group.id);

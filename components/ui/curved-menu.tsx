@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { MenuIcon } from "./icons-menu";
 import SpecularButton from "../SpecularButton";
+import { common } from "@/lib/copy/common";
 
 // Curved slide-in menu (after the 21st.dev "curved-menu"): a full-height panel slides
 // in from the right while the bulge on its left edge flattens, with big numbered links
@@ -17,12 +18,13 @@ import SpecularButton from "../SpecularButton";
 export type CurvedMenuItem = { heading: string; href: string };
 
 /** Menu for every page except the landing page (which links to its own sections). */
+const M = common.menuItems;
 export const SITE_MENU: CurvedMenuItem[] = [
-  { heading: "Home", href: "/" },
-  { heading: "Gift exchange", href: "/draw" },
-  { heading: "Ajo payout order", href: "/ajo" },
-  { heading: "Gift Finder", href: "/gifts" },
-  { heading: "Pricing", href: "/#pricing" },
+  { heading: M.home, href: "/" },
+  { heading: M.santa, href: "/draw" },
+  { heading: M.ajo, href: "/ajo" },
+  { heading: M.gifts, href: "/gifts" },
+  { heading: M.pricing, href: "/#pricing" },
 ];
 
 const noop = () => () => {};
@@ -57,22 +59,22 @@ export default function CurvedMenu({ items, footer }: { items: CurvedMenuItem[];
 
   return (
     <>
-      <button ref={btn} type="button" className="menu-btn" aria-expanded={open} aria-controls="curved-menu" aria-label="Open menu" onClick={() => setOpen(true)}>
+      <button ref={btn} type="button" className="menu-btn" aria-expanded={open} aria-controls="curved-menu" aria-label={common.menu.open} onClick={() => setOpen(true)}>
         <MenuIcon size={22} />
       </button>
       {mounted && createPortal(
         <>
           <div className={`cm-scrim${open ? " open" : ""}`} onClick={() => close(false)} aria-hidden="true" />
-          <div ref={panel} id="curved-menu" className={`cm-panel${open ? " open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu">
+          <div ref={panel} id="curved-menu" className={`cm-panel${open ? " open" : ""}`} role="dialog" aria-modal="true" aria-label={common.menu.dialog}>
             <svg className="cm-curve" viewBox="0 0 100 1000" preserveAspectRatio="none" aria-hidden="true">
               <path d="M100 0 Q-100 500 100 1000 Z" />
             </svg>
-            <button type="button" className="menu-btn cm-close" aria-label="Close menu" onClick={() => close()}>
+            <button type="button" className="menu-btn cm-close" aria-label={common.menu.close} onClick={() => close()}>
               <MenuIcon size={22} open={open} />
             </button>
             <div className="cm-body">
-              <p className="cm-label">Navigation</p>
-              <nav aria-label="Menu">
+              <p className="cm-label">{common.menu.label}</p>
+              <nav aria-label={common.menu.dialog}>
                 {items.map((it, i) => (
                   <Link key={it.href} href={it.href} className="cm-link" onClick={() => close(false)}>
                     <span className="cm-num" aria-hidden="true">{i + 1}.</span>
@@ -98,8 +100,8 @@ export default function CurvedMenu({ items, footer }: { items: CurvedMenuItem[];
 export function StartDrawFooter() {
   return (
     <>
-      <SpecularButton href="/draw" className="btn btn-primary">Start a draw</SpecularButton>
-      <span className="cm-note">Free up to 15 people · Made in Lagos</span>
+      <SpecularButton href="/draw" className="btn btn-primary">{common.startDraw}</SpecularButton>
+      <span className="cm-note">{common.menuNote}</span>
     </>
   );
 }

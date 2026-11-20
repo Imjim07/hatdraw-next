@@ -8,6 +8,7 @@ import { useId, useState } from "react";
 import { Owo } from "./motifs";
 import SpecularButton from "./SpecularButton";
 import { naira } from "@/lib/config";
+import { landing } from "@/lib/copy/landing";
 
 export type Billing = "monthly" | "yearly";
 type PerPeriod<T> = Record<Billing, T>;
@@ -26,6 +27,8 @@ export type Plan = {
   tag?: string;
   /** No href: rendered as a disabled label. */
   cta: PerPeriod<{ label: string; href?: string; variant: "gold" | "ghost" }>;
+  /** An extra text link under the button, e.g. "Talk to us" by email. */
+  extra?: { label: string; href: string };
 };
 
 export default function PricingTable({ plans, yearlyBadge }: { plans: Plan[]; yearlyBadge?: string }) {
@@ -42,12 +45,12 @@ export default function PricingTable({ plans, yearlyBadge }: { plans: Plan[]; ye
 
 function BillingToggle({ value, onChange, badge }: { value: Billing; onChange: (b: Billing) => void; badge?: string }) {
   const options: { value: Billing; label: string }[] = [
-    { value: "monthly", label: "Monthly" },
-    { value: "yearly", label: "Yearly" },
+    { value: "monthly", label: landing.pricing.monthly },
+    { value: "yearly", label: landing.pricing.yearly },
   ];
   return (
     <fieldset className="billing" data-period={value}>
-      <legend className="sr-only">Billing period</legend>
+      <legend className="sr-only">{landing.pricing.billingPeriod}</legend>
       <span className="billing-pill" aria-hidden="true" />
       {options.map((o) => (
         <button key={o.value} type="button" aria-pressed={o.value === value} onClick={() => onChange(o.value)}>
@@ -62,7 +65,7 @@ function BillingToggle({ value, onChange, badge }: { value: Billing; onChange: (
 function PlanCard({ plan, period }: { plan: Plan; period: Billing }) {
   const titleId = useId();
   const free = plan.price.monthly === 0 && plan.price.yearly === 0;
-  const amount = free ? "Free" : naira(plan.price[period]);
+  const amount = free ? landing.pricing.free : naira(plan.price[period]);
   const cta = plan.cta[period];
   return (
     <section aria-labelledby={titleId} className={`price${plan.popular ? " hot" : ""}`}>
@@ -78,6 +81,7 @@ function PlanCard({ plan, period }: { plan: Plan; period: Billing }) {
       {cta.href
         ? <SpecularButton href={cta.href} className={`btn btn-${cta.variant}`}>{cta.label}</SpecularButton>
         : <span className="btn btn-ghost btn-off" aria-disabled="true">{cta.label}</span>}
+      {plan.extra && <a href={plan.extra.href} className="price-note price-extra">{plan.extra.label}</a>}
     </section>
   );
 }

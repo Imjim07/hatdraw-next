@@ -3,12 +3,12 @@ import { useEffect, useState, type ReactNode } from "react";
 import SpecularButton from "@/components/SpecularButton";
 import AyoSow from "./AyoSow";
 import Schedule from "./Schedule";
-import { naira } from "@/lib/config";
 import { FREQ_LABEL, drawnLabel, longDate, shortDate } from "@/lib/ajo/client";
-import { lagosToday, nextTurnIndex, payoutAmount, redrawLabel } from "@/lib/ajo/logic";
+import { lagosToday, nextTurnIndex, payoutAmount } from "@/lib/ajo/logic";
+import { ajo as A } from "@/lib/copy/ajo";
 import type { PublicGroup, PublicTurn } from "@/lib/ajo/types";
 
-export const NO_MONEY = "HatDraw only draws the payout order and keeps the schedule. It never holds or moves money, and it can't make anyone pay. Collect contributions the way your group already does.";
+export const NO_MONEY = A.noMoney;
 
 /** The heading block every ajo screen shares. */
 export function GroupHead({ g, eyebrow }: { g: PublicGroup; eyebrow: string }) {
@@ -18,18 +18,18 @@ export function GroupHead({ g, eyebrow }: { g: PublicGroup; eyebrow: string }) {
       <div className="eyebrow">{eyebrow}</div>
       <h2>{g.name}</h2>
       <div className="summary">
-        <span>{naira(g.amount)} each</span>
+        <span>{A.head.each(g.amount)}</span>
         <span>{FREQ_LABEL[g.frequency]}</span>
-        <span>{n} members</span>
-        <span>Each turn collects {naira(payoutAmount(g.amount, n))}</span>
-        <span>From {longDate(g.startDate)}</span>
+        <span>{A.head.members(n)}</span>
+        <span>{A.head.perTurn(payoutAmount(g.amount, n))}</span>
+        <span>{A.head.from(longDate(g.startDate))}</span>
       </div>
     </>
   );
 }
 
 export const drawInfo = (g: PublicGroup) =>
-  g.draw ? [`Drawn ${drawnLabel(g.draw.drawnAt)}`, g.draw.mode === "live" ? "live draw" : "instant draw", redrawLabel(g.draw.redrawCount)].filter(Boolean).join(" · ") : "";
+  g.draw ? [A.schedule.drawn(drawnLabel(g.draw.drawnAt)), g.draw.redrawCount ? A.schedule.redrawn(g.draw.redrawCount) : A.schedule.neverRedrawn].join(" · ") : "";
 
 /**
  * Before the draw: the members. During a live countdown: the countdown, synced
@@ -77,22 +77,22 @@ export function OrderView({ g, offset, refresh, sowFrom, action }: {
       return (
         <div className="drum">
           <div>
-            <div className="big" role="timer" aria-live="off">{s > 0 ? `0:${String(s).padStart(2, "0")}` : "Sowing…"}</div>
-            <p className="hint">{s > 0 ? "The live draw starts for everyone at the same moment. Keep this page open." : "Drawing the order…"}</p>
+            <div className="big" role="timer" aria-live="off">{s > 0 ? A.live.countdown(s) : A.live.sowing}</div>
+            <p className="hint">{s > 0 ? A.live.watching : A.live.drawingOrder}</p>
           </div>
         </div>
       );
     }
     return (
       <>
-        <p className="hint" style={{ marginTop: 18 }}>The payout order hasn&apos;t been drawn yet. These are the members:</p>
-        <ul className="board" aria-label="Members">
+        <p className="hint" style={{ marginTop: 18 }}>{A.schedule.notDrawn}</p>
+        <ul className="board" aria-label={A.setup2.boardLabel}>
           {g.members.map((m) => (
             <li key={m.name} className="hole filled"><span className="seed" aria-hidden="true" /><span className="nm" title={m.name}>{m.name}</span>
-              {m.pinnedTurn && <span className="turn-n">Turn {m.pinnedTurn}</span>}</li>
+              {m.pinnedTurn && <span className="turn-n">{A.schedule.turn(m.pinnedTurn)}</span>}</li>
           ))}
         </ul>
-        {g.members.some((m) => m.pinnedTurn) && <p className="hint">Turns shown on a member were agreed before the draw.</p>}
+        {g.members.some((m) => m.pinnedTurn) && <p className="hint">{A.schedule.agreedNote}</p>}
       </>
     );
   }
@@ -103,14 +103,14 @@ export function OrderView({ g, offset, refresh, sowFrom, action }: {
   const next = nextTurnIndex(g.turns.map((t) => t.date), today);
   return (
     <>
-      <p className="hint" style={{ marginTop: 14 }}>{drawInfo(g)}</p>
-      {next === -1 && <p className="hint">Every turn has been paid out. This cycle is complete.</p>}
+      <p className="hint" style={{ marginTop: 14 }}><b>{A.schedule.locked}</b> · {drawInfo(g)}</p>
+      {next === -1 && <p className="hint">{A.schedule.complete}</p>}
       <Schedule turns={g.turns} next={next} action={action} />
       {g.swaps.length > 0 && (
         <div className="field">
-          <span className="lbl">Swaps</span>
+          <span className="lbl">{A.schedule.swaps}</span>
           <ul className="swap-log">
-            {g.swaps.map((s) => <li key={s.a + s.b + s.at}>{s.a} ↔ {s.b} swapped turns, {shortDate(s.at.slice(0, 10))}</li>)}
+            {g.swaps.map((s) => <li key={s.a + s.b + s.at}>{A.schedule.swapped(s.a, s.b, shortDate(s.at.slice(0, 10)))}</li>)}
           </ul>
         </div>
       )}
@@ -119,5 +119,5 @@ export function OrderView({ g, offset, refresh, sowFrom, action }: {
 }
 
 export function CalendarButton({ publicId }: { publicId: string }) {
-  return <SpecularButton href={`/api/ajo/groups/${publicId}/calendar.ics`} className="btn btn-ghost btn-sm" download>Add to calendar</SpecularButton>;
+  return <SpecularButton href={`/api/ajo/groups/${publicId}/calendar.ics`} className="btn btn-ghost btn-sm" download>{A.schedule.calendar}</SpecularButton>;
 }

@@ -1,4 +1,4 @@
-// HatDraw palette, "Same core, two modes". The single source of truth for hex
+// Kádàrá palette, "Same core, two modes". The single source of truth for hex
 // values used outside CSS (SVG attributes, canvas, the theme-color meta, the
 // contrast test). CSS uses the matching custom properties in app/globals.css.
 export const PALETTE = {

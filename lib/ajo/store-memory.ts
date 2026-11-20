@@ -2,13 +2,14 @@
 // (AJO_STORE=memory). Data lives in this server process and vanishes on restart.
 import { randomUUID } from "node:crypto";
 import type { AjoStore, NewDraw, NewGroup, NewMember } from "./store";
-import type { DrawRow, GroupRow, MemberRow, SwapRow } from "./types";
+import type { DrawRow, GroupRow, MemberRow, ResearchRow, SwapRow } from "./types";
 
-type Db = { groups: GroupRow[]; members: MemberRow[]; draws: DrawRow[]; swaps: SwapRow[]; reminders: Set<string> };
+type Db = { groups: GroupRow[]; members: MemberRow[]; draws: DrawRow[]; swaps: SwapRow[]; reminders: Set<string>; research: ResearchRow[] };
 const g = globalThis as unknown as { __ajoMemoryDb?: Db };
 
 export function memoryStore(): AjoStore {
-  const db = (g.__ajoMemoryDb ??= { groups: [], members: [], draws: [], swaps: [], reminders: new Set() });
+  const db = (g.__ajoMemoryDb ??= { groups: [], members: [], draws: [], swaps: [], reminders: new Set(), research: [] });
+  db.research ??= [];
   const now = () => new Date().toISOString();
   const copy = <T>(x: T): T => structuredClone(x);
 
@@ -22,6 +23,19 @@ export function memoryStore(): AjoStore {
     async getGroup(publicId) { const r = db.groups.find((x) => x.public_id === publicId); return r ? copy(r) : null; },
     async updateGroup(id, patch) { const r = db.groups.find((x) => x.id === id); if (r) Object.assign(r, patch); },
     async drawnGroups() { return copy(db.groups.filter((x) => x.status === "drawn" || x.status === "scheduled_live")); },
+    async groupsForCleanup() {
+      return db.groups.map((x) => ({ id: x.id, start_date: x.start_date, frequency: x.frequency, members: db.members.filter((m) => m.group_id === x.id).length }));
+    },
+    async deleteGroup(id) {
+      // the same cascade as the database
+      const gone = new Set(db.members.filter((m) => m.group_id === id).map((m) => m.id));
+      db.groups = db.groups.filter((x) => x.id !== id);
+      db.members = db.members.filter((m) => m.group_id !== id);
+      db.draws = db.draws.filter((d) => d.group_id !== id);
+      db.swaps = db.swaps.filter((s) => s.group_id !== id && !gone.has(s.from_member) && !gone.has(s.to_member));
+      for (const k of [...db.reminders]) if (k.startsWith(id + ":")) db.reminders.delete(k);
+    },
+    async recordResearch(row) { db.research.push({ ...row }); },
 
     async members(groupId) { return copy(db.members.filter((m) => m.group_id === groupId)); },
     async memberByTokenHash(hash) { const r = db.members.find((m) => m.token_hash === hash); return r ? copy(r) : null; },

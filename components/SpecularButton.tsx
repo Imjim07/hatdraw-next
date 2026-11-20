@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, CSSProperties, ReactNode } from "react";
 
-// SpecularButton (React Bits), ported to TypeScript and adapted for HatDraw:
+// SpecularButton (React Bits), ported to TypeScript and adapted for this site:
 // - One shared WebGL2 context renders every button, then each frame is copied
 //   onto the button's own 2D canvas. Browsers cap live WebGL contexts at ~16,
 //   and the results list can hold dozens of buttons.

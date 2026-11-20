@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { BRAND } from "@/lib/config";
+import { gifts } from "@/lib/copy/gifts";
 import StoreNav from "@/components/gifts/StoreNav";
 
 export const metadata: Metadata = {
-  title: `Gift Finder · ${BRAND.name}`,
-  description: "Gifts that fit your budget, delivered in Lagos. Order on WhatsApp; the delivery fee is confirmed before you pay.",
+  title: gifts.meta.title,
+  description: gifts.meta.description,
 };
 
 // The store uses the neutral styling (no data-mode): it isn't a Santa or ajo screen.

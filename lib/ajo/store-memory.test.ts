@@ -6,7 +6,7 @@ describe("memory store", () => {
 
   it("keeps one current draw per group and the rest as history", async () => {
     const s = memoryStore();
-    const g = await s.createGroup({ public_id: "p", name: "G", amount_naira: 1000, frequency: "weekly", start_date: "2026-01-01", admin_token_hash: "h", research_consent: false },
+    const g = await s.createGroup({ public_id: "p", name: "G", amount_naira: 1000, frequency: "weekly", start_date: "2026-01-01", admin_token_hash: "h" },
       [{ name: "A", token_hash: "a", pinned_turn: null }, { name: "B", token_hash: "b", pinned_turn: null }]);
     const ids = (await s.members(g.id)).map((m) => m.id);
     await s.replaceDraw(g.id, { group_id: g.id, mode: "instant", member_order: ids, drawn_at: "t1", redraw_count: 0, locked: true });

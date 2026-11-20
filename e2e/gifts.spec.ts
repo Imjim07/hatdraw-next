@@ -27,22 +27,23 @@ async function bringIntoView(page: Page, el: Locator) {
 
 test("landing: four offers, the giveaway picker isn't clickable, the other three links work", async ({ page }) => {
   await page.goto("/");
-  const offers = page.locator("#offers");
+  const offers = page.locator("#features");
   const cards = offers.locator(".of-card");
   await expect(cards).toHaveCount(4);
-  await expect(cards.nth(0)).toHaveAttribute("data-mode", "santa");
-  await expect(cards.nth(1)).toHaveAttribute("data-mode", "ajo");
+  await expect(cards.nth(0)).toHaveClass(/of-santa/);
+  await expect(cards.nth(1)).toHaveClass(/of-ajo/);
 
   const giveaway = cards.filter({ hasText: "Giveaway picker" });
   await expect(giveaway).toContainText("Coming soon");
+  await expect(giveaway).toHaveAttribute("aria-disabled", "true");
   await expect(giveaway.locator("a, button, [role=link], [role=button], [tabindex]")).toHaveCount(0);
 
   await bringIntoView(page, offers);
   await shot(page, "offers", offers);
 
-  for (const [name, path] of [["Start a gift exchange", "/draw"], ["Draw a payout order", "/ajo"], ["Find a gift", "/gifts"]] as const) {
+  for (const [name, path] of [["Start a Secret Santa", "/draw"], ["Draw an ajo order", "/ajo"], ["Find a gift", "/gifts"]] as const) {
     await page.goto("/");
-    const link = page.locator("#offers").getByRole("link", { name });
+    const link = page.locator("#features").getByRole("link", { name });
     await bringIntoView(page, link);
     await link.click();
     await page.waitForURL(`**${path}`);
@@ -121,25 +122,63 @@ test("gifts: the empty state widens the budget, and an empty catalogue says so",
   await shot(page, "gifts-empty");
 });
 
-test("product page: order opens WhatsApp with the name and price; out of stock can't be ordered", async ({ page }) => {
+test("product page: order opens the vendor's WhatsApp with a CDR- ref; out of stock can't be ordered", async ({ page, context }) => {
+  // Don't load WhatsApp itself: record where the tab goes.
+  await context.route(/^https:\/\/(wa\.me|api\.whatsapp\.com)\//, (r) => r.fulfill({ body: "whatsapp" }));
   await page.goto("/gifts/sample-adire-scarf");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("[Sample] Adire scarf");
-  const order = page.getByRole("main").getByRole("link", { name: "Order on WhatsApp" });
-  const href = (await order.getAttribute("href"))!;
-  const url = new URL(href);
-  expect(url.origin + url.pathname).toBe("https://wa.me/2348000000000");
-  expect(url.searchParams.get("text")).toContain("[Sample] Adire scarf (₦18,500)");
-  expect(url.searchParams.get("text")).toContain("/gifts/sample-adire-scarf");
-  await expect(page.getByRole("main").getByText("We'll confirm price, delivery fee and delivery date on WhatsApp before you pay.")).toBeVisible();
+  await expect(page.getByRole("main").getByText("Checked by", { exact: false })).toBeVisible(); // this vendor is verified
+  await expect(page.getByRole("main").getByText("Sample vendor. Not a real refund policy.")).toBeVisible();
+  const order = page.getByRole("main").getByRole("link", { name: "Order from [Sample] Ada's Candles on WhatsApp" });
+  // Without JavaScript the link itself goes to the vendor, with the message but no ref.
+  const fallback = new URL((await order.getAttribute("href"))!);
+  expect(fallback.origin + fallback.pathname).toBe("https://wa.me/10000000001");
+  expect(fallback.searchParams.get("text")).not.toContain("Ref:");
+  await expect(page.getByRole("main").getByText(/You'll confirm the price, delivery fee and date with \[Sample\] Ada's Candles before you pay\./)).toBeVisible();
   await shot(page, "gift-page");
 
-  await page.getByRole("link", { name: /policy/ }).click();
+  const popupP = page.waitForEvent("popup");
+  await order.click();
+  const popup = await popupP;
+  await popup.waitForURL(/^https:\/\/wa\.me\//);
+  const url = new URL(popup.url());
+  expect(url.pathname).toBe("/10000000001");
+  expect(url.searchParams.get("text")).toMatch(/^Hi \[Sample\] Ada's Candles, I found your \[Sample\] Adire scarf \(₦18,500\) on .+ and I'd like to order\. Ref: CDR-[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$/);
+  await popup.close();
+
+  await page.getByRole("link", { name: "How buying works" }).click();
   await page.waitForURL("**/gifts/policy");
-  await expect(page.getByRole("main").getByText("[OWNER TO WRITE]")).toHaveCount(4);
+  for (const h of ["Who sells", "Payment", "Delivery", "Refunds", "Report a vendor"]) await expect(page.getByRole("heading", { name: h })).toBeVisible();
+
+  await page.goto("/gifts/sample-dinner-for-two"); // an unchecked vendor: no badge
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("[Sample] Dinner for two");
+  await expect(page.getByRole("main").getByText("Checked by", { exact: false })).toHaveCount(0);
 
   await page.goto("/gifts/sample-wireless-earbuds");
   await expect(page.getByRole("main").getByRole("button", { name: "Out of stock" })).toBeDisabled();
-  await expect(page.getByRole("link", { name: "Order on WhatsApp" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Order from .* on WhatsApp/ })).toHaveCount(0);
+});
+
+test("vendors, buying policy, privacy and terms render and are in the footer", async ({ page }) => {
+  for (const [path, h1] of [["/vendors", "Sell your gifts where Nigerians plan their gifting"], ["/gifts/policy", "Buying policy"], ["/privacy", "Privacy"], ["/terms", "Terms"]] as const) {
+    await page.goto(path);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(h1);
+  }
+  for (const path of ["/privacy", "/terms"]) {
+    await page.goto(path);
+    await expect(page.getByText("Draft, pending legal review")).toBeVisible(); // LEGAL_REVIEWED=false
+  }
+  await page.goto("/vendors");
+  const apply = page.getByRole("link", { name: "Apply to list" });
+  const u = new URL((await apply.getAttribute("href"))!);
+  expect(u.origin + u.pathname).toBe("https://wa.me/10000000009");
+  expect(u.searchParams.get("text")).toMatch(/^Hi, I'd like to sell on .+\. Business name:/);
+  await expect(page.getByRole("link", { name: "Prefer email?" })).toHaveAttribute("href", /^mailto:sales@kadaradraw\.com\?subject=/);
+
+  await page.goto("/");
+  for (const path of ["/vendors", "/gifts/policy", "/privacy", "/terms"]) {
+    await expect(page.locator(`footer a[href="${path}"], .sf-top a[href="${path}"]`).first()).toBeAttached();
+  }
 });
 
 test("reveal: gift link carries only the budget, never a name", async ({ page, request }) => {

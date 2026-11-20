@@ -1,5 +1,5 @@
 // Ajo payout-order draw: shared types (no Node or DOM APIs).
-// HatDraw never holds or moves money; these describe an ORDER and its dates.
+// The site never holds or moves money; these describe an ORDER and its dates.
 
 export type Frequency = "weekly" | "biweekly" | "monthly";
 export type GroupStatus = "setup" | "scheduled_live" | "drawn" | "complete";
@@ -15,11 +15,13 @@ export type GroupRow = {
   frequency: Frequency;
   start_date: string; // YYYY-MM-DD
   admin_token_hash: string;
-  research_consent: boolean;
   status: GroupStatus;
   live_reveal_at: string | null; // ISO
   created_at: string;
 };
+
+/** Opt-in research: four anonymous numbers, stored with no link back to a group. */
+export type ResearchRow = { group_size: number; amount_naira: number; frequency: Frequency; created_month: string /* YYYY-MM-01 */ };
 
 export type MemberRow = {
   id: string;

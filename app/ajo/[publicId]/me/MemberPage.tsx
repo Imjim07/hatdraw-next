@@ -3,8 +3,9 @@ import { use, useCallback, useEffect, useState } from "react";
 import SpecularButton from "@/components/SpecularButton";
 import { CalendarButton, GroupHead, NO_MONEY } from "@/components/ajo/GroupView";
 import { Loading, Problem, Shell } from "@/components/ajo/Shell";
-import { naira } from "@/lib/config";
 import { api, fragment, longDate, shortDate } from "@/lib/ajo/client";
+import { ajo as A } from "@/lib/copy/ajo";
+import { common } from "@/lib/copy/common";
 import type { MemberView, PublicGroup } from "@/lib/ajo/types";
 
 type Data = { me: MemberView; group: PublicGroup };
@@ -25,7 +26,7 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
   const load = useCallback(async () => {
     const t = fragment();
     setToken(t);
-    if (!t) { setErr("This personal link is missing its private part (after the #). Ask your organizer to resend it."); return; }
+    if (!t) { setErr(A.member.missing); return; }
     const r = await api<Data>("/api/ajo/members/me", { token: t, publicId });
     if (!r.ok) { setErr(r.error); return; }
     take(r);
@@ -46,20 +47,21 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
     setBusy(false);
     if (!r.ok) return setErr(r.error);
     take(r);
-    say(r.me.remind ? "Reminders on ✓" : "Saved ✓");
+    say(r.me.remind ? A.member.saved : A.member.off);
   }
 
-  async function swap(action: "request" | "confirm" | "decline", extra: object) {
+  async function swap(action: "request" | "confirm" | "decline", extra: { with?: string; swapId?: string }) {
+    if (action === "request" && !window.confirm(A.member.confirmSwap(extra.with ?? ""))) return;
     setBusy(true); setErr("");
     const r = await api<Data>("/api/ajo/swaps", { token, publicId, action, ...extra });
     setBusy(false);
     if (!r.ok) return setErr(r.error);
     take(r);
-    say(action === "request" ? "Swap request sent" : action === "confirm" ? "Swap confirmed ✓" : "Swap declined");
+    say(action === "request" ? A.member.sent(extra.with ?? "") : action === "confirm" ? (r.me.date ? A.member.confirmed(shortDate(r.me.date)) : A.member.confirmedShort) : A.member.declined);
   }
 
-  if (err && !data) return <Problem title="Hmm" text={err} />;
-  if (!data) return <Loading label="Opening your turn" />;
+  if (err && !data) return <Problem title={common.hmm} text={err} />;
+  if (!data) return <Loading label={A.member.loading} />;
   const { me, group: g } = data;
   const drawn = me.turn != null;
   const choices = me.others;
@@ -68,48 +70,46 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
   return (
     <Shell toast={toast}>
       <div className="panel rise">
-        <GroupHead g={g} eyebrow={`Ajo · ${me.name}`} />
+        <GroupHead g={g} eyebrow={A.member.eyebrow(me.name)} />
 
         <div className="details ob">
           <div className="wide">
-            <small>Your turn</small>
-            {drawn && <span className="mode-pill">Turn {me.turn}: you</span>}
-            <b style={{ display: "block" }}>{drawn ? `${shortDate(me.date!)} · ${naira(me.amount!)}` : "Not drawn yet"}</b>
-            {drawn && <span className="hint" style={{ display: "block", marginTop: 4 }}>{longDate(me.date!)}{me.pinned ? " · agreed before the draw" : ""}</span>}
-            {!drawn && <span className="hint" style={{ display: "block", marginTop: 4 }}>Your organizer hasn&apos;t drawn the payout order yet. Check back after the draw.</span>}
+            <b style={{ display: "block" }}>{drawn ? A.member.yourTurn(me.turn!, me.date!, me.amount!) : A.member.notDrawn}</b>
+            {drawn && <span className="hint" style={{ display: "block", marginTop: 4 }}>{longDate(me.date!)}{me.pinned ? ` · ${A.member.agreed}` : ""}</span>}
+            {!drawn && <span className="hint" style={{ display: "block", marginTop: 4 }}>{A.member.notDrawnHelp}</span>}
           </div>
         </div>
 
-        <div className="field"><span className="lbl">Email reminders</span>
-          <p className="hint" style={{ marginTop: 0 }}>One email 3 days before each payout date. Only you and HatDraw see your address.</p>
-          <div className="field" style={{ marginTop: 10 }}><label htmlFor="me-email">Your email</label>
-            <span className="pit"><input id="me-email" className="in" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} /></span></div>
+        <div className="field"><span className="lbl">{A.member.reminders}</span>
+          <p className="hint" style={{ marginTop: 0 }}>{A.member.remindersHelp}</p>
+          <div className="field" style={{ marginTop: 10 }}><label htmlFor="me-email">{A.member.email}</label>
+            <span className="pit"><input id="me-email" className="in" type="email" autoComplete="email" placeholder={A.member.emailPlaceholder} value={email} onChange={(e) => setEmail(e.target.value)} /></span></div>
           <label className="toggle"><input type="checkbox" checked={remind} onChange={(e) => setRemind(e.target.checked)} /><span className="sw" />
-            <span><b>Remind me</b><span className="d">Email me 3 days before each payout date. You can switch this off any time.</span></span></label>
-          <div className="nav-row" style={{ marginTop: 14 }}><span /><SpecularButton className="btn btn-primary btn-sm" onClick={save} disabled={busy}>Save</SpecularButton></div>
+            <span><b>{A.member.remindMe}</b><span className="d">{A.member.remindMeHelp}</span></span></label>
+          <div className="nav-row" style={{ marginTop: 14 }}><span /><SpecularButton className="btn btn-primary btn-sm" onClick={save} disabled={busy}>{A.member.save}</SpecularButton></div>
         </div>
 
         {drawn && (
-          <div className="field"><span className="lbl">Swap turns</span>
-            <p className="hint" style={{ marginTop: 0 }}>A swap only happens if you <b>both</b> confirm from your own links. Every swap is shown on the schedule.{me.pinned ? " Your turn was agreed before the draw, so it can't be swapped." : ""}</p>
+          <div className="field"><span className="lbl">{A.member.swapHeading}</span>
+            <p className="hint" style={{ marginTop: 0 }}>{A.member.swapHelp}{me.pinned ? A.member.swapPinned : ""}</p>
             <div className="res">
               {me.swapsIn.map((s) => (
                 <div key={s.id} className="res-row">
-                  <span>{s.from} wants to swap turns with you</span>
+                  <span>{(() => { const t = g.turns?.find((x) => x.name === s.from); return t && drawn ? A.member.incoming(s.from, t.turn, t.date, me.turn!, me.date!) : A.member.incomingShort(s.from); })()}</span>
                   <div className="acts">
-                    <SpecularButton className="btn btn-ghost btn-sm" onClick={() => swap("decline", { swapId: s.id })} disabled={busy}>Decline</SpecularButton>
-                    <SpecularButton className="btn btn-primary btn-sm" onClick={() => swap("confirm", { swapId: s.id })} disabled={busy}>Confirm swap</SpecularButton>
+                    <SpecularButton className="btn btn-ghost btn-sm" onClick={() => swap("decline", { swapId: s.id })} disabled={busy}>{A.member.decline}</SpecularButton>
+                    <SpecularButton className="btn btn-primary btn-sm" onClick={() => swap("confirm", { swapId: s.id })} disabled={busy}>{A.member.accept}</SpecularButton>
                   </div>
                 </div>
               ))}
               {me.swapsOut.map((s) => (
-                <div key={s.id} className="res-row"><span>Waiting for {s.to} to confirm your swap request <span className="hint" style={{ display: "block", marginTop: 2 }}>Asked {shortDate(s.requestedAt.slice(0, 10))}. Requests expire after 72 hours.</span></span></div>
+                <div key={s.id} className="res-row"><span>{A.member.waiting(s.to)} <span className="hint" style={{ display: "block", marginTop: 2 }}>{A.member.waitingHelp(shortDate(s.requestedAt.slice(0, 10)))}</span></span></div>
               ))}
             </div>
             {!me.pinned && choices.length > 0 && (
               <div className="ex-row" style={{ marginTop: 12, gridTemplateColumns: "1fr auto" }}>
-                <span className="pit"><select className="in" aria-label="Swap with" value={target} onChange={(e) => setSwapWith(e.target.value)}>{choices.map((c) => <option key={c}>{c}</option>)}</select></span>
-                <SpecularButton className="btn btn-ghost" onClick={() => swap("request", { with: target })} disabled={busy || !target}>Ask to swap</SpecularButton>
+                <span className="pit"><select className="in" aria-label={A.member.swapWith} value={target} onChange={(e) => setSwapWith(e.target.value)}>{choices.map((c) => <option key={c}>{c}</option>)}</select></span>
+                <SpecularButton className="btn btn-ghost" onClick={() => swap("request", { with: target })} disabled={busy || !target}>{A.member.askToSwap}</SpecularButton>
               </div>
             )}
           </div>
@@ -118,7 +118,7 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
         <div className="err" role="alert">{err}</div>
         <div className="nav-row" style={{ justifyContent: "flex-start" }}>
           {drawn && <CalendarButton publicId={g.publicId} />}
-          <SpecularButton className="btn btn-ghost btn-sm" href={`/ajo/${g.publicId}`}>See the full schedule</SpecularButton>
+          <SpecularButton className="btn btn-ghost btn-sm" href={`/ajo/${g.publicId}`}>{A.member.fullSchedule}</SpecularButton>
         </div>
         <div className="notice">{NO_MONEY}</div>
       </div>

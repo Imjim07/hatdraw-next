@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { BRAND } from "@/lib/config";
+import { landing } from "@/lib/copy/landing";
 import BorderGlow from "./ui/BorderGlow";
 import SpecularButton from "./SpecularButton";
 
@@ -19,46 +19,37 @@ const GLOW: Record<Tone, { colors: string[]; glow: string }> = {
   give: { colors: ["#7C86D6", "#A9B1EE", "#4E58A8"], glow: "233 55 74" },
 };
 
+const O = landing.offers, C = O.cards;
 const OFFERS: Offer[] = [
-  { title: "Secret Santa", tone: "santa", motif: "santa",
-    text: "Everyone gets a private link and beats the starch to see who they're gifting.",
-    points: ["Private reveal links", "Keep-apart rules", "Pass-the-phone mode"], link: { href: "/draw", label: "Start a gift exchange" } },
-  { title: "Ajo payout order", tone: "ajo", motif: "ajo",
-    text: "Draw the payout order once, in front of everyone, and share one schedule.",
-    points: ["Locked or live draw", "Reminders before every turn", "Swaps both members agree to"], link: { href: "/ajo", label: "Draw a payout order" } },
-  { title: "Gift Finder", tone: "gift", motif: "giftfinder",
-    text: "Gifts that fit your budget, delivered.",
-    points: ["Browse by budget", "Picked for Nigerian gifting", "Order in a tap"], link: { href: "/gifts", label: "Find a gift" } },
-  { title: "Giveaway picker for vendors", tone: "give", motif: "giveaway",
-    text: "Pick your giveaway winner fairly, with a link your followers can check.",
-    points: ["One fair pick", "A result anyone can check"] },
+  { title: C.santa.title, tone: "santa", motif: "santa", text: C.santa.line, points: C.santa.points, link: { href: "/draw", label: C.santa.link } },
+  { title: C.ajo.title, tone: "ajo", motif: "ajo", text: C.ajo.line, points: C.ajo.points, link: { href: "/ajo", label: C.ajo.link } },
+  { title: C.gifts.title, tone: "gift", motif: "giftfinder", text: C.gifts.line, points: C.gifts.points, link: { href: "/gifts", label: C.gifts.link } },
+  { title: C.giveaway.title, tone: "give", motif: "giveaway", text: C.giveaway.line, points: C.giveaway.points },
 ];
-
-const PROMISES = ["Fair & recorded draws", "No sign-up", "WhatsApp-first", "Free for small groups", "Draws never touch your money"];
 
 export default function Offers() {
   return (
     <section className="band" id="features"><div className="wrap">
       <div className="of-head">
-        <div className="eyebrow">What {BRAND.name} offers</div>
-        <h2>Fair draws for whatever needs one</h2>
-        <p className="sub">{BRAND.name} is built for two traditions, Secret Santa and ajo, and works for any event that needs a fair pick. Then it helps you find the gift.</p>
+        <div className="eyebrow">{O.eyebrow}</div>
+        <h2>{O.heading}</h2>
+        <p className="sub">{O.subline}</p>
       </div>
       <ul className="of-grid ob">
         {OFFERS.map((o) => (
           <li key={o.title} className="of-item">
-            <BorderGlow className={`of-card of-${o.tone}`} colors={GLOW[o.tone].colors} glowColor={GLOW[o.tone].glow}>
+            <BorderGlow className={`of-card of-${o.tone}`} colors={GLOW[o.tone].colors} glowColor={GLOW[o.tone].glow} aria-disabled={o.link ? undefined : true}>
               <span className="of-motif" aria-hidden="true"><i className="tint-ico of-ico" style={{ "--ico": `url(/icons/of-${o.motif}.png)` } as CSSProperties} /></span>
-              <h3>{o.title}{!o.link && <span className="pill of-soon">Coming soon</span>}</h3>
+              <h3>{o.title}{!o.link && <span className="pill of-soon">{O.soon}</span>}</h3>
               <p>{o.text}</p>
-              <ul className="of-points">{o.points.map((p) => <li key={p}>{p}</li>)}</ul>
+              {o.points.length > 0 && <ul className="of-points">{o.points.map((p) => <li key={p}>{p}</li>)}</ul>}
               {o.link && <SpecularButton href={o.link.href} className="btn btn-primary btn-sm of-btn">{o.link.label} <span aria-hidden="true">→</span></SpecularButton>}
             </BorderGlow>
           </li>
         ))}
       </ul>
-      <ul className="of-promise" aria-label="Our promises">
-        {PROMISES.map((p) => <li key={p}>{p}</li>)}
+      <ul className="of-promise" aria-label={O.promisesLabel}>
+        {O.promises.map((p) => <li key={p}>{p}</li>)}
       </ul>
     </div></section>
   );

@@ -1,4 +1,6 @@
-# HatDraw (Next.js 16)
+# Kádàrá (Next.js 16)
+
+Fair draws for Secret Santa and ajo, at [kadaradraw.com](https://kadaradraw.com). Every user-facing string lives in `lib/copy.ts` (from `docs/copy-deck.md`); the brand name, contact addresses and prices live in `lib/config.ts`.
 
 Secret Santa draws for friends, families and companies, with encrypted reveal links and weather-aware ambient effects.
 
@@ -21,7 +23,7 @@ Preview any weather scene: `/?wx=snow|rain|storm|clear-day|clear-night|cloudy|fo
 | Weather | `app/api/weather/route.ts`, `lib/weather.ts`, `components/Ambient.tsx` | Reads the visitor's approximate location from the host's headers (Vercel, Netlify or Cloudflare) and gets current weather from MET Norway (free for commercial use, CC BY 4.0, attribution in footer). Falls back to festive snow. "Let it snow" overrides. Harmattan = West Africa + Nov–Mar + humidity < 40%. |
 | Rename / prices | `lib/config.ts` | One file. |
 
-The Secret Santa draw needs no database: drafts live in the organizer's browser.
+The Secret Santa draw needs no database: drafts live in the organiser's browser.
 
 ## Ajo payout order
 
@@ -49,7 +51,7 @@ Links work like the Secret Santa ones: secret tokens in the URL fragment (`#toke
   };
   export const config = { schedule: "0 7 * * *" };
   ```
-- **Vercel:** add to `vercel.json`: `{ "crons": [{ "path": "/api/cron/ajo-reminders", "schedule": "0 7 * * *" }] }`. Vercel sends `Authorization: Bearer $CRON_SECRET` automatically when `CRON_SECRET` is set.
+- **Vercel:** `vercel.json` already schedules both crons (reminders at 07:00 UTC, cleanup at 02:30 UTC). Vercel sends `Authorization: Bearer $CRON_SECRET` automatically when `CRON_SECRET` is set.
 - **Supabase pg_cron + pg_net:**
   ```sql
   select cron.schedule('ajo-reminders', '0 7 * * *', $$
@@ -58,7 +60,7 @@ Links work like the Secret Santa ones: secret tokens in the URL fragment (`#toke
   $$);
   ```
 
-Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `REMINDER_FROM_EMAIL` (a verified Resend sender), `CRON_SECRET` and `NEXT_PUBLIC_SITE_URL` in the host's environment.
+Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `EMAIL_FROM` (a verified Resend sender; replies go to support), `CRON_SECRET` and `NEXT_PUBLIC_SITE_URL` in the host's environment.
 
 ## Deploy
 
@@ -72,3 +74,11 @@ Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `REMINDER_FRO
 2. **Live Paystack checkout is untested.** It uses the v2 inline script. Test in Paystack test mode before setting `NEXT_PUBLIC_PAYWALL_MODE=live`.
 3. **Fonts** load from Google Fonts via `<link>`. Switch to `next/font/google` for self-hosted fonts and no layout shift.
 4. Yearly plan, resolutions and email (Resend) need accounts: Supabase auth + tables.
+
+## Data we keep, and for how long
+
+- **Secret Santa:** nothing. Names, matches, budgets and dates live only in the encrypted links. The draw and reveal routes log no request data (`lib/privacy.test.ts` checks).
+- **Big circle payments:** the Paystack reference, amount, status, a random draw id and the time (`payments`). Never the payer's email. One reference unlocks one draw.
+- **Ajo:** groups, member names, amounts, dates and swaps. Emails only for members who opt in on their own page; "Stop reminders" (or switching reminders off) deletes the address. `GET /api/cron/cleanup` (daily, `Authorization: Bearer $CRON_SECRET`) deletes each group 90 days after its last turn, with everything under it.
+- **Ajo research (opt-in):** group size, contribution, frequency and creation month, in `ajo_research_stats`, with no link back to the group.
+- **Gift orders:** `gift_clicks` holds a ref, the product and the vendor. Nothing about the buyer; the order itself happens on the vendor's WhatsApp.

@@ -2,7 +2,7 @@
 // Never import this from a client component: the key bypasses RLS.
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { AjoStore, NewDraw, NewGroup, NewMember } from "./store";
-import type { DrawRow, GroupRow, MemberRow, SwapRow } from "./types";
+import type { DrawRow, GroupRow, MemberRow, ResearchRow, SwapRow } from "./types";
 
 function must<T>(res: { data: T | null; error: { message: string; code?: string } | null }): T {
   if (res.error) throw new Error(`Supabase: ${res.error.message}`);
@@ -32,6 +32,17 @@ export class SupabaseStore implements AjoStore {
   }
   async drawnGroups() {
     return must(await this.db.from("ajo_groups").select("*").in("status", ["drawn", "scheduled_live"])) as GroupRow[];
+  }
+  async groupsForCleanup() {
+    const rows = must(await this.db.from("ajo_groups").select("id,start_date,frequency,ajo_members(count)")) as
+      { id: string; start_date: string; frequency: GroupRow["frequency"]; ajo_members: { count: number }[] }[];
+    return rows.map((r) => ({ id: r.id, start_date: r.start_date, frequency: r.frequency, members: r.ajo_members?.[0]?.count ?? 0 }));
+  }
+  async deleteGroup(id: string) {
+    must(await this.db.from("ajo_groups").delete().eq("id", id)); // members, draws, swaps, reminders: on delete cascade
+  }
+  async recordResearch(row: ResearchRow) {
+    must(await this.db.from("ajo_research_stats").insert(row));
   }
 
   async members(groupId: string) {

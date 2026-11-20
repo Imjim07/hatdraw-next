@@ -1,6 +1,7 @@
 "use client";
 import { useWeather } from "./WeatherContext";
 import { MODE_LABEL } from "@/lib/weather";
+import { weather } from "@/lib/copy/weather";
 
 export default function WeatherChip() {
   const { real, info, preview, letSnow, setLetSnow } = useWeather();
@@ -11,11 +12,11 @@ export default function WeatherChip() {
   const showToggle = real !== "snow";
 
   return (
-    <div className="wx-chip" title="Live weather data from MET Norway (CC BY 4.0)">
-      <span>{letSnow ? "❄️ Let it snow" : `${m.icon} ${m.label}${temp}${where}`}{preview && " (preview)"}</span>
+    <div className="wx-chip" title={weather.title}>
+      <span>{letSnow ? weather.snowing : `${m.icon} ${m.label}${temp}${where}`}{preview && weather.preview}</span>
       {showToggle && (
         <button onClick={() => setLetSnow(!letSnow)} aria-pressed={letSnow}>
-          {letSnow ? "Real weather" : "Let it snow ❄️"}
+          {letSnow ? weather.real : weather.letSnow}
         </button>
       )}
     </div>

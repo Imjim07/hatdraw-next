@@ -1,5 +1,6 @@
 import { PUBLIC_ID, load, now, siteUrl, withStore } from "@/lib/ajo/server";
-import { naira } from "@/lib/config";
+import { BRAND } from "@/lib/config";
+import { ajo } from "@/lib/copy/ajo";
 
 // iCalendar file: one all-day event per turn.
 const esc = (s: string) => s.replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
@@ -24,23 +25,23 @@ export async function GET(req: Request, ctx: RouteContext<"/api/ajo/groups/[publ
     if (!group) return notFound();
     const at = now(req);
     const l = await load(s, group, at);
-    if (!l.order) return new Response("The payout order hasn't been drawn yet.", { status: 409, headers: { "Cache-Control": "no-store" } });
+    if (!l.order) return new Response(ajo.schedule.notDrawn.replace(/ These are the members:$/, ""), { status: 409, headers: { "Cache-Control": "no-store" } });
 
     const names = new Map(l.members.map((m) => [m.id, m.name]));
     const total = group.amount_naira * l.members.length;
     const url = `${siteUrl(req)}/ajo/${publicId}`;
     const lines = [
-      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//HatDraw//Ajo//EN", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VCALENDAR", "VERSION:2.0", `PRODID:-//${BRAND.domain}//Ajo//EN`, "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
       `X-WR-CALNAME:${esc(`${group.name} ajo`)}`,
       ...l.order.flatMap((id, i) => {
         const date = l.dates[i];
         return [
           "BEGIN:VEVENT",
-          `UID:${publicId}-turn-${i + 1}@hatdraw`,
+          `UID:${publicId}-turn-${i + 1}@${BRAND.domain}`,
           `DTSTAMP:${stamp(at)}`,
           `DTSTART;VALUE=DATE:${day(date)}`,
-          `SUMMARY:${esc(`Ajo turn ${i + 1}: ${names.get(id)} collects ${naira(total)}`)}`,
-          `DESCRIPTION:${esc(`${group.name} ajo. HatDraw doesn't handle money; pay the way your group agreed. Schedule: ${url}`)}`,
+          `SUMMARY:${esc(ajo.turnLine({ turn: i + 1, name: names.get(id) ?? "", amount: total, date }).replace(/ on [^.]+\.$/, ""))}`,
+          `DESCRIPTION:${esc(`${ajo.calendar.description(group.name)} Schedule: ${url}`)}`,
           `URL:${url}`,
           "END:VEVENT",
         ];

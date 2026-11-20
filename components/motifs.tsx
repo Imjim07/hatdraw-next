@@ -1,4 +1,4 @@
-// Adire-inspired motifs, drawn for HatDraw (not traced from any cloth or artist).
+// Adire-inspired motifs, drawn for Kádàrá (not traced from any cloth or artist).
 // Usage rule: one motif per spot, and only where its meaning fits.
 //   IgiIye → the Christmas tree / reveal   Sunbebe → adding names
 //   AyeDegbe → shuffling                    Owo     → money only

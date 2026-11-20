@@ -1,4 +1,4 @@
-import { naira } from "@/lib/config";
+import { gifts } from "@/lib/copy/gifts";
 import { CATEGORIES, FOR_WHOM, type Category, type ForWhom, type GiftProduct } from "./types";
 
 // Gift Finder filters. They live in the URL (/gifts?max=15000&for=her) so a filtered
@@ -62,10 +62,11 @@ export function bandOf(f: Pick<Filters, "min" | "max">): BandId | null {
 }
 
 export function budgetLabel(f: Pick<Filters, "min" | "max">): string {
-  if (f.min !== null && f.max !== null) return `${naira(f.min)}–${naira(f.max)}`;
-  if (f.max !== null) return `Under ${naira(f.max)}`;
-  if (f.min !== null) return `Over ${naira(f.min)}`;
-  return "Any budget";
+  const L = gifts.filters.custom;
+  if (f.min !== null && f.max !== null) return L.between(f.min, f.max);
+  if (f.max !== null) return L.under(f.max);
+  if (f.min !== null) return L.over(f.min);
+  return L.any;
 }
 
 export const matches = (p: Pick<GiftProduct, "price" | "forWhom" | "category">, f: Filters) =>

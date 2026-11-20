@@ -3,7 +3,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import AdireLoader from "@/components/AdireLoader";
 import type { RevealPayload } from "@/lib/types";
-import { BRAND } from "@/lib/config";
+import { reveal as T } from "@/lib/copy/reveal";
 
 // The reveal UI loads in parallel with the decrypt request (both start on mount),
 // so first-load JS stays small for people opening links on slow mobile data.
@@ -13,8 +13,8 @@ const GiftReveal = lazy(loadReveal);
 function Opening() {
   return (
     <div className="reveal" data-mode="santa"><div className="reveal-inner">
-      <AdireLoader label="Opening your cloth" />
-      <p className="sub" style={{ margin: "18px auto 0" }} aria-hidden="true">Opening your cloth…</p>
+      <AdireLoader label={T.opening} />
+      <p className="sub" style={{ margin: "18px auto 0" }} aria-hidden="true">{T.opening}…</p>
     </div></div>
   );
 }
@@ -28,24 +28,25 @@ export default function RevealPage() {
     const token = window.location.hash.slice(1);
     loadReveal();
     // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only value, read once after hydration
-    if (!token) { setState({ error: "This link is missing its secret part. Ask your organizer to resend it." }); return; }
+    if (!token) { setState({ error: T.broken }); return; }
     fetch("/api/reveal", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) })
       .then((r) => r.json())
-      .then((j) => setState(j.ok ? { data: j.data } : { error: "This link looks broken. Ask your organizer to resend it." }))
-      .catch(() => setState({ error: "Couldn't reach the hat. Check your connection and try again." }));
+      .then((j) => setState(j.ok ? { data: j.data } : { error: T.broken }))
+      .catch(() => setState({ error: T.network }));
   }, []);
 
   if (state.data)
     return (
       <Suspense fallback={<Opening />}>
-        <GiftReveal data={state.data} context="link" cta={{ href: "/draw", label: `Run your own draw on ${BRAND.name}` }} />
+        <GiftReveal data={state.data} context="link" cta={{ href: "/draw", label: T.loopBack }} />
       </Suspense>
     );
   if (!state.error) return <Opening />;
 
   return (
     <div className="reveal" data-mode="santa"><div className="reveal-inner">
-      <h2 className="serif">Hmm</h2><p className="sub" style={{ margin: "0 auto 24px" }}>{state.error}</p><Link href="/" className="btn btn-ghost">Go to {BRAND.name}</Link>
+      <h2 className="serif">{T.hmm}</h2><p className="sub" style={{ margin: "0 auto 24px" }}>{state.error}</p><Link href="/" className="btn btn-ghost">{T.goHome}</Link>
+      {state.error === T.broken && <p className="hint"><a href={T.stillStuckHref}>{T.stillStuck}</a></p>}
     </div></div>
   );
 }

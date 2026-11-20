@@ -3,8 +3,9 @@ import { use, useCallback, useEffect, useState } from "react";
 import SpecularButton from "@/components/SpecularButton";
 import { CalendarButton, GroupHead, NO_MONEY, OrderView } from "@/components/ajo/GroupView";
 import { Loading, Problem, Shell } from "@/components/ajo/Shell";
-import { naira } from "@/lib/config";
-import { api, clockOffset, copyText, fragment, shortDate } from "@/lib/ajo/client";
+import { api, clockOffset, copyText, fragment } from "@/lib/ajo/client";
+import { ajo as A } from "@/lib/copy/ajo";
+import { common } from "@/lib/copy/common";
 import type { PublicGroup } from "@/lib/ajo/types";
 
 type AdminData = { group: PublicGroup; canDraw: boolean; redrawUntil: string | null };
@@ -28,7 +29,7 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
   const refresh = useCallback(async () => {
     const t = fragment();
     setToken(t);
-    if (!t) { setErr("This admin link is missing its private part (after the #). Copy the whole link again."); return; }
+    if (!t) { setErr(A.admin.missing); return; }
     const r = await api<AdminData>(`${base}/admin`, { token: t });
     if (!r.ok) { setErr(r.error); return; }
     take(r);
@@ -71,8 +72,8 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
     await refresh();
   }
 
-  if (err && !data) return <Problem title="Hmm" text={err} />;
-  if (!data) return <Loading label="Opening your admin page" />;
+  if (err && !data) return <Problem title={common.hmm} text={err} />;
+  if (!data) return <Loading label={A.admin.loading} />;
   const g = data.group;
   const pub = typeof window === "undefined" ? "" : `${window.location.origin}/ajo/${g.publicId}`;
   const mins = Math.max(0, Math.floor(left / 60000)), secs = Math.max(0, Math.floor((left % 60000) / 1000));
@@ -80,31 +81,32 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
   return (
     <Shell toast={toast}>
       <div className="panel rise">
-        <GroupHead g={g} eyebrow="Ajo admin · keep this page private" />
+        <GroupHead g={g} eyebrow={A.admin.eyebrow} />
 
         {data.canDraw ? (
           <>
-            <p className="hint" style={{ marginTop: 18 }}>When everyone is ready, draw the payout order. Pinned members keep their agreed turns; everyone else is drawn at random into the rest.</p>
+            <h3 style={{ marginTop: 18 }}>{A.admin.choice}</h3>
+            <p className="hint">{A.admin.choiceHelp}</p>
             <div className="draw-choice">
               <div className="toggle" style={{ cursor: "default" }}>
-                <span><b>Draw now</b><span className="d">The order is set straight away. You can redraw within 10 minutes if you spot a typo, and every redraw is shown on the schedule.</span></span>
+                <span><b>{A.admin.now}</b><span className="d">{A.admin.nowHelp}</span></span>
               </div>
               <div className="toggle" style={{ cursor: "default" }}>
-                <span><b>Draw live</b><span className="d">Everyone with the schedule link watches the draw at the same moment, {LIVE_SECONDS} seconds after you start it. A live draw can&apos;t be redrawn.</span></span>
+                <span><b>{A.admin.live}</b><span className="d">{A.admin.liveHelp}</span></span>
               </div>
             </div>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row">
-              <SpecularButton className="btn btn-ghost" onClick={() => draw("live")} disabled={busy}>Draw live (starts in {LIVE_SECONDS}s)</SpecularButton>
-              <SpecularButton className="btn btn-primary" onClick={() => draw("instant")} disabled={busy}>{busy ? "Drawing…" : "Draw now"}</SpecularButton>
+              <SpecularButton className="btn btn-ghost" onClick={() => draw("live")} disabled={busy}>{A.admin.live}</SpecularButton>
+              <SpecularButton className="btn btn-primary" onClick={() => draw("instant")} disabled={busy}>{busy ? A.admin.drawing : A.admin.now}</SpecularButton>
             </div>
           </>
         ) : (
           <>
             <OrderView g={g} offset={offset} refresh={refresh} sowFrom={sowFrom}
               action={(t) => (
-                <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(`Turn ${t.turn}: ${t.name} collects ${naira(t.amount)} on ${shortDate(t.date)}. Contributions due by then.`)) ? "Announcement copied ✓" : "Couldn't copy")}>
-                  Copy announcement
+                <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(A.announcement(t, pub))) ? A.admin.announced : common.couldntCopy)}>
+                  {A.admin.announce}
                 </SpecularButton>
               )} />
             <div className="err" role="alert">{err}</div>
@@ -112,15 +114,15 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
               <div className="nav-row" style={{ justifyContent: "flex-start" }}>
                 {data.redrawUntil && left > 0 && (
                   <SpecularButton className="btn btn-ghost btn-sm" onClick={() => setConfirmRedraw(true)} disabled={busy}>
-                    Redraw ({mins}:{String(secs).padStart(2, "0")} left)
+                    {A.admin.redraw(mins, secs)}
                   </SpecularButton>
                 )}
                 <CalendarButton publicId={g.publicId} />
-                <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(pub)) ? "Schedule link copied ✓" : "Couldn't copy")}>Copy schedule link</SpecularButton>
-                <SpecularButton className="btn btn-ghost btn-sm" href={`/ajo/${g.publicId}`}>Open public schedule</SpecularButton>
+                <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(pub)) ? A.admin.scheduleCopied : common.couldntCopy)}>{A.admin.shareSchedule}</SpecularButton>
+                <SpecularButton className="btn btn-ghost btn-sm" href={`/ajo/${g.publicId}`}>{A.admin.openSchedule}</SpecularButton>
               </div>
             )}
-            {g.turns && !data.redrawUntil && g.draw?.mode === "instant" && <p className="hint">The redraw window has closed. This order is final.</p>}
+            {g.turns && !data.redrawUntil && g.draw?.mode === "instant" && <p className="hint">{A.admin.final}</p>}
           </>
         )}
         <div className="notice">{NO_MONEY}</div>
@@ -128,11 +130,10 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
 
       {confirmRedraw && (
         <div className="modal" role="dialog" aria-modal="true" aria-labelledby="redraw-title"><div className="panel">
-          <div className="eyebrow">Redraw</div>
-          <h2 id="redraw-title" style={{ fontSize: "1.8rem" }}>Draw the order again?</h2>
-          <p className="sub">Use this only to fix a mistake. Everyone will see on the schedule that the order was redrawn{g.draw?.redrawCount ? ` (it already has been ${g.draw.redrawCount === 1 ? "once" : `${g.draw.redrawCount} times`})` : ""}.</p>
-          <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => setConfirmRedraw(false)}>Keep this order</SpecularButton>
-            <SpecularButton className="btn btn-primary" onClick={redraw}>Redraw</SpecularButton></div>
+          <div className="eyebrow">{A.admin.redrawEyebrow}</div>
+          <h2 id="redraw-title" style={{ fontSize: "1.8rem" }}>{A.admin.redrawConfirm}</h2>
+          <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => setConfirmRedraw(false)}>{A.admin.keep}</SpecularButton>
+            <SpecularButton className="btn btn-primary" onClick={redraw}>{A.admin.redrawEyebrow}</SpecularButton></div>
         </div></div>
       )}
     </Shell>

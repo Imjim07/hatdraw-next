@@ -1,3 +1,4 @@
+import { ajo as A } from "@/lib/copy/ajo";
 import { memberFromToken, memberView } from "@/lib/ajo/member";
 import { PUBLIC_ID, clip, fail, load, now, ok, readJson, toPublic, withStore } from "@/lib/ajo/server";
 
@@ -9,20 +10,22 @@ export async function POST(req: Request) {
   const body = await readJson(req);
   return withStore(async (s) => {
     const me = await memberFromToken(s, body?.token);
-    if (!me) return fail("This personal link doesn't work. Ask your organizer to resend it.", 403);
+    if (!me) return fail(A.errors.memberLink, 403);
     const publicId = String(body?.publicId ?? "");
     const group = PUBLIC_ID.test(publicId) ? await s.getGroup(publicId) : null;
-    if (!group || group.id !== me.group_id) return fail("This personal link doesn't belong to this ajo group.", 403);
+    if (!group || group.id !== me.group_id) return fail(A.errors.wrongGroup, 403);
 
     let saved = me;
     if (body?.save && typeof body.save === "object") {
       const save = body.save as { email?: unknown; remind?: unknown };
       const email = clip(save.email, 254).toLowerCase();
       const remind = save.remind === true;
-      if (email && !EMAIL.test(email)) return fail("That email address doesn't look right.");
-      if (remind && !email) return fail("Add your email to get reminders.");
-      await s.updateMember(me.id, { email: email || null, remind });
-      saved = { ...me, email: email || null, remind };
+      if (email && !EMAIL.test(email)) return fail(A.errors.badEmail);
+      if (remind && !email) return fail(A.errors.needEmail);
+      // An email is kept only while reminders are on. Switching them off deletes it.
+      const keep = remind ? email : null;
+      await s.updateMember(me.id, { email: keep, remind });
+      saved = { ...me, email: keep, remind };
     }
 
     const at = now(req);

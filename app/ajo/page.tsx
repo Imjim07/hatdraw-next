@@ -7,9 +7,10 @@ import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import Stepper from "@/components/Stepper";
 import DatePicker from "@/components/ui/DatePicker";
-import { NO_MONEY } from "@/components/ajo/GroupView";
-import { naira } from "@/lib/config";
-import { FREQ_LABEL, api, copyText, longDate } from "@/lib/ajo/client";
+import { waLink } from "@/lib/config";
+import { ajo as A } from "@/lib/copy/ajo";
+import { common } from "@/lib/copy/common";
+import { api, copyText, longDate } from "@/lib/ajo/client";
 import { MAX_AMOUNT, MAX_MEMBERS, MIN_MEMBERS, payoutAmount, payoutDates } from "@/lib/ajo/logic";
 import type { CreateGroupRequest, CreateGroupResponse, Frequency } from "@/lib/ajo/types";
 
@@ -20,7 +21,7 @@ const DRAFT_KEY = "hd-ajo-draft-v1";
 // Avatar fills from the palette; initials are ink (≥4.5:1 on each).
 // fixed light fills (dark text in both themes)
 const AV = ["#DDE3F5", "var(--palm-gold)"];
-const STEPS = ["Group", "Members", "Turns", "Review"];
+const STEPS = A.steps;
 const FREQS: Frequency[] = ["weekly", "biweekly", "monthly"];
 const blank = (): Draft => ({ name: "", amount: "", frequency: "monthly", startDate: "", members: [], pins: [], researchConsent: false });
 const initials = (s: string) => Array.from(new Intl.Segmenter().segment(s.normalize("NFC")), (x) => x.segment).slice(0, 2).join("").toUpperCase();
@@ -57,26 +58,27 @@ export default function AjoSetup() {
 
   const next = () => {
     if (step === 0) {
-      if (!d.name.trim()) return setErr("Give your ajo group a name.");
-      if (amount <= 0 || amount > MAX_AMOUNT) return setErr("Enter each member's contribution (up to ₦10,000,000).");
-      if (!d.startDate) return setErr("Choose the first payout date.");
+      if (!d.name.trim()) return setErr(A.errors.noName);
+      if (amount <= 0 || amount > MAX_AMOUNT) return setErr(A.errors.amountUpTo);
+      if (!d.startDate) return setErr(A.errors.noStart);
     }
-    if (step === 1 && n < MIN_MEMBERS) return setErr(`An ajo needs at least ${MIN_MEMBERS} members.`);
+    if (step === 1 && n < MIN_MEMBERS) return setErr(A.errors.tooFew(MIN_MEMBERS));
     go(step + 1);
   };
 
   const addNames = (raw: string) => {
     const parts = raw.split(/[\n,;]+/).map((s) => s.replace(/^\s*\d+[.)-]\s*/, "").trim().slice(0, 40)).filter(Boolean);
     const members = [...d.members];
-    let dup = 0, full = 0;
+    const dups: string[] = [];
+    let full = 0;
     for (const p of parts) {
-      if (members.some((q) => q.toLowerCase() === p.toLowerCase())) dup++;
+      if (members.some((q) => q.toLowerCase() === p.toLowerCase())) dups.push(p);
       else if (members.length >= MAX_MEMBERS) full++;
       else members.push(p);
     }
     set({ members });
-    if (dup) say(`${dup} duplicate name${dup > 1 ? "s" : ""} skipped`);
-    if (full) say(`An ajo can have up to ${MAX_MEMBERS} members`);
+    if (dups.length) say(dups.length === 1 ? A.setup2.duplicate(dups[0]) : A.setup2.duplicates(dups.length));
+    if (full) say(A.setup2.full(MAX_MEMBERS));
   };
   const removeName = (p: string) => setD((x) => ({ ...x, members: x.members.filter((q) => q !== p), pins: x.pins.filter((q) => q.name !== p).filter((q) => q.turn <= x.members.length - 1) }));
 
@@ -84,7 +86,7 @@ export default function AjoSetup() {
   const freeTurns = Array.from({ length: n }, (_, i) => i + 1).filter((t) => !d.pins.some((p) => p.turn === t));
   const addPin = () => {
     const who = pinWho || freeMembers[0], turn = Number(pinTurn || freeTurns[0]);
-    if (!who || !turn) return setErr("Every member or turn is already pinned.");
+    if (!who || !turn) return setErr(A.setup3.allPinned);
     setErr(""); set({ pins: [...d.pins, { name: who, turn }].sort((a, b) => a.turn - b.turn) }); setPinWho(""); setPinTurn("");
   };
 
@@ -100,7 +102,7 @@ export default function AjoSetup() {
   }
 
   const dates = d.startDate ? payoutDates(d.startDate, d.frequency, Math.max(n, 1)) : [];
-  const perTurn = amount ? (n ? `With ${n} members, each turn collects ${naira(payoutAmount(amount, n))}.` : `Each turn collects ${naira(amount)} × the number of members.`) : "";
+  const perTurn = amount ? A.setup1.total(payoutAmount(amount, Math.max(n, 1))) : "";
   const emptyPits = Math.max(12, Math.ceil(n / 6) * 6) - n;
 
   // ---------- after creating: hand out the links ----------
@@ -110,45 +112,45 @@ export default function AjoSetup() {
     const admin = `${pub}/admin#${created.adminToken}`;
     return (
       <div className="wrap ob" data-mode="ajo">
-        <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
+        <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
         <main className="app">
           <div className="panel rise">
-            <div className="eyebrow">Group created</div>
-            <h2>{d.name}</h2>
-            <p className="sub">Send each member their own link. Then open your admin page to draw the payout order.</p>
-            <div className="notice"><b>These links are shown once.</b> Copy them now: HatDraw can&apos;t show them again.</div>
+            <div className="eyebrow">{d.name}</div>
+            <h2>{A.handoff.heading}</h2>
+            <p className="sub">{A.handoff.helper}</p>
+            <div className="notice"><b>{A.handoff.shownOnce}</b> {A.handoff.shownOnceMore}</div>
 
-            <div className="field"><span className="lbl">Public schedule (share with everyone)</span>
+            <div className="field"><span className="lbl">{A.handoff.schedule}</span>
               <div className="res-row"><span className="link-text">{pub}</span>
-                <div className="acts"><SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(pub)) ? "Schedule link copied ✓" : "Couldn't copy")}>Copy link</SpecularButton></div></div></div>
+                <div className="acts"><SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(pub)) ? A.schedule.copied : common.couldntCopy)}>{A.handoff.copyLink}</SpecularButton></div></div></div>
 
-            <div className="field"><span className="lbl">Your admin link</span>
-              <div className="notice">Keep this private. Anyone with it can draw your group&apos;s order (and redraw it for 10 minutes after an instant draw).</div>
+            <div className="field"><span className="lbl">{A.handoff.organiser}</span>
+              <div className="notice">{A.handoff.organiserWarn}</div>
               <div className="res-row" style={{ marginTop: 10 }}><span className="link-text">{admin}</span>
                 <div className="acts">
-                  <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(admin)) ? "Admin link copied ✓" : "Couldn't copy")}>Copy</SpecularButton>
-                  <SpecularButton className="btn btn-primary btn-sm" href={`/ajo/${created.publicId}/admin#${created.adminToken}`}>Open admin page</SpecularButton>
+                  <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(admin)) ? common.copied : common.couldntCopy)}>{A.handoff.copy}</SpecularButton>
+                  <SpecularButton className="btn btn-primary btn-sm" href={`/ajo/${created.publicId}/admin#${created.adminToken}`}>{A.handoff.openOrganiser}</SpecularButton>
                 </div></div></div>
 
-            <div className="field"><span className="lbl">Each member&apos;s personal link</span>
-              <p className="hint" style={{ marginTop: 0 }}>Members use their link to see their turn, get email reminders and agree swaps. Send each person <b>only their own</b>.</p>
+            <div className="field"><span className="lbl">{A.handoff.personal}</span>
+              <p className="hint" style={{ marginTop: 0 }}>{A.handoff.personalHelp}</p>
               <div className="res">
                 {created.members.map(({ name, token }, i) => {
                   const url = `${pub}/me#${token}`;
-                  const wa = "https://wa.me/?text=" + encodeURIComponent(`Hi ${name}! You're in the "${d.name}" ajo on HatDraw.\nThis is your personal link to see your turn, get reminders and agree swaps. It's only for you:\n${url}`);
+                  const wa = waLink(A.handoff.message(name, d.name, url));
                   return (
                     <div key={name} className="res-row">
                       <div className="who"><span className="av" style={{ background: AV[i % AV.length] }}>{initials(name)}</span>{name}</div>
                       <div className="acts">
-                        <SpecularButton className="btn btn-primary btn-sm" href={wa} target="_blank" rel="noopener noreferrer">WhatsApp</SpecularButton>
-                        <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? "Link copied ✓" : "Couldn't copy")}>Copy link</SpecularButton>
+                        <SpecularButton className="btn btn-primary btn-sm" href={wa} target="_blank" rel="noopener noreferrer">{A.handoff.whatsapp}</SpecularButton>
+                        <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(url)) ? common.copied : common.couldntCopy)}>{A.handoff.copyLink}</SpecularButton>
                       </div>
                     </div>
                   );
                 })}
               </div>
               <div className="nav-row" style={{ justifyContent: "flex-start" }}>
-                <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(created.members.map((m) => `${m.name}: ${pub}/me#${m.token}`).join("\n\n"))) ? "All links copied ✓" : "Couldn't copy")}>Copy all member links</SpecularButton>
+                <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(created.members.map((m) => `${m.name}: ${pub}/me#${m.token}`).join("\n\n"))) ? A.handoff.allCopied : common.couldntCopy)}>{A.handoff.copyAll}</SpecularButton>
               </div>
             </div>
           </div>
@@ -160,96 +162,96 @@ export default function AjoSetup() {
 
   return (
     <div className="wrap ob" data-mode="ajo">
-      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">← Home</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
+      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="ajo" />}
         <Stepper steps={STEPS} current={step} />
 
         {step === 0 && (
           <div className="panel rise">
-            <h2>Set up your ajo</h2>
-            <div className="field"><label htmlFor="aj-name">Group name</label>
-              <span className="pit"><input id="aj-name" className="in" maxLength={60} placeholder="e.g. Ikoyi Wives Monthly" value={d.name} onChange={(e) => set({ name: e.target.value })} /></span></div>
+            <h2>{A.setup1.heading}</h2>
+            <p className="hint">{A.setup1.helper}</p>
+            <div className="field"><label htmlFor="aj-name">{A.setup1.name}</label>
+              <span className="pit"><input id="aj-name" className="in" maxLength={60} placeholder={A.setup1.namePlaceholder} value={d.name} onChange={(e) => set({ name: e.target.value })} /></span></div>
             <div className="row">
-              <div className="field"><label htmlFor="aj-amount">Each member pays (₦ per turn)</label>
-                <span className="pit"><input id="aj-amount" className="in" inputMode="numeric" placeholder="e.g. 20,000"
+              <div className="field"><label htmlFor="aj-amount">{A.setup1.amount}</label>
+                <span className="pit"><input id="aj-amount" className="in" inputMode="numeric" placeholder={A.setup1.amountPlaceholder}
                   value={d.amount ? Number(d.amount).toLocaleString("en-NG") : ""}
                   onChange={(e) => set({ amount: e.target.value.replace(/\D/g, "").slice(0, 8) })} /></span></div>
-              <DatePicker id="aj-start" label="First payout date" value={d.startDate} onChange={(startDate) => set({ startDate })} />
+              <DatePicker id="aj-start" label={A.setup1.start} value={d.startDate} onChange={(startDate) => set({ startDate })} />
             </div>
-            <div className="field"><span className="lbl" id="aj-freq">How often?</span>
+            <div className="field"><span className="lbl" id="aj-freq">{A.setup1.often}</span>
               <div className="seg" role="radiogroup" aria-labelledby="aj-freq">
-                {FREQS.map((f) => <button key={f} role="radio" aria-checked={d.frequency === f} className={d.frequency === f ? "on" : ""} onClick={() => set({ frequency: f })}>{FREQ_LABEL[f]}</button>)}
+                {FREQS.map((f) => <button key={f} role="radio" aria-checked={d.frequency === f} className={d.frequency === f ? "on" : ""} onClick={() => set({ frequency: f })}>{A.freq[f]}</button>)}
               </div></div>
-            <p className="hint" aria-live="polite">{perTurn}</p>
+            <p className="hint" aria-live="polite">{perTurn && <><b>{perTurn}</b> · {A.setup1.totalHelper}</>}</p>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><span /><SpecularButton className="btn btn-primary" onClick={next}>Next: members →</SpecularButton></div>
+            <div className="nav-row"><span /><SpecularButton className="btn btn-primary" onClick={next}>{A.setup1.button} →</SpecularButton></div>
           </div>
         )}
 
         {step === 1 && (
           <div className="panel rise">
-            <h2>Who&apos;s in the group?</h2>
-            <p className="hint">Press Enter after each name, or paste a whole list (one per line or comma-separated). Each name takes one turn.</p>
+            <h2>{A.setup2.heading}</h2>
+            <p className="hint">{A.setup2.helper} {A.setup2.namesHint}</p>
             <div className="field chips-in">
-              <span className="pit"><input ref={nameRef} className="in" maxLength={400} placeholder="Type a name…" autoComplete="off" aria-label="Member name" value={nameIn}
+              <span className="pit"><input ref={nameRef} className="in" maxLength={400} placeholder={A.setup2.placeholder} autoComplete="off" aria-label={A.setup2.inputLabel} value={nameIn}
                 onChange={(e) => setNameIn(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } } }}
                 onPaste={(e) => { const t = e.clipboardData.getData("text"); if (/[\n,;]/.test(t)) { e.preventDefault(); addNames(t); } }} /></span>
-              <SpecularButton className="btn btn-primary" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>Add</SpecularButton>
+              <SpecularButton className="btn btn-primary" onClick={() => { if (nameIn.trim()) { addNames(nameIn); setNameIn(""); } nameRef.current?.focus(); }}>{A.setup2.add}</SpecularButton>
             </div>
-            <ul className="board" aria-label="Members">
+            <ul className="board" aria-label={A.setup2.boardLabel}>
               {d.members.map((p) => (
                 <li key={p} className="hole filled"><span className="seed" aria-hidden="true" /><span className="nm" title={p}>{p}</span>
-                  <button aria-label={`Remove ${p}`} onClick={() => removeName(p)}>×</button></li>
+                  <button aria-label={A.setup2.remove(p)} onClick={() => removeName(p)}>×</button></li>
               ))}
               {Array.from({ length: emptyPits }, (_, i) => <li key={`e${i}`} className="hole empty" aria-hidden="true" />)}
-              {!n && <li className="board-empty">No members yet.</li>}
+              {!n && <li className="board-empty">{A.setup2.empty}</li>}
             </ul>
-            <div className="counter"><span>{n} {n === 1 ? "member" : "members"} · {n} turns</span>{amount > 0 && n > 0 && <span>Each turn collects {naira(payoutAmount(amount, n))}</span>}</div>
+            <div className="counter"><span>{A.setup2.count(n)}</span>{amount > 0 && n > 0 && <span>{A.setup1.total(payoutAmount(amount, n))}</span>}</div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>← Back</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>Next: pins →</SpecularButton></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>{common.back}</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>{A.setup2.button} →</SpecularButton></div>
           </div>
         )}
 
         {step === 2 && (
           <div className="panel rise">
-            <div className="eyebrow">Optional</div>
-            <h2>Any turns already agreed?</h2>
-            <p className="hint">If the group agreed before the draw that someone takes a particular turn, pin them here. Pinned members keep their turn; everyone else is drawn into the remaining turns. Skip this if nothing was agreed.</p>
-            <div className="field"><span className="lbl">Pin a member to a turn</span>
+            <div className="eyebrow">{A.setup3.eyebrow}</div>
+            <h2>{A.setup3.heading}</h2>
+            <p className="hint">{A.setup3.helper}</p>
+            <div className="field"><span className="lbl">{A.setup3.pinLabel}</span>
               <div className="ex-row">
-                <span className="pit"><select className="in" aria-label="Member" value={pinWho || freeMembers[0] || ""} onChange={(e) => setPinWho(e.target.value)} disabled={!freeMembers.length}>{freeMembers.map((p) => <option key={p}>{p}</option>)}</select></span>
-                <span className="pit"><select className="in" aria-label="Turn" value={pinTurn || freeTurns[0] || ""} onChange={(e) => setPinTurn(e.target.value)} disabled={!freeTurns.length}>
-                  {freeTurns.map((t) => <option key={t} value={t}>Turn {t}{dates[t - 1] ? ` · ${longDate(dates[t - 1])}` : ""}</option>)}</select></span>
-                <SpecularButton className="btn btn-ghost" onClick={addPin} disabled={!freeMembers.length || !freeTurns.length}>Pin</SpecularButton>
+                <span className="pit"><select className="in" aria-label={A.setup3.member} value={pinWho || freeMembers[0] || ""} onChange={(e) => setPinWho(e.target.value)} disabled={!freeMembers.length}>{freeMembers.map((p) => <option key={p}>{p}</option>)}</select></span>
+                <span className="pit"><select className="in" aria-label={A.setup3.turn} value={pinTurn || freeTurns[0] || ""} onChange={(e) => setPinTurn(e.target.value)} disabled={!freeTurns.length}>
+                  {freeTurns.map((t) => <option key={t} value={t}>{A.setup3.turnOption(t, dates[t - 1] ? longDate(dates[t - 1]) : undefined)}</option>)}</select></span>
+                <SpecularButton className="btn btn-ghost" onClick={addPin} disabled={!freeMembers.length || !freeTurns.length}>{A.setup3.pin}</SpecularButton>
               </div>
               <div className="ex-list">
-                {d.pins.map((p) => <div key={p.name} className="ex"><span>{p.name} · turn {p.turn} <span className="hint" style={{ display: "inline" }}>agreed before the draw</span></span>
-                  <button onClick={() => set({ pins: d.pins.filter((q) => q.name !== p.name) })}>Remove</button></div>)}
+                {d.pins.map((p) => <div key={p.name} className="ex"><span>{A.setup3.pinned(p.name, p.turn)} <span className="hint" style={{ display: "inline" }}>{A.setup3.agreed}</span></span>
+                  <button onClick={() => set({ pins: d.pins.filter((q) => q.name !== p.name) })}>{A.setup3.remove}</button></div>)}
               </div>
             </div>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(1)}>← Back</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>Next: review →</SpecularButton></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(1)}>{common.back}</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>{A.setup3.button} →</SpecularButton></div>
           </div>
         )}
 
         {step === 3 && (
           <div className="panel rise">
-            <h2>Check and create</h2>
+            <h2>{A.setup4.heading}</h2>
             <div className="summary">
-              <span>{d.name}</span><span>{naira(amount)} each</span><span>{FREQ_LABEL[d.frequency]}</span>
-              <span>{n} members</span><span>Each turn collects {naira(payoutAmount(amount, n))}</span>
-              {d.startDate && <span>{longDate(dates[0])} to {longDate(dates[n - 1])}</span>}
-              {d.pins.length > 0 && <span>{d.pins.length} pinned {d.pins.length === 1 ? "turn" : "turns"}</span>}
+              <span>{d.name}</span><span>{A.setup4.each(amount)}</span><span>{A.freq[d.frequency]}</span>
+              <span>{A.setup4.members(n)}</span><span>{A.setup4.perTurn(payoutAmount(amount, n))}</span>
+              {d.startDate && <span>{A.setup4.range(longDate(dates[0]), longDate(dates[n - 1]))}</span>}
+              {d.pins.length > 0 && <span>{A.setup4.pins(d.pins.length)}</span>}
             </div>
-            <div className="notice">{NO_MONEY}</div>
-            <p className="hint">After you create the group you&apos;ll get a public schedule link, a private admin link, and a personal link for each member. You draw the order from the admin page, either straight away or live, with everyone watching.</p>
+            <div className="notice">{A.noMoney}</div>
             <label className="toggle"><input type="checkbox" checked={d.researchConsent} onChange={(e) => set({ researchConsent: e.target.checked })} /><span className="sw" />
-              <span><b>Help us learn how ajo groups run</b><span className="d">Allow HatDraw to use this group&apos;s size, amount band and frequency, anonymously. Nothing else is used. Off unless you switch it on.</span></span></label>
+              <span><b>{A.setup4.research}</b><span className="d">{A.setup4.researchHelp}</span></span></label>
             <div className="err" role="alert">{err}</div>
-            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(2)}>← Back</SpecularButton>
-              <SpecularButton className="btn btn-primary" onClick={create} disabled={busy}>{busy ? "Creating…" : "Create group"}</SpecularButton></div>
+            <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(2)}>{common.back}</SpecularButton>
+              <SpecularButton className="btn btn-primary" onClick={create} disabled={busy}>{busy ? A.setup4.creating : A.setup4.button}</SpecularButton></div>
           </div>
         )}
       </main>
