@@ -63,7 +63,7 @@ export default function GiftReveal({ data, context, actions, cta }: Props) {
   const details: { k: string; wide?: boolean; body: React.ReactNode }[] = [];
   if (e.budget) details.push({ k: "b", body: <><small>{T.budget}</small><b>{naira(e.budget)}</b></> });
   if (e.date) details.push({ k: "d", body: <><small>{T.giftDay}</small><b>{fmtDate(e.date)}</b><br /><span className="hint" style={{ margin: 0 }}>{T.daysToGo(dd!)}</span></> });
-  if (e.where) details.push({ k: "w", wide: true, body: <><small>{T.where}</small><b>📍 {e.where}</b></> });
+  if (e.where) details.push({ k: "w", wide: true, body: <><small>{T.where}</small><b><i className="tint-ico where-ico" aria-hidden="true" />{e.where}</b></> });
   if (details.length === 1) details[0].wide = true;
 
   // ~72px for short names, shrinking so long ones still fit across the cloth.

@@ -267,7 +267,8 @@ export default function DrawPage() {
                 <div className="eyebrow">{S.results.success}</div>
                 <h2>{S.results.heading(n)}</h2>
                 <div className="summary">
-                  {[d.ev.name, d.ev.budget && S.results.budget(d.ev.budget), d.ev.date, d.ev.where && `📍 ${d.ev.where}`].filter(Boolean).map((b) => <span key={String(b)}>{b}</span>)}
+                  {[d.ev.name, d.ev.budget && S.results.budget(d.ev.budget), d.ev.date].filter(Boolean).map((b) => <span key={String(b)}>{b}</span>)}
+                  {d.ev.where && <span><i className="tint-ico where-ico" aria-hidden="true" />{d.ev.where}</span>}
                 </div>
                 {result.demoUnlock && <div className="notice">{S.results.demo}</div>}
                 <div className="tabs" role="tablist">
