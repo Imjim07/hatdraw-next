@@ -3,6 +3,7 @@ import "./globals.css";
 import { BRAND } from "@/lib/config";
 import { landing } from "@/lib/copy/landing";
 import { PALETTE, THEME_KEY } from "@/lib/palette";
+import { gtmLoader } from "@/lib/analytics";
 import { WeatherProvider } from "@/components/WeatherContext";
 import Ambient from "@/components/Ambient";
 import WeatherChip from "@/components/WeatherChip";
@@ -32,6 +33,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en-NG" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: PRE_PAINT }} />
+        {/* Google Tag Manager; skipped on private-link pages (see lib/analytics.ts) */}
+        <script dangerouslySetInnerHTML={{ __html: gtmLoader() }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         {/* App Router root layout applies to every page; this Pages-Router rule does not apply */}

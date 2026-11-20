@@ -129,7 +129,8 @@ export default function AjoSetup() {
               <div className="res-row" style={{ marginTop: 10 }}><span className="link-text">{admin}</span>
                 <div className="acts">
                   <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(admin)) ? common.copied : common.couldntCopy)}>{A.handoff.copy}</SpecularButton>
-                  <SpecularButton className="btn btn-primary btn-sm" href={`/ajo/${created.publicId}/admin#${created.adminToken}`}>{A.handoff.openOrganiser}</SpecularButton>
+                  {/* A full page load, not an in-app navigation, so analytics loaded here never sees the organiser link. */}
+                  <SpecularButton className="btn btn-primary btn-sm" href={admin}>{A.handoff.openOrganiser}</SpecularButton>
                 </div></div></div>
 
             <div className="field"><span className="lbl">{A.handoff.personal}</span>
