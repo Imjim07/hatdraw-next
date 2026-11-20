@@ -944,3 +944,10 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .ob .seg :is(button,a) .kind-ico{color:var(--rb-accent);transition:filter .2s}
 .ob .seg :is(button,a):is(.on,:focus-visible) .kind-ico{background:var(--ico) center/contain no-repeat,currentColor;background-blend-mode:multiply;-webkit-mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;filter:none!important}
 @media (hover:hover){.ob .seg :is(button,a):hover .kind-ico{background:var(--ico) center/contain no-repeat,currentColor;background-blend-mode:multiply;-webkit-mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat,var(--ico) center/contain no-repeat;filter:none!important}}
+
+/* Hero countdown pill: frosted glass with the same specular edge as the hero buttons */
+.pill.pill-glass{--sb-line:var(--indigo);--sb-base:var(--text-muted);cursor:default;font-weight:600;border:0;background:color-mix(in srgb,var(--indigo-mist) 55%,transparent);-webkit-backdrop-filter:blur(10px) saturate(1.4);backdrop-filter:blur(10px) saturate(1.4);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 55%,transparent),0 10px 24px -14px rgba(20,26,51,.3)}
+.pill.pill-glass:active{transform:none}
+.pill-glass .specular-button__label{gap:8px}
+:root[data-theme="dark"] .pill.pill-glass,:root.dark .pill.pill-glass{box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 10%,transparent),0 10px 24px -14px rgba(0,0,0,.5)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) .pill.pill-glass{box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 10%,transparent),0 10px 24px -14px rgba(0,0,0,.5)}}

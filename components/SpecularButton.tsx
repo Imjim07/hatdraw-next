@@ -216,7 +216,9 @@ type Common = {
 };
 type AsButton = Common & Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof Common> & { href?: undefined };
 type AsLink = Common & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, keyof Common> & { href: string; disabled?: undefined };
-export type SpecularButtonProps = AsButton | AsLink;
+/** A non-interactive badge (e.g. the hero countdown pill) with the same glass edge. */
+type AsSpan = Common & { as: "span"; href?: undefined; disabled?: undefined };
+export type SpecularButtonProps = AsButton | AsLink | AsSpan;
 
 export default function SpecularButton(props: SpecularButtonProps) {
   const {
@@ -427,6 +429,9 @@ export default function SpecularButton(props: SpecularButtonProps) {
     </>
   );
 
+  if ("as" in rest && rest.as === "span") {
+    return <span ref={elRef as React.RefObject<HTMLSpanElement>} className={cls} style={vars}>{inner}</span>;
+  }
   if (rest.href !== undefined) {
     const { href, ...a } = rest as AnchorHTMLAttributes<HTMLAnchorElement> & { href: string };
     const ref = elRef as React.RefObject<HTMLAnchorElement>;

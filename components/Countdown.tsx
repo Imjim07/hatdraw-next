@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import SpecularButton from "./SpecularButton";
 
 export default function Countdown() {
   const [text, setText] = useState("Christmas is coming");
@@ -10,7 +11,8 @@ export default function Countdown() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- browser-only value, read once after hydration
     setText(d > 1 ? `${d} days to Christmas` : d === 1 ? "Christmas is tomorrow!" : d === 0 ? "It's Christmas! 🎄" : "Planning next Christmas already?");
   }, []);
-  return <span className="pill"><i />{text}</span>;
+  // Same glass edge as the hero buttons; a plain badge, not a control.
+  return <SpecularButton as="span" className="pill pill-glass"><i />{text}</SpecularButton>;
 }
 
 export function Year() {
