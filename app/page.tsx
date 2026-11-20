@@ -89,7 +89,6 @@ export default function Home() {
               <SpecularButton href="/draw" className="btn btn-primary">{landing.hero.santa.button} →</SpecularButton>
               <SpecularButton className="btn btn-ghost" href="/ajo">{landing.hero.ajo.button}</SpecularButton>
             </div>
-            <div className="trust">{landing.hero.santa.smallPrint.map((t) => <span key={t}>{t}</span>)}</div>
           </div>
           <HeroShekere />
         </div>
