@@ -58,7 +58,12 @@ async function load(): Promise<GiftProduct[]> {
     .eq("active", true)
     .eq("vendors.active", true) // a product shows only while its vendor is active
     .order("sort").order("price_naira");
-  if (error) throw new Error(`Couldn't load gifts: ${error.message}`);
+  if (error) {
+    // e.g. the vendors migration hasn't been run yet. Show the empty catalogue rather than
+    // crash the page, and say why in the server log (a short code, no request data).
+    console.error(`[gifts] load_failed ${error.code ?? ""} ${error.message}`);
+    return [];
+  }
   return (data as unknown as Row[]).filter((r) => r.vendors).map((r) => fromRow(r, url.replace(/\/+$/, "")));
 }
 
