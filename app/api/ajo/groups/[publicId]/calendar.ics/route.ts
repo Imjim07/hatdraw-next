@@ -1,6 +1,7 @@
 import { PUBLIC_ID, load, now, siteUrl, withStore } from "@/lib/ajo/server";
 import { BRAND } from "@/lib/config";
 import { ajo } from "@/lib/copy/ajo";
+import { fileSafe } from "@/lib/ajo/csv";
 
 // iCalendar file: one all-day event per turn.
 const esc = (s: string) => s.replace(/\\/g, "\\\\").replace(/;/g, "\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
@@ -48,7 +49,7 @@ export async function GET(req: Request, ctx: RouteContext<"/api/ajo/groups/[publ
       }),
       "END:VCALENDAR",
     ];
-    const safeName = group.name.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "ajo";
+    const safeName = fileSafe(group.name);
     return new Response(lines.map(fold).join("\r\n") + "\r\n", {
       headers: {
         "Content-Type": "text/calendar; charset=utf-8",

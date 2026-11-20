@@ -118,6 +118,13 @@ export function OrderView({ g, offset, refresh, sowFrom, action }: {
   );
 }
 
-export function CalendarButton({ publicId }: { publicId: string }) {
-  return <SpecularButton href={`/api/ajo/groups/${publicId}/calendar.ics`} className="btn btn-ghost btn-sm" download>{A.schedule.calendar}</SpecularButton>;
+/** The schedule's downloads: every turn as calendar events, and as a spreadsheet (CSV). */
+export function ScheduleDownloads({ publicId }: { publicId: string }) {
+  const base = `/api/ajo/groups/${encodeURIComponent(publicId)}`;
+  return (
+    <>
+      <SpecularButton href={`${base}/calendar.ics`} className="btn btn-ghost btn-sm" download>{A.schedule.calendar}</SpecularButton>
+      <SpecularButton href={`${base}/schedule.csv`} className="btn btn-ghost btn-sm" download>{A.schedule.csv}</SpecularButton>
+    </>
+  );
 }

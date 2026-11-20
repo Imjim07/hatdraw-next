@@ -1,7 +1,7 @@
 "use client";
 import { use, useCallback, useEffect, useState } from "react";
 import SpecularButton from "@/components/SpecularButton";
-import { CalendarButton, GroupHead, NO_MONEY } from "@/components/ajo/GroupView";
+import { ScheduleDownloads, GroupHead, NO_MONEY } from "@/components/ajo/GroupView";
 import { Loading, Problem, Shell } from "@/components/ajo/Shell";
 import { api, fragment, longDate, shortDate } from "@/lib/ajo/client";
 import { ajo as A } from "@/lib/copy/ajo";
@@ -116,8 +116,8 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
         )}
 
         <div className="err" role="alert">{err}</div>
-        <div className="nav-row" style={{ justifyContent: "flex-start" }}>
-          {drawn && <CalendarButton publicId={g.publicId} />}
+        <div className="nav-row sched-acts" role="group" aria-label={A.schedule.actions}>
+          {drawn && <ScheduleDownloads publicId={g.publicId} />}
           <SpecularButton className="btn btn-ghost btn-sm" href={`/ajo/${g.publicId}`}>{A.member.fullSchedule}</SpecularButton>
         </div>
         <div className="notice">{NO_MONEY}</div>

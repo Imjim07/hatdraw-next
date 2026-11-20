@@ -964,3 +964,12 @@ select.in option{background:var(--cloud);color:var(--ink)}
 /* "Where" pin (Icons8 glass icon), tinted with the text colour so it follows the theme:
    in the results summary on /draw and on the reveal's "Where" card */
 .tint-ico.where-ico{--ico:url(/icons/where.png);width:1.15em;height:1.15em;vertical-align:-.2em;margin-right:4px}
+
+/* Ajo schedule actions (calendar, CSV, share, open). On wide screens a wrapping row;
+   on phones one full-width button per line, each at least 44px tall, so nothing is
+   cramped or scrolls sideways and every target is easy to hit with a thumb. */
+.sched-acts{justify-content:flex-start}
+@media (max-width:600px){
+  .sched-acts{display:grid;grid-template-columns:1fr;gap:10px;margin-top:22px}
+  .sched-acts>:is(a,button,.btn){width:100%;min-height:44px;justify-content:center;white-space:normal;text-align:center}
+}

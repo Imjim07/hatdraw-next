@@ -1,7 +1,7 @@
 "use client";
 import { use, useCallback, useEffect, useState } from "react";
 import SpecularButton from "@/components/SpecularButton";
-import { CalendarButton, GroupHead, NO_MONEY, OrderView } from "@/components/ajo/GroupView";
+import { ScheduleDownloads, GroupHead, NO_MONEY, OrderView } from "@/components/ajo/GroupView";
 import { Loading, Problem, Shell } from "@/components/ajo/Shell";
 import { api, clockOffset, copyText, fragment } from "@/lib/ajo/client";
 import { ajo as A } from "@/lib/copy/ajo";
@@ -111,13 +111,13 @@ export default function AdminView({ params }: { params: Promise<{ publicId: stri
               )} />
             <div className="err" role="alert">{err}</div>
             {g.turns && (
-              <div className="nav-row" style={{ justifyContent: "flex-start" }}>
+              <div className="nav-row sched-acts" role="group" aria-label={A.schedule.actions}>
                 {data.redrawUntil && left > 0 && (
                   <SpecularButton className="btn btn-ghost btn-sm" onClick={() => setConfirmRedraw(true)} disabled={busy}>
                     {A.admin.redraw(mins, secs)}
                   </SpecularButton>
                 )}
-                <CalendarButton publicId={g.publicId} />
+                <ScheduleDownloads publicId={g.publicId} />
                 <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(pub)) ? A.admin.scheduleCopied : common.couldntCopy)}>{A.admin.shareSchedule}</SpecularButton>
                 <SpecularButton className="btn btn-ghost btn-sm" href={`/ajo/${g.publicId}`}>{A.admin.openSchedule}</SpecularButton>
               </div>

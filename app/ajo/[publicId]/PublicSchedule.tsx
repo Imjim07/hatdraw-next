@@ -1,7 +1,7 @@
 "use client";
 import { use, useCallback, useEffect, useState } from "react";
 import SpecularButton from "@/components/SpecularButton";
-import { CalendarButton, GroupHead, NO_MONEY, OrderView } from "@/components/ajo/GroupView";
+import { ScheduleDownloads, GroupHead, NO_MONEY, OrderView } from "@/components/ajo/GroupView";
 import { Loading, Problem, Shell } from "@/components/ajo/Shell";
 import { api, clockOffset, copyText } from "@/lib/ajo/client";
 import type { PublicGroup } from "@/lib/ajo/types";
@@ -34,8 +34,8 @@ export default function PublicSchedule({ params }: { params: Promise<{ publicId:
       <div className="panel rise">
         <GroupHead g={g} eyebrow={A.schedule.eyebrow} />
         <OrderView g={g} offset={offset} refresh={refresh} />
-        <div className="nav-row" style={{ justifyContent: "flex-start" }}>
-          {g.turns && <CalendarButton publicId={g.publicId} />}
+        <div className="nav-row sched-acts" role="group" aria-label={A.schedule.actions}>
+          {g.turns && <ScheduleDownloads publicId={g.publicId} />}
           <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(window.location.href.split("#")[0])) ? A.schedule.copied : common.couldntCopy)}>{A.schedule.copySchedule}</SpecularButton>
         </div>
         <div className="notice">{NO_MONEY}</div>
