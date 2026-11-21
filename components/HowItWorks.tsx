@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { AyeDegbe, Dundun, Sunbebe } from "./motifs";
+import type { CSSProperties, ReactNode } from "react";
+import { AyeDegbe } from "./motifs";
 import { landing } from "@/lib/copy/landing";
 import { Headline } from "@/components/GradientText";
 
@@ -9,7 +9,10 @@ import { Headline } from "@/components/GradientText";
 // motifs stand in for the lucide icons.
 // Words follow the Secret Santa column of the deck's "How it works" (the ajo column is in
 // copy.landing.how.ajo, for when the section follows a mode toggle).
-const MARKS = [<Sunbebe key="a" size={30} />, <AyeDegbe key="b" size={30} />, <Dundun key="c" size={30} />];
+// Steps 1 and 2: Icons8 icons (credited in the footer), tinted with the text colour so they
+// follow the theme. Step 3: the adire motif that used to mark step 2.
+const icon = (name: string) => <i className="tint-ico how-ico" style={{ "--ico": `url(/icons/${name}.png)` } as CSSProperties} />;
+const MARKS = [icon("how-step1"), icon("how-step2"), <AyeDegbe key="c" size={30} />];
 const H = landing.how;
 const STEPS = H.santa.map((s, i) => ({ ...s, mark: MARKS[i] }));
 

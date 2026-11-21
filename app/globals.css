@@ -1125,3 +1125,8 @@ section.band{padding:clamp(56px,7vw,88px) 0}
 .field>.react-aria-Label{display:block;font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:8px}
 .ob .field>.react-aria-Label{font-size:.875rem;font-weight:500;color:var(--ob-fg)}
 .ob .dp-group{min-height:53px}
+
+/* How it works: the Icons8 step icons sit in the framed mark at the motifs' size */
+.how-deco-mark .how-ico{width:30px;height:30px;margin:0;vertical-align:0;color:var(--indigo)}
+/* flat one-colour icons: fill the shape with the text colour (multiply would keep black icons black in dark mode) */
+.how-deco-mark .tint-ico.how-ico{background:currentColor;background-blend-mode:normal;-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat;filter:none}
