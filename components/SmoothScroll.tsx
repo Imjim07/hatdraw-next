@@ -11,7 +11,11 @@ import { useEffect, useRef } from "react";
 //   to first-load JS and never reaches /r.
 // - Reduced motion: GSAP is never loaded and the page scrolls normally, so the
 //   data-speed / data-lag attributes do nothing.
-// - Touch screens keep native scrolling (smoothTouch off); only the effects run.
+// - Touch screens get a light ease too (smoothTouch 0.1). With purely native touch
+//   scrolling the footer's pin (FooterStack) was positioned a frame behind the finger,
+//   so scrolling back up from the footer jerked; eased, it slides back like on desktop.
+// - Phones' address bar showing and hiding doesn't re-measure the page (ignoreMobileResize),
+//   which otherwise made the pinned section jump mid-scroll.
 // - Same-page #links go through smoother.scrollTo: the browser's own jump would
 //   scroll the fixed wrapper instead of the page.
 // - normalizeScroll from the demo is left off: it takes over touch scrolling.
@@ -30,6 +34,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
       ]);
       if (cancelled || !wrapper.current || !content.current) return;
       gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+      ScrollTrigger.config({ ignoreMobileResize: true });
 
       const root = document.documentElement;
       root.classList.add("smooth-on"); // CSS scroll-behavior:smooth would fight it
@@ -38,7 +43,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         content: content.current,
         smooth: 1.2,
         effects: true,
-        smoothTouch: false,
+        smoothTouch: 0.1,
       });
       dispatchEvent(new Event("smoother:ready")); // FooterStack builds its pins after this
 

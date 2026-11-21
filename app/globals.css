@@ -319,17 +319,15 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .stack-under{position:relative}
 .stack-under>.wrap{transform-origin:50% calc(100% - 50vh)}
 .stack-under::after{content:"";position:absolute;inset:0;z-index:2;background:#000;opacity:var(--sf-dim,0);pointer-events:none}
-.sf-top{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:40px}
+.sf-top{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(3,minmax(0,1fr));gap:40px;align-items:start}
 .sf-tag{font-size:1.1rem;line-height:1.55;color:var(--ink);max-width:22rem}
-.sf-col{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding-top:22px;border-top:1px solid var(--line)}
-.sf-col h3{font-family:var(--display);font-weight:700;font-size:1.15rem;color:var(--indigo);margin-bottom:6px}
+.sf-col{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
+.sf-col h3{font-family:var(--display);font-weight:700;font-size:1.15rem;line-height:1.55;color:var(--indigo);margin:0 0 8px}
 .sf-col a{display:inline-flex;align-items:center;min-height:44px;color:var(--text-muted);text-decoration:none;transition:color .2s}
 .sf-col a:hover{color:var(--ink)}
 .sf-social{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
 .sf-social a{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);color:var(--indigo);transition:background .2s,border-color .2s}
 .sf-social a:hover{background:var(--indigo-mist);border-color:transparent}
-.sf-link-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.sf-badge{padding:4px 10px;border-radius:999px;background:var(--indigo-mist);color:var(--ink);font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 .sf-mark{height:calc(var(--sf-size) * .74);margin-top:56px;overflow:hidden;--sf-size:min(calc((100vw - 44px) / 3.45),19.5rem);
   -webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}
 .sf-mark span{display:block;text-align:center;font-family:var(--display);font-weight:800;font-size:var(--sf-size);line-height:.9;letter-spacing:-.04em;
@@ -613,7 +611,7 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .how-steps{grid-template-columns:1fr;max-width:24rem}
   .fg-grid{grid-template-columns:1fr 1fr}
   nav.top .section-nav{display:none}
-  .sf-top{grid-template-columns:1fr 1fr;gap:28px}.sf-intro{grid-column:1/-1}
+  .sf-top{grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 24px}.sf-intro{grid-column:1/-1}
   .site-foot{border-radius:24px 24px 0 0;padding-top:48px}
 }
 @media (max-width:520px){
@@ -1003,7 +1001,7 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .logo{min-height:44px}
 .dp-btn{width:44px;height:44px}
 .sf-col a{min-width:44px}
-.how-num,.pill.of-soon,.sf-badge,.details.ob small{font-size:.75rem}
+.how-num,.pill.of-soon,.details.ob small{font-size:.75rem}
 .ob-lbl,.field small{font-size:max(.75rem,12px)}
 @media (max-width:760px){.ob-lbl{font-size:.75rem}}
 /* Gift Finder: on one column the comparison table scrolls inside its own box instead of
@@ -1089,3 +1087,14 @@ select.in option{background:var(--cloud);color:var(--ink)}
 /* Windows high contrast and print: plain text in the system colour */
 @media (forced-colors:active){.gradient-text__content{-webkit-text-fill-color:CanvasText;background:none}.gradient-text__glow{display:none}}
 @media print{.gradient-text__content{-webkit-text-fill-color:currentColor;background:none}.gradient-text__glow{display:none}}
+
+/* Footer credits on tablets: two left-aligned columns instead of a ragged spread */
+@media (max-width:860px){.sf-bottom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 24px}}
+/* Footer on phones: Products and Kádàrá side by side, then Company across the width with
+   its links in the same two columns, so every link lines up on one grid */
+@media (max-width:520px){
+  .sf-top{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 20px}
+  .sf-col:last-child{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:20px;row-gap:2px;justify-items:start}
+  .sf-col:last-child h3{grid-column:1/-1}
+  .sf-bottom{grid-template-columns:minmax(0,1fr);gap:4px}
+}

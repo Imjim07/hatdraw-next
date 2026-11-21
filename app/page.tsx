@@ -129,7 +129,7 @@ export default function Home() {
             </nav>
             <nav className="sf-col" aria-label={F.company}>
               <h3>{F.company}</h3>
-              <span className="sf-link-row"><a href={BRAND.byUrl}>{BRAND.by}</a><span className="sf-badge">{F.madeIn}</span></span>
+              <a href={BRAND.byUrl}>{BRAND.by}</a>
               <a href={mailto(CONTACT.info, common.mail.enquiry)}>{F.contact}</a>
               <a href={mailto(CONTACT.support, common.mail.support)}>{F.help}</a>
               <Link href="/privacy">{F.links.privacy}</Link>
