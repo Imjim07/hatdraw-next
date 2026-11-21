@@ -6,7 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import SmoothScroll from "@/components/SmoothScroll";
 import FooterStack from "@/components/FooterStack";
 import SocialIcons from "@/components/SocialIcons";
-import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
+import FloatingMenu from "@/components/ui/liquid-morph-floating-menu";
 import PricingTable, { type Plan } from "@/components/PricingTable";
 import Offers from "@/components/Offers";
 import HowItWorks from "@/components/HowItWorks";
@@ -67,7 +67,7 @@ export default function Home() {
           <span className="nav-end">
             <ThemeToggle />
             <SpecularButton href="/draw" className="btn btn-primary btn-sm nav-cta">{common.startDraw}</SpecularButton>
-            <CurvedMenu items={MENU} footer={<StartDrawFooter />} />
+            <FloatingMenu items={MENU} cta={{ label: common.startDraw, href: "/draw" }} />
           </span>
         </nav>
       </div>

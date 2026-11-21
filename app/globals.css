@@ -27,7 +27,6 @@
   /* fixed in both themes: the indigo-dyed illustrations (gourd, cloth, adire grid)
      and the text on persimmon / palm gold fills */
   --dye:#1B2A5C; --dye-fg:#F4F1EA; --on-accent:#141A33;
-  --cm-bg:var(--cloud); /* curved menu panel; raised to the tint in dark so its edge shows */
   color-scheme:light;
 }
 /* ---- Dark theme ----
@@ -41,7 +40,6 @@
   --text-muted:#A8B3D9; --danger:#FF8F78;
   --line:rgba(244,241,234,0.14);
   --pit-shadow:inset 0 2px 5px rgba(0,0,0,.45),inset 0 -1px 0 rgba(255,255,255,.06);
-  --cm-bg:#24315F;
   color-scheme:dark;
 }
 @media (prefers-color-scheme:dark){
@@ -50,8 +48,7 @@
     --text-muted:#A8B3D9; --danger:#FF8F78;
     --line:rgba(244,241,234,0.14);
     --pit-shadow:inset 0 2px 5px rgba(0,0,0,.45),inset 0 -1px 0 rgba(255,255,255,.06);
-    --cm-bg:#24315F;
-    color-scheme:dark;
+      color-scheme:dark;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -108,40 +105,6 @@ nav.top{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify
 main.home{padding-top:88px}
 @media (min-width:1025px) and (hover:hover),(min-width:1367px){main.home{padding-top:101px}} /* the section pills make the bar taller */
 html{scroll-padding-top:104px}
-/* mobile menu (landing page, ≤860px) */
-.menu-btn{display:none;place-items:center;width:44px;height:44px;flex:none;border-radius:50%;color:var(--indigo);border:1.5px solid color-mix(in srgb,var(--ink) 25%,transparent);transition:border-color .2s,background .2s}
-.menu-btn:hover,.menu-btn[aria-expanded="true"]{border-color:var(--indigo);background:color-mix(in srgb,var(--indigo) 7%,transparent)}
-.menu-icon line{transform-box:fill-box;transition:transform .45s var(--spring),opacity .2s ease-in-out}
-.menu-icon .mi-1{transform-origin:top right}.menu-icon .mi-3{transform-origin:bottom right}
-.menu-icon.open .mi-1{transform:translate(-2.35px,.35px) rotate(-45deg)}
-.menu-icon.open .mi-2{opacity:0}
-.menu-icon.open .mi-3{transform:translate(-2.35px,-.35px) rotate(45deg)}
-/* curved slide-in menu (components/ui/curved-menu.tsx), phones and tablets ≤1024px */
-.cm-lock,.cm-lock body{overflow:hidden}
-.cm-scrim{position:fixed;inset:0;z-index:84;background:rgba(20,26,51,.4);opacity:0;visibility:hidden;transition:opacity .6s,visibility 0s .6s}
-.cm-scrim.open{opacity:1;visibility:visible;transition:opacity .6s}
-.cm-panel{position:fixed;top:0;right:0;z-index:85;width:100vw;max-width:640px;height:100dvh;display:flex;flex-direction:column;justify-content:space-between;background:var(--cm-bg);color:var(--indigo);
-  transform:translateX(calc(100% + 100px));visibility:hidden;transition:transform .8s cubic-bezier(.76,0,.24,1),visibility 0s .8s}
-.cm-panel.open{transform:none;visibility:visible;transition:transform .8s cubic-bezier(.76,0,.24,1)}
-/* the bulge on the left edge: full when the panel starts moving, flat once it lands */
-.cm-curve{position:absolute;top:0;left:-99px;width:100px;height:100%;fill:var(--cm-bg);transform-origin:right center;transition:transform .8s cubic-bezier(.76,0,.24,1)}
-.cm-panel.open .cm-curve{transform:scaleX(0);transition-duration:1s}
-.cm-close{display:grid;position:absolute;top:22px;right:22px}
-.cm-body{flex:1 1 auto;min-height:0;padding:92px clamp(28px,8vw,96px) 0;overflow-y:auto;overscroll-behavior:contain}
-.cm-label{padding-bottom:10px;font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
-.cm-link{display:flex;align-items:flex-start;gap:10px;padding:18px 0;color:var(--indigo);text-decoration:none;text-transform:uppercase;font-family:var(--display)}
-.cm-num{font-size:clamp(1.6rem,6vw,2.25rem);font-weight:500;line-height:1;color:var(--text-muted)}
-.cm-word{display:block;font-size:clamp(1.6rem,6vw,2.25rem);font-weight:500;line-height:1;letter-spacing:-.01em;white-space:nowrap;transition:transform .5s var(--spring)}
-.cm-word>span{display:inline-block;transition:transform .5s var(--spring)}
-@media (hover:hover){
-  .cm-link:hover .cm-word{transform:translateX(-16px)}
-  .cm-link:hover .cm-word>span{transform:translateX(16px);transition-delay:calc(250ms + var(--i) * 75ms)}
-}
-.cm-link:focus-visible{outline-offset:-2px}
-.cm-foot{display:flex;flex-direction:column;align-items:stretch;gap:12px;padding:24px clamp(28px,8vw,96px) 32px}
-.cm-note{text-align:center;font-size:.85rem;color:var(--text-muted)}
-/* short screens (small phones, browser bars, landscape): tighten so every item fits; the list scrolls if it still can't */
-@media (max-height:620px){.cm-body{padding-top:72px}.cm-link{padding:12px 0}.cm-foot{padding-top:14px;padding-bottom:18px}}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:1.35rem;letter-spacing:-.01em;text-decoration:none;color:var(--indigo)}
 .logo svg{width:34px;height:34px}
 .nav-end{display:flex;align-items:center;gap:10px}
@@ -596,10 +559,9 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .modal .panel{max-width:460px;width:100%}
 .toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cloud);padding:12px 22px;border-radius:999px;font-weight:600;z-index:120;animation:rise .3s;max-width:calc(100vw - 32px);text-align:center}
 
-/* the menu takes over on phones and tablets: ≤1024px, or any touch screen up to 1366px (iPads in landscape) */
+/* the floating menu takes over on phones and tablets: ≤1024px, or any touch screen up to 1366px (iPads in landscape) */
 @media (max-width:1024px),(hover:none) and (pointer:coarse) and (max-width:1366px){
   nav.top .section-nav,nav.top .nav-cta{display:none}
-  .menu-btn{display:grid}
 }
 @media (max-width:860px){
   .hero{grid-template-columns:1fr;padding-top:30px}
@@ -1130,3 +1092,51 @@ section.band{padding:clamp(56px,7vw,88px) 0}
 .how-deco-mark .how-ico{width:30px;height:30px;margin:0;vertical-align:0;color:var(--indigo)}
 /* flat one-colour icons: fill the shape with the text colour (multiply would keep black icons black in dark mode) */
 .how-deco-mark .tint-ico.how-ico{background:currentColor;background-blend-mode:normal;-webkit-mask:var(--ico) center/contain no-repeat;mask:var(--ico) center/contain no-repeat;filter:none}
+
+/* ---- Liquid morph floating menu (components/ui/liquid-morph-floating-menu.tsx): phones and
+   tablets only. Closed: a gold "Menu" pill at the bottom centre, in thumb reach. Open: the pill
+   grows into a panel, an indigo circle rises from the bottom to fill it, links fade in in turn.
+   Gold and indigo in both themes (dark ink text on gold 8.9:1, cloud on indigo 12:1). ---- */
+.lm{display:none}
+@media (max-width:1024px),(hover:none) and (pointer:coarse) and (max-width:1366px){
+  .lm{display:block;position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));z-index:86;transform:translateX(-50%);animation:lm-in .4s cubic-bezier(.22,1,.36,1) both}
+  /* keep the last content, the weather chip and toasts clear of the pill */
+  main:not(.home),.site-foot{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+  .wx-chip{bottom:calc(84px + env(safe-area-inset-bottom))}
+  .toast{bottom:calc(88px + env(safe-area-inset-bottom))}
+}
+@keyframes lm-in{from{opacity:0;transform:translate(-50%,20px)}}
+.lm-shape{--lm-ease:cubic-bezier(.22,1,.36,1);position:relative;display:flex;flex-direction:column;width:150px;height:52px;overflow:hidden;border-radius:999px;background:var(--palm-gold);border:1px solid #C98F1F;box-shadow:0 14px 30px -14px rgba(20,26,51,.55);
+  transition:width .8s var(--lm-ease),height .15s var(--lm-ease),border-radius .8s var(--lm-ease),transform .25s var(--lm-ease),border-color .3s}
+@media (hover:hover){.lm:not(.is-open) .lm-shape:hover{transform:scale(1.05)}}
+.lm.is-open .lm-shape{width:min(300px,calc(100vw - 32px));height:calc(28px + var(--n) * 50px + var(--cta) * 66px + 72px);border-radius:32px;border-color:#1B2A5C;transition:width .8s var(--lm-ease),height .8s var(--lm-ease),border-radius .8s var(--lm-ease),border-color .1s}
+/* the indigo circle that rises from the bottom */
+.lm-fill{position:absolute;left:50%;bottom:-200%;width:200%;height:200%;border-radius:50%;background:#1B2A5C;transform:translateX(-50%);transition:bottom .8s var(--lm-ease)}
+.lm.is-open .lm-fill{bottom:-20%;transition-delay:.1s}
+.lm-items{position:relative;z-index:1;flex:0 0 0;min-height:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 20px;opacity:0;pointer-events:none;visibility:hidden}
+.lm.is-open .lm-items{flex:1 1 auto;padding-top:28px;opacity:1;pointer-events:auto;visibility:visible}
+.lm-link,.lm-cta{opacity:0;transition:opacity .4s var(--lm-ease)}
+.lm.is-open :is(.lm-link,.lm-cta){opacity:1;transition-delay:calc(.4s + var(--i) * 80ms)}
+.lm-link{display:flex;align-items:center;justify-content:center;min-height:48px;padding:0 12px;border-radius:12px;color:#F4F1EA;text-decoration:none;font-family:var(--display);font-size:1.45rem;font-weight:600;text-transform:uppercase;letter-spacing:-.01em;line-height:1}
+.lm-word{display:flex}
+.lm-ch{display:inline-block;height:1em;overflow:hidden}
+.lm-roll{display:flex;flex-direction:column;transition:transform 0s}
+.lm-roll>span,.lm-roll::after{display:block;height:1em;line-height:1em}
+.lm-roll::after{content:attr(data-ch)}
+@media (hover:hover){.lm-link:hover .lm-roll{transform:translateY(-50%);transition:transform .8s var(--lm-ease) calc(var(--j) * 30ms)}}
+.lm-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;margin-top:14px;padding:0 26px;border-radius:999px;background:var(--palm-gold);color:#141A33;font-weight:700;text-decoration:none}
+.lm-bar{position:relative;z-index:1;flex:none;display:flex;align-items:center;justify-content:space-between;width:100%;height:52px;padding:0 20px;border:0;background:none;font:inherit;color:#141A33;cursor:pointer;transition:padding .8s var(--lm-ease),height .8s var(--lm-ease),color .3s var(--lm-ease)}
+.lm.is-open .lm-bar{height:62px;padding:0 24px 10px;color:#F4F1EA}
+.lm-label{font-family:var(--display);font-size:1.05rem;font-weight:700;line-height:1}
+.lm-burger{position:relative;display:grid;place-items:center;width:24px;height:24px}
+.lm-burger i{position:absolute;width:18px;height:2px;border-radius:2px;background:currentColor;transition:transform .4s var(--lm-ease)}
+.lm-burger i:first-child{transform:translateY(-3px)}
+.lm-burger i:last-child{transform:translateY(3px)}
+.lm.is-open .lm-burger i:first-child{transform:rotate(45deg)}
+.lm.is-open .lm-burger i:last-child{transform:rotate(-45deg)}
+.lm-bar:focus-visible{outline:2px solid #141A33;outline-offset:-4px;border-radius:999px}
+.lm.is-open .lm-bar:focus-visible,.lm-link:focus-visible{outline:2px solid #F2B33D;outline-offset:-2px}
+.lm-cta:focus-visible{outline:2px solid #F4F1EA;outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .lm,.lm-shape,.lm-fill,.lm-link,.lm-cta,.lm-bar,.lm-burger i,.lm-roll{animation:none!important;transition:none!important}
+}

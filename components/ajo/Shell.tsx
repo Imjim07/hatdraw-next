@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Logo from "@/components/Logo";
 import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
-import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
+import FloatingMenu, { SITE_MENU } from "@/components/ui/liquid-morph-floating-menu";
 import AdireLoader from "@/components/AdireLoader";
 import { ajo } from "@/lib/copy/ajo";
 import { common } from "@/lib/copy/common";
@@ -11,7 +11,7 @@ import { common } from "@/lib/copy/common";
 export function Shell({ children, toast }: { children: ReactNode; toast?: string }) {
   return (
     <div className="wrap" data-mode="ajo">
-      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
+      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><FloatingMenu items={SITE_MENU} /></span></nav>
       <main className="app">{children}</main>
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>

@@ -5,7 +5,7 @@ import GiftReveal from "@/components/GiftReveal";
 import Shekere from "@/components/Shekere";
 import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
-import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
+import FloatingMenu, { SITE_MENU } from "@/components/ui/liquid-morph-floating-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import Stepper from "@/components/Stepper";
 import DatePicker from "@/components/ui/DatePicker";
@@ -277,7 +277,7 @@ export default function DrawPage() {
 
   return (
     <div className="wrap ob" data-mode="santa">
-      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
+      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><FloatingMenu items={SITE_MENU} /></span></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="gift" />}
         <Stepper steps={STEPS} current={step} />

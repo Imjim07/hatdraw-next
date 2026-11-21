@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Logo from "@/components/Logo";
 import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
-import CurvedMenu, { SITE_MENU } from "@/components/ui/curved-menu";
+import FloatingMenu, { SITE_MENU } from "@/components/ui/liquid-morph-floating-menu";
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import Stepper from "@/components/Stepper";
 import DatePicker from "@/components/ui/DatePicker";
@@ -112,7 +112,7 @@ export default function AjoSetup() {
     const admin = `${pub}/admin#${created.adminToken}`;
     return (
       <div className="wrap ob" data-mode="ajo">
-        <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
+        <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><FloatingMenu items={SITE_MENU} /></span></nav>
         <main className="app">
           <div className="panel rise">
             <div className="eyebrow">{d.name}</div>
@@ -163,7 +163,7 @@ export default function AjoSetup() {
 
   return (
     <div className="wrap ob" data-mode="ajo">
-      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><CurvedMenu items={SITE_MENU} /></span></nav>
+      <nav className="top"><Logo /><span className="nav-end"><ThemeToggle /><SpecularButton href="/" className="btn btn-ghost btn-sm nav-cta">{common.home}</SpecularButton><FloatingMenu items={SITE_MENU} /></span></nav>
       <main className="app">
         {step === 0 && <DrawKindSwitch current="ajo" />}
         <Stepper steps={STEPS} current={step} />

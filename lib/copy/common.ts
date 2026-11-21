@@ -1,4 +1,4 @@
-import { BRAND, CONTACT, PRICING } from "@/lib/config";
+import { BRAND, CONTACT } from "@/lib/config";
 
 // Words shared by every page. Source: docs/copy-deck.md ("Microcopy library", "Footer").
 export const common = {
@@ -15,7 +15,6 @@ export const common = {
     offers: "What we offer",
   },
   startDraw: "Start a draw",
-  menuNote: `Free up to ${PRICING.FREE_MAX} people · Made in Lagos`,
   logoHome: `${BRAND.name} home`,
   copied: "Link copied",
   couldntCopy: "Couldn't copy",
