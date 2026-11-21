@@ -89,7 +89,6 @@ export default function FloatingMenu({ items, cta }: { items: MenuItem[]; cta?: 
             inert={!open} style={{ top: at.top, right: at.right, "--r": `${at.right}px`, "--n": n, "--cta": cta ? 1 : 0 } as CSSProperties}>
             <span className="lm-fill" aria-hidden="true" />
             <div className="lm-bar">
-              <span className="lm-label" aria-hidden="true">{common.menu.dialog}</span>
               <button type="button" className="lm-close" aria-label={common.menu.close} onClick={() => close()}><Burger /></button>
             </div>
             <nav className="lm-items" aria-label={common.menu.dialog}>
