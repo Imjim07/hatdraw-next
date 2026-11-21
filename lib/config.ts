@@ -34,12 +34,19 @@ export const brandWhatsApp = (raw = process.env.NEXT_PUBLIC_KADARA_WHATSAPP): st
 export const waLink = (text: string, number?: string | null) =>
   `https://wa.me/${number ?? ""}?text=${encodeURIComponent(text)}`;
 
+// Locked launch prices (copy deck, 21 Nov 2026). The server computes every amount sent to
+// Paystack from these; the browser only shows what the server says. See lib/pricing.ts.
 export const PRICING = {
-  FREE_LIMIT: 15, // draws with this many people or fewer are free (Small circle)
-  ONE_TIME: 700, // ₦ per draw above the free limit (Big circle): what checkout charges
-  BIG_CIRCLE_YEARLY: 7500, // ₦ per year (needs accounts: not sold yet)
-  MAX_PEOPLE: 500,
-};
+  FREE_MAX: 15,
+  TIERS: [
+    { id: "mid", label: "Mid circle", min: 16, max: 50, price: 1500 },
+    { id: "big", label: "Big circle", min: 51, max: 500, price: 7500 },
+  ],
+  YEAR_PASS: { price: 15000, days: 365, maxPeople: 500, maxDraws: 25 },
+} as const;
+
+/** The most people one draw can have (the top tier's ceiling). */
+export const MAX_PEOPLE = PRICING.TIERS[PRICING.TIERS.length - 1].max;
 
 // "demo": big draws unlock without payment (shows a notice)
 // "live": big draws need a verified Paystack payment
@@ -52,3 +59,7 @@ export const naira = (n: number | string) =>
 /** "1 Dec" from "YYYY-MM-DD" (calendar date, no time zone shift). */
 export const dayMonth = (d: string) =>
   new Date(d + "T12:00:00Z").toLocaleDateString("en-NG", { day: "numeric", month: "short", timeZone: "UTC" });
+
+/** "21 Nov 2027" from an ISO date or timestamp. */
+export const dayMonthYear = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric", timeZone: "Africa/Lagos" });

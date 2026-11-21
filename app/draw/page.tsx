@@ -11,7 +11,8 @@ import Stepper from "@/components/Stepper";
 import DatePicker from "@/components/ui/DatePicker";
 import { serifName } from "@/lib/marks";
 import { burst } from "@/components/Ambient";
-import { PRICING, PAYWALL_MODE, mailto, naira, waLink } from "@/lib/config";
+import { PRICING, PAYWALL_MODE, dayMonthYear, mailto, naira, waLink } from "@/lib/config";
+import { tierFor } from "@/lib/pricing";
 import { common } from "@/lib/copy/common";
 import { santa as S } from "@/lib/copy/santa";
 import type { DrawResponse, EventInfo, Kind, RevealPayload } from "@/lib/types";
@@ -20,6 +21,16 @@ type Draft = { ev: EventInfo; people: string[]; ex: [string, string][]; circle: 
 type Result = Extract<DrawResponse, { ok: true }>;
 
 const DRAFT_KEY = "hd-draft-v2";
+/** A Year pass code remembered on this phone, so the organiser doesn't retype it. */
+const PASS_KEY = "kdr-pass";
+/** What the server quoted: the amount and reference it made (or, for an upgrade, the payment it tops up). */
+type Quote = { reference: string; amountKobo: number; upgradeFrom?: string; message?: string };
+async function postJson(path: string, body: object) {
+  try {
+    const r = await fetch(path, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    return await r.json();
+  } catch { return null; }
+}
 // Avatar fills from the palette; the person icon (Icons8) inside is ink (≥4.5:1 on each).
 // fixed light fills (dark text in both themes)
 const AV = ["#DDE3F5", "var(--palm-gold)", "var(--persimmon)"];
@@ -64,6 +75,16 @@ export default function DrawPage() {
   const [payOpen, setPayOpen] = useState(false);
   const [payEmail, setPayEmail] = useState("");
   const [payRef, setPayRef] = useState("");
+  // The paywall. The price always comes from the server (/api/pay/start); this only shows it.
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [payView, setPayView] = useState<"pay" | "pass" | "code" | "enter">("pay");
+  const [payBusy, setPayBusy] = useState(false);
+  const [payErr, setPayErr] = useState("");
+  const [pass, setPass] = useState<{ code: string; expiresAt: string; drawsLeft: number } | null>(null);
+  const [newCode, setNewCode] = useState<{ code: string; expiresAt: string } | null>(null);
+  const [codeIn, setCodeIn] = useState("");
+  const [passEmail, setPassEmail] = useState("");
+  const [passSent, setPassSent] = useState(false);
   const [peek, setPeek] = useState(false);
   const [toast, setToast] = useState("");
   const toastT = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -85,7 +106,8 @@ export default function DrawPage() {
   const setEv = (patch: Partial<EventInfo>) => setD((x) => ({ ...x, ev: { ...x.ev, ...patch } }));
   const go = (n: number) => { setErr(""); setStep(n); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const n = d.people.length;
-  const paid = n > PRICING.FREE_LIMIT;
+  const paid = n > PRICING.FREE_MAX;
+  const tierNow = paid && n <= PRICING.TIERS[PRICING.TIERS.length - 1].max ? tierFor(n) : null;
 
   const next = () => {
     if (step === 0 && !d.ev.name.trim()) { setErr(S.errors.noName); return; }
@@ -110,29 +132,78 @@ export default function DrawPage() {
     setErr(""); setD((x) => ({ ...x, ex: [...x.ex, [a, b]] }));
   };
 
-  async function runDraw(reference?: string) {
+  // A Year pass code saved on this phone: check it's still good (expiry, draws left).
+  useEffect(() => {
+    let code = "";
+    try { code = localStorage.getItem(PASS_KEY) || ""; } catch {}
+    if (!code) return;
+    postJson("/api/pass/status", { code }).then((j) => {
+      if (j?.ok) setPass({ code, expiresAt: j.expiresAt, drawsLeft: j.drawsLeft });
+      else try { localStorage.removeItem(PASS_KEY); } catch {}
+    });
+  }, []);
+  const keepPass = (p: { code: string; expiresAt: string; drawsLeft: number } | null) => {
+    setPass(p);
+    try { if (p) localStorage.setItem(PASS_KEY, p.code); else localStorage.removeItem(PASS_KEY); } catch {}
+  };
+
+  async function runDraw(opts: { reference?: string; passCode?: string } = {}) {
+    const { reference, passCode } = opts;
     setErr(""); setDrawing(true); setResult(null); setSeen([]); go(3);
     const minWait = new Promise((r) => setTimeout(r, 1700));
     try {
       const res = await fetch("/api/draw", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ event: d.ev, people: d.people, ex: d.ex, circle: d.circle, blind: d.blind, reference }),
+        body: JSON.stringify({ event: d.ev, people: d.people, ex: d.ex, circle: d.circle, blind: d.blind, reference, passCode }),
       });
       const j: DrawResponse = await res.json();
       await minWait;
       if (!j.ok) {
         setStep(2); setErr(j.error);
-        if (j.needsPayment) setPayOpen(true);
+        if (j.code === "pass_invalid") keepPass(null);
+        if (j.code === "tier_upgrade" && j.upgradeFrom) {
+          // Names were added after paying: offer to pay the difference.
+          setQuote({ reference: "", amountKobo: j.extraKobo ?? 0, upgradeFrom: j.upgradeFrom, message: j.error });
+          setPayView("pay"); setPayErr(""); setPayOpen(true);
+        } else if (j.needsPayment) openPaywall();
         return;
       }
       setResult(j); burst();
+      if (j.pass && pass) keepPass({ ...pass, expiresAt: j.pass.expiresAt, drawsLeft: j.pass.drawsLeft });
       if (d.circle && !j.circle) say(S.results.circleFallback);
     } catch {
       await minWait; setStep(2); setErr(S.errors.network);
     } finally { setDrawing(false); }
   }
 
-  const shake = () => { if (paid) setPayOpen(true); else runDraw(); };
+  const shake = () => { if (paid) openPaywall(); else runDraw(); };
+
+  function openPaywall() {
+    setPayErr(""); setPayView("pay"); setQuote(null); setPayOpen(true);
+    if (PAYWALL_MODE === "live" && !pass) quoteDraw();
+  }
+  async function quoteDraw(upgradeFrom?: string): Promise<Quote | null> {
+    setPayBusy(true);
+    const j = await postJson("/api/pay/start", { kind: "draw", peopleCount: n, upgradeFrom });
+    setPayBusy(false);
+    if (!j?.ok) { setPayErr(j?.error ?? S.errors.network); return null; }
+    const q: Quote = { reference: j.reference, amountKobo: j.amountKobo, upgradeFrom, message: upgradeFrom ? quote?.message : undefined };
+    setQuote(q);
+    return q;
+  }
+  /** Opens Paystack for an amount and reference the server made. */
+  async function paystack(reference: string, amountKobo: number, onPaid: () => void) {
+    if (!/^\S+@\S+\.\S+$/.test(payEmail)) { setPayErr(S.paywall.badEmail); return; }
+    setPayErr("");
+    try {
+      await loadPaystack();
+      new window.PaystackPop!().newTransaction({
+        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY, email: payEmail, amount: amountKobo, currency: "NGN", reference,
+        onSuccess: () => { setPayRef(reference); onPaid(); },
+        onCancel: () => say(S.paywall.cancelled),
+      });
+    } catch { say(S.paywall.paystackFailed); }
+  }
 
   // Back to the first step with an empty wizard. The drawn links aren't kept anywhere, so
   // ask first unless everyone has already unwrapped in pass-the-phone.
@@ -147,15 +218,43 @@ export default function DrawPage() {
 
   async function pay() {
     if (PAYWALL_MODE !== "live") { setPayOpen(false); runDraw(); return; }
-    if (!/^\S+@\S+\.\S+$/.test(payEmail)) { say(S.paywall.badEmail); return; }
-    try {
-      await loadPaystack();
-      new window.PaystackPop!().newTransaction({
-        key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY, email: payEmail, amount: PRICING.ONE_TIME * 100, currency: "NGN",
-        onSuccess: (t: { reference: string }) => { setPayRef(t.reference); setPayOpen(false); runDraw(t.reference); },
-        onCancel: () => say(S.paywall.cancelled),
-      });
-    } catch { say(S.paywall.paystackFailed); }
+    // An upgrade gets its own reference (for the difference) only when the organiser chooses to pay.
+    const q = quote?.upgradeFrom && !quote.reference ? await quoteDraw(quote.upgradeFrom) : quote;
+    if (!q?.reference) return;
+    paystack(q.reference, q.amountKobo, () => { setPayOpen(false); runDraw({ reference: q.reference }); });
+  }
+  function drawWithPass(code = pass?.code) { if (!code) return; setPayOpen(false); runDraw({ passCode: code }); }
+
+  async function buyPass() {
+    setPayBusy(true); setPayErr("");
+    const j = await postJson("/api/pay/start", { kind: "pass" });
+    setPayBusy(false);
+    if (!j?.ok) { setPayErr(j?.error ?? S.errors.network); return; }
+    paystack(j.reference, j.amountKobo, async () => {
+      setPayBusy(true);
+      // Paystack may take a moment to confirm; try a few times.
+      let r: Awaited<ReturnType<typeof postJson>> = null;
+      for (let i = 0; i < 5; i++) { r = await postJson("/api/pass/issue", { reference: j.reference }); if (r?.ok || r?.code !== "payment_pending") break; await new Promise((ok) => setTimeout(ok, 2000)); }
+      setPayBusy(false);
+      if (!r?.ok) { setPayErr(r?.error ?? S.pass.issueFailed); return; }
+      setNewCode({ code: r.code, expiresAt: r.expiresAt }); setPassSent(false); setPayView("code");
+      keepPass({ code: r.code, expiresAt: r.expiresAt, drawsLeft: r.drawsLeft });
+    });
+  }
+  async function useCode() {
+    setPayBusy(true); setPayErr("");
+    const j = await postJson("/api/pass/status", { code: codeIn });
+    setPayBusy(false);
+    if (!j?.ok) { setPayErr(S.paywall.passInvalid); return; }
+    keepPass({ code: codeIn.trim(), expiresAt: j.expiresAt, drawsLeft: j.drawsLeft });
+    drawWithPass(codeIn.trim());
+  }
+  async function emailCode() {
+    if (!newCode) return;
+    setPayBusy(true); setPayErr("");
+    const j = await postJson("/api/pass/email", { code: newCode.code, email: passEmail });
+    setPayBusy(false);
+    if (j?.ok) { setPassSent(true); setPassEmail(""); } else setPayErr(j?.error ?? S.pass.sendFailed);
   }
 
   const linkFor = (token: string) => `${window.location.origin}/r#${token}`;
@@ -174,7 +273,7 @@ export default function DrawPage() {
 
   // An ayo board has two rows of six pits; keep at least that, and fill out the last row.
   const emptyPits = Math.max(12, Math.ceil(n / 6) * 6) - n;
-  const tier = paid ? S.step2.bigCircle : S.step2.freeLeft(Math.max(0, PRICING.FREE_LIMIT - n));
+  const tier = paid ? (tierNow ? S.step2.tierLine(tierNow.label, tierNow.price) : S.errors.tooMany) : S.step2.freeLeft(Math.max(0, PRICING.FREE_MAX - n));
 
   return (
     <div className="wrap ob" data-mode="santa">
@@ -234,7 +333,7 @@ export default function DrawPage() {
               {!n && <li className="board-empty">{S.step2.empty}</li>}
             </ul>
             <div className="counter"><span>{S.step2.people(n)}</span><span className={paid ? "over" : undefined}>{tier}</span></div>
-            <div className="meter"><i className={paid ? "over" : ""} style={{ width: `${Math.min(100, (n / PRICING.FREE_LIMIT) * 100)}%` }} /></div>
+            <div className="meter"><i className={paid ? "over" : ""} style={{ width: `${Math.min(100, (n / PRICING.FREE_MAX) * 100)}%` }} /></div>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(0)}>{common.back}</SpecularButton><SpecularButton className="btn btn-primary" onClick={next}>{S.step2.button} →</SpecularButton></div>
           </div>
@@ -262,7 +361,7 @@ export default function DrawPage() {
             <div className="err" role="alert">{err}</div>
             {paid && PAYWALL_MODE === "live" && err && <a className="hint" href={mailto(S.paywall.support, S.paywall.problemSubject(payRef))}>{S.paywall.problem}</a>}
             <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(1)}>{common.back}</SpecularButton>
-              <SpecularButton className="btn btn-primary" onClick={shake} disabled={drawing}>{drawing ? S.shaking.heading : paid ? S.step3.buttonPaid : S.step3.button}</SpecularButton></div>
+              <SpecularButton className="btn btn-primary" onClick={shake} disabled={drawing}>{drawing ? S.shaking.heading : paid && tierNow && !pass ? S.step3.buttonPaid(tierNow.price) : S.step3.button}</SpecularButton></div>
           </div>
         )}
 
@@ -310,7 +409,7 @@ export default function DrawPage() {
                     <div className="nav-row" style={{ justifyContent: "flex-start" }}>
                       <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(result.givers.map((g) => `${g.name}: ${linkFor(g.token)}`).join("\n\n"))) ? S.results.allCopied : common.couldntCopy)}>{S.results.copyAll}</SpecularButton>
                       {result.pairs && <SpecularButton className="btn btn-ghost btn-sm" onClick={() => setPeek(true)}>{S.results.showAll}</SpecularButton>}
-                      <SpecularButton className="btn btn-ghost btn-sm" onClick={() => { if (!window.confirm(S.results.redrawConfirm)) return; if (paid && PAYWALL_MODE === "live") setPayOpen(true); else runDraw(); }}>{S.results.redraw}</SpecularButton>
+                      <SpecularButton className="btn btn-ghost btn-sm" onClick={() => { if (!window.confirm(S.results.redrawConfirm)) return; if (paid && PAYWALL_MODE === "live") openPaywall(); else runDraw(); }}>{S.results.redraw}</SpecularButton>
                       <SpecularButton className="btn btn-ghost btn-sm" onClick={startAgain}>{S.results.startAgain}</SpecularButton>
                     </div>
                   </>
@@ -350,18 +449,86 @@ export default function DrawPage() {
         </div></div>); })()}
 
       {payOpen && (
-        <div className="modal" role="dialog" aria-modal="true"><div className="panel">
-          <div className="eyebrow">{S.paywall.eyebrow}</div>
-          <h2 style={{ fontSize: "1.8rem" }}>{S.paywall.heading(n)}</h2>
-          <p className="sub">{S.paywall.line}</p>
-          <div className="amt" style={{ margin: "18px 0 6px" }}><strong>{naira(PRICING.ONE_TIME)}</strong><small>{S.paywall.oneOff}</small></div>
-          {PAYWALL_MODE === "live" ? (
-            <div className="field"><label htmlFor="pay-email">{S.paywall.email}</label>
-              <span className="pit"><input id="pay-email" className="in" type="email" value={payEmail} onChange={(e) => setPayEmail(e.target.value)} placeholder={S.paywall.emailPlaceholder} /></span><span className="hint">{S.paywall.emailHint}</span></div>
-          ) : <p className="hint">{S.paywall.demo}</p>}
-          {PAYWALL_MODE === "live" && <a className="hint" href={mailto(S.paywall.support, S.paywall.problemSubject(payRef))}>{S.paywall.problem}</a>}
-          <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => setPayOpen(false)}>{S.paywall.notNow}</SpecularButton>
-            <SpecularButton className="btn btn-primary" onClick={pay}>{PAYWALL_MODE === "live" ? S.paywall.button : S.paywall.buttonDemo}</SpecularButton></div>
+        <div className="modal" role="dialog" aria-modal="true" aria-labelledby="pay-title"><div className="panel">
+          {payView === "code" && newCode ? (
+            <>
+              {/* The Year pass code, shown once */}
+              <div className="eyebrow">{S.pass.eyebrow}</div>
+              <h2 id="pay-title" style={{ fontSize: "1.8rem" }}>{S.pass.codeHeading}</h2>
+              <p className="pass-code" aria-live="polite">{newCode.code}</p>
+              <p className="sub">{S.pass.save(dayMonthYear(newCode.expiresAt))} {S.pass.once}</p>
+              <div className="nav-row" style={{ justifyContent: "flex-start", marginTop: 14 }}>
+                <SpecularButton className="btn btn-ghost btn-sm" onClick={async () => say((await copyText(newCode.code)) ? S.pass.copied : common.couldntCopy)}>{S.pass.copy}</SpecularButton>
+              </div>
+              <div className="field"><label htmlFor="pass-email">{S.pass.emailLabel}</label>
+                <div className="chips-in">
+                  <span className="pit"><input id="pass-email" className="in" type="email" autoComplete="email" value={passEmail} onChange={(e) => setPassEmail(e.target.value)} placeholder={S.pass.emailPlaceholder} /></span>
+                  <SpecularButton className="btn btn-ghost" onClick={emailCode} disabled={payBusy || !passEmail}>{S.pass.send}</SpecularButton>
+                </div>
+                <span className="hint">{passSent ? S.pass.sent : S.pass.emailHint}</span></div>
+              <div className="err" role="alert">{payErr}</div>
+              <div className="nav-row"><span /><SpecularButton className="btn btn-primary" onClick={() => drawWithPass(newCode.code)}>{S.pass.draw}</SpecularButton></div>
+            </>
+          ) : payView === "pass" ? (
+            <>
+              {/* Buying a Year pass */}
+              <div className="eyebrow">{S.pass.eyebrow}</div>
+              <h2 id="pay-title" style={{ fontSize: "1.8rem" }}>{S.pass.heading}</h2>
+              <p className="sub">{S.pass.line}</p>
+              <div className="field"><label htmlFor="pay-email">{S.paywall.email}</label>
+                <span className="pit"><input id="pay-email" className="in" type="email" autoComplete="email" value={payEmail} onChange={(e) => setPayEmail(e.target.value)} placeholder={S.paywall.emailPlaceholder} /></span><span className="hint">{S.paywall.emailHint}</span></div>
+              <div className="err" role="alert">{payErr}</div>
+              <a className="hint" href="/terms#refunds" target="_blank" rel="noopener noreferrer">{S.paywall.refund}</a>
+              <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => { setPayErr(""); setPayView("pay"); }}>{S.pass.back}</SpecularButton>
+                <SpecularButton className="btn btn-primary" onClick={buyPass} disabled={payBusy}>{S.pass.button}</SpecularButton></div>
+            </>
+          ) : (
+            <>
+              <div className="eyebrow">{tierNow?.label}</div>
+              <h2 id="pay-title" style={{ fontSize: "1.8rem" }}>{S.paywall.heading(n)}</h2>
+              {PAYWALL_MODE !== "live" ? (
+                <>
+                  {tierNow && <p className="sub">{S.paywall.line(n, tierNow.price)}</p>}
+                  <p className="hint">{S.paywall.demo}</p>
+                </>
+              ) : pass && payView !== "enter" ? (
+                <>
+                  {/* A Year pass on this phone: no payment needed */}
+                  <p className="sub">{S.paywall.passActive(dayMonthYear(pass.expiresAt), pass.drawsLeft)}</p>
+                  {n > PRICING.YEAR_PASS.maxPeople && <p className="hint">{S.paywall.passTooBig}</p>}
+                  <button type="button" className="gf-text-link" onClick={() => { keepPass(null); quoteDraw(); }}>{S.paywall.forget}</button>
+                </>
+              ) : payView === "enter" ? (
+                <div className="field"><label htmlFor="pass-code">{S.paywall.codeLabel}</label>
+                  <div className="chips-in">
+                    <span className="pit"><input id="pass-code" className="in" autoCapitalize="characters" autoComplete="off" spellCheck={false} value={codeIn} onChange={(e) => setCodeIn(e.target.value)} placeholder={S.paywall.codePlaceholder} /></span>
+                    <SpecularButton className="btn btn-primary" onClick={useCode} disabled={payBusy || !codeIn.trim()}>{S.paywall.useCode}</SpecularButton>
+                  </div></div>
+              ) : (
+                <>
+                  <p className="sub">{quote?.message ?? (tierNow ? S.paywall.line(n, tierNow.price) : "")}</p>
+                  <div className="amt" style={{ margin: "18px 0 6px" }}><strong>{quote?.amountKobo ? naira(quote.amountKobo / 100) : S.paywall.preparing}</strong>{quote?.amountKobo ? <small>{S.paywall.oneOff}</small> : null}</div>
+                  <div className="field"><label htmlFor="pay-email">{S.paywall.email}</label>
+                    <span className="pit"><input id="pay-email" className="in" type="email" autoComplete="email" value={payEmail} onChange={(e) => setPayEmail(e.target.value)} placeholder={S.paywall.emailPlaceholder} /></span><span className="hint">{S.paywall.emailHint}</span></div>
+                </>
+              )}
+              <div className="err" role="alert">{payErr}</div>
+              {PAYWALL_MODE === "live" && (
+                <p className="hint pay-links">
+                  {!pass && payView !== "enter" && <button type="button" className="gf-text-link" onClick={() => { setPayErr(""); setPayView("pass"); }}>{S.paywall.yearPass}</button>}
+                  {!pass && payView !== "enter" && <button type="button" className="gf-text-link" onClick={() => { setPayErr(""); setPayView("enter"); }}>{S.paywall.haveCode}</button>}
+                  <a className="gf-text-link" href="/terms#refunds" target="_blank" rel="noopener noreferrer">{S.paywall.refund}</a>
+                  <a className="gf-text-link" href={mailto(S.paywall.support, S.paywall.problemSubject(payRef || quote?.reference))}>{S.paywall.problem}</a>
+                </p>
+              )}
+              <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => { if (payView === "enter") setPayView("pay"); else setPayOpen(false); }}>{payView === "enter" ? S.pass.back : S.paywall.notNow}</SpecularButton>
+                {PAYWALL_MODE !== "live"
+                  ? <SpecularButton className="btn btn-primary" onClick={pay}>{S.paywall.buttonDemo}</SpecularButton>
+                  : pass && payView !== "enter"
+                    ? <SpecularButton className="btn btn-primary" onClick={() => drawWithPass()} disabled={n > PRICING.YEAR_PASS.maxPeople}>{S.paywall.passButton}</SpecularButton>
+                    : payView !== "enter" && <SpecularButton className="btn btn-primary" onClick={pay} disabled={payBusy || !quote?.amountKobo && !quote?.upgradeFrom}>{quote?.upgradeFrom ? S.paywall.upgradeButton(quote.amountKobo / 100) : quote?.amountKobo ? S.paywall.button(quote.amountKobo / 100) : S.paywall.preparing}</SpecularButton>}</div>
+            </>
+          )}
         </div></div>
       )}
 

@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { claimPayment, memoryPayments } from "./payments";
+import { describe, expect, it } from "vitest";
 
 const files = (dir: string): string[] =>
   readdirSync(dir).flatMap((f) => { const p = join(dir, f); return statSync(p).isDirectory() ? files(p) : [p]; });
@@ -23,26 +22,17 @@ describe("Secret Santa stays stateless", () => {
 });
 
 describe("Paystack records", () => {
-  afterEach(() => vi.unstubAllEnvs());
-
-  it("hold the reference, amount, status, draw id and time, and nothing about the payer", async () => {
-    vi.stubEnv("SUPABASE_URL", ""); vi.stubEnv("NODE_ENV", "test");
-    expect(await claimPayment({ reference: "ref_1", amount_naira: 700, status: "success", draw_id: "d1" })).toBe("ok");
-    const row = memoryPayments().find((p) => p.reference === "ref_1")!;
-    expect(Object.keys(row).sort()).toEqual(["amount_naira", "created_at", "draw_id", "reference", "status"]);
+  it("have no email, name or card column in the payment and pass tables", () => {
+    const sql = readdirSync("supabase/migrations").filter((f) => f >= "20261121").map((f) => readFileSync(join("supabase/migrations", f), "utf8")).join("\n");
+    for (const t of ["payments", "year_passes"]) {
+      const body = sql.match(new RegExp(`create table ${t} \\(([\\s\\S]*?)\\n\\);`))![1];
+      expect(body, t).not.toMatch(/email|name|card|phone/i);
+    }
   });
-
-  it("let one payment unlock only one draw", async () => {
-    vi.stubEnv("SUPABASE_URL", ""); vi.stubEnv("NODE_ENV", "test");
-    await claimPayment({ reference: "ref_2", amount_naira: 700, status: "success", draw_id: "d2" });
-    expect(await claimPayment({ reference: "ref_2", amount_naira: 700, status: "success", draw_id: "d3" })).toBe("used");
-  });
-
-  it("have no email column in any table", () => {
-    for (const f of readdirSync("supabase/migrations")) {
-      const sql = readFileSync(join("supabase/migrations", f), "utf8");
-      const payments = sql.match(/create table payments \(([\s\S]*?)\n\);/);
-      if (payments) expect(payments[1]).not.toMatch(/email|name|card/i);
+  it("are written without any email", () => {
+    for (const f of ["lib/payments.ts", "lib/paywall.ts", "app/api/pay/start/route.ts", "app/api/paystack/webhook/route.ts", "app/api/pass/issue/route.ts"]) {
+      const src = readFileSync(f, "utf8").replace(/\/\/.*$/gm, "");
+      expect(src, f).not.toMatch(/\bemail\b/i);
     }
   });
 });

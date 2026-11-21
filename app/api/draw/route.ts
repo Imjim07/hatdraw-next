@@ -1,9 +1,9 @@
-import { randomInt, randomUUID } from "node:crypto";
+import { randomInt } from "node:crypto";
 import { draw } from "@/lib/draw";
 import { seal } from "@/lib/seal";
-import { PRICING, PAYWALL_MODE } from "@/lib/config";
-import { verifyPayment } from "@/lib/paystack";
-import { claimPayment } from "@/lib/payments";
+import { MAX_PEOPLE, PAYWALL_MODE } from "@/lib/config";
+import { tierFor } from "@/lib/pricing";
+import { unlockWithPayment, spendPassDraw, type Fail, type PassInfo, type Unlock } from "@/lib/paywall";
 import { common } from "@/lib/copy/common";
 import { santa } from "@/lib/copy/santa";
 import type { DrawRequest, DrawResponse, EventInfo, RevealPayload } from "@/lib/types";
@@ -11,6 +11,24 @@ import type { DrawRequest, DrawResponse, EventInfo, RevealPayload } from "@/lib/
 const clip = (s: unknown, n: number) => String(s ?? "").trim().slice(0, n);
 const fail = (error: string, status = 400, extra: object = {}) =>
   Response.json({ ok: false, error, ...extra } satisfies DrawResponse, { status });
+
+const MESSAGES: Record<string, string> = {
+  payment_not_found: santa.errors.paymentNotFound,
+  payment_used: santa.errors.paymentUsed,
+  payment_pending: santa.errors.paymentPending,
+  payment_too_small: santa.errors.needsPayment,
+  payments_off: santa.errors.paymentsOff,
+  too_many: santa.errors.tooMany,
+  pass_invalid: santa.paywall.passInvalid,
+  pass_too_big: santa.paywall.passTooBig,
+};
+function payFail(f: Fail, people = 0) {
+  const { ok: _ok, status, code, ...extra } = f;
+  void _ok;
+  const tier = extra.tier as { label: string } | undefined;
+  const error = code === "tier_upgrade" && tier ? santa.paywall.upgrade(people, tier.label, Number(extra.extraKobo) / 100) : MESSAGES[code] ?? santa.errors.needsPayment;
+  return fail(error, status, { needsPayment: true, code, ...extra });
+}
 
 export async function POST(req: Request) {
   let body: DrawRequest;
@@ -32,28 +50,36 @@ export async function POST(req: Request) {
       .map((p) => [p.toLowerCase(), p] as const),
   ).values()];
   if (people.length < 3) return fail(santa.errors.tooFew);
-  if (people.length > PRICING.MAX_PEOPLE) return fail(santa.errors.tooMany);
+  if (people.length > MAX_PEOPLE) return fail(santa.errors.tooMany);
 
   const names = new Set(people);
   const ex = (Array.isArray(body.ex) ? body.ex : [])
     .filter((p): p is [string, string] => Array.isArray(p) && names.has(p[0]) && names.has(p[1]) && p[0] !== p[1]);
 
-  // Paywall is enforced here, on the server, not in the browser.
-  let demoUnlock = false;
-  if (people.length > PRICING.FREE_LIMIT) {
-    if (PAYWALL_MODE === "live") {
-      const paid = await verifyPayment(clip(body.reference, 100), PRICING.ONE_TIME);
-      if (!paid) return fail(santa.errors.needsPayment, 402, { needsPayment: true });
-      // One payment, one draw. Only the reference, amount, status, a draw id and the time are kept.
-      const claim = await claimPayment({ reference: paid.reference, amount_naira: paid.amountNaira, status: paid.status, draw_id: randomUUID() });
-      if (claim === "used") return fail(santa.errors.paymentUsed, 402, { needsPayment: true });
-    } else {
-      demoUnlock = true;
+  // Paywall, enforced here on the server. The price comes from PRICING (lib/pricing.ts);
+  // the browser only passes a Paystack reference or a Year pass code.
+  let demoUnlock = false, unlock: Unlock | null = null, passCode = "", pass: PassInfo | undefined;
+  if (tierFor(people.length)) {
+    if (PAYWALL_MODE !== "live") demoUnlock = true;
+    else if (body.passCode) passCode = clip(body.passCode, 40);
+    else {
+      const u = await unlockWithPayment(clip(body.reference, 40), people.length);
+      if (!u.ok) return payFail(u, people.length);
+      unlock = u;
     }
   }
 
+  // Work the draw out first: it changes nothing, so a failure here leaves the payment unused.
   const result = draw(people, ex, body.circle !== false, (n) => randomInt(n));
   if (!result) return fail(santa.errors.rulesTooStrict, 422);
+
+  // Then use up the payment (one reference, one draw) or one draw of the pass.
+  if (unlock && !(await unlock.claim())) return payFail({ ok: false, code: "payment_used", status: 402 });
+  if (passCode) {
+    const r = await spendPassDraw(passCode, people.length);
+    if (!r.ok) return payFail(r, people.length);
+    pass = { expiresAt: r.expiresAt, drawsLeft: r.drawsLeft };
+  }
 
   const map = new Map(result.pairs);
   const givers = people.map((g) => ({
@@ -65,6 +91,7 @@ export async function POST(req: Request) {
     ok: true,
     circle: result.circle,
     demoUnlock,
+    ...(pass ? { pass } : {}),
     givers,
     ...(body.blind === false ? { pairs: result.pairs } : {}),
   };

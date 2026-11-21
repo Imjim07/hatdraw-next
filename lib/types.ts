@@ -23,9 +23,10 @@ export type DrawRequest = {
   ex: [string, string][];
   circle: boolean;
   blind: boolean;
-  reference?: string; // Paystack reference for paid draws
+  reference?: string; // KDR- payment reference for paid draws (from /api/pay/start)
+  passCode?: string; // or a Year pass code
 };
 
 export type DrawResponse =
-  | { ok: true; circle: boolean; demoUnlock: boolean; givers: { name: string; token: string }[]; pairs?: [string, string][] }
-  | { ok: false; error: string; needsPayment?: boolean };
+  | { ok: true; circle: boolean; demoUnlock: boolean; givers: { name: string; token: string }[]; pairs?: [string, string][]; pass?: { expiresAt: string; drawsLeft: number } }
+  | { ok: false; error: string; needsPayment?: boolean; code?: string; upgradeFrom?: string; extraKobo?: number };

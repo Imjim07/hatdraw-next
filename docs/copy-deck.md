@@ -1,4 +1,4 @@
-<!-- Exported from the Claude Doc "Kadara: Copy Deck & Launch Plan" (rev 15), 2026-11-20. That doc is the source of truth: re-export it rather than editing this file. -->
+<!-- Exported from the Claude Doc "Kadara: Copy Deck & Launch Plan" (rev 16), 2026-11-21. That doc is the source of truth: re-export it rather than editing this file. -->
 
 # Kadara: Copy Deck & Launch Plan
 
@@ -106,11 +106,15 @@ The landing page leads with fair draws in general, then lets the visitor pick Se
 
 The hat is gone, so "Small Hat" and "Big Hat" become circles, matching the ṣẹ̀kẹ̀rẹ̀ and ajo.
 
-| Plan | Price | Line |
-| --- | --- | --- |
-| Small circle | Free | Secret Santa for up to 15 people |
-| Big circle | ₦3,500 per draw | Offices, churches and big families, up to 500 people |
-| Ajo | Free | Any group size. Kadara never holds money |
+| Plan | People | Price | Line |
+| --- | --- | --- | --- |
+| Small circle | Up to 15 | Free | Friends and family. No payment, no sign-up |
+| Mid circle | 16–50 | ₦1,500 per draw | Church fellowships, big families, small offices |
+| Big circle | 51–500 | ₦7,500 per draw | Offices, churches and whole departments |
+| Year pass | Up to 500 per draw | ₦15,000 once, for 12 months | Unlimited draws all year: Christmas, birthdays, team events. No auto-renewal |
+| Ajo | Any size | Free | Kadara never holds money |
+
+Prices are locked for launch. Review on 8 Dec: if fewer than 1 in 4 organisers who reach the payment screen pay for Mid circle, drop it to ₦1,000.
 
 ### 6. FAQ
 
@@ -159,8 +163,11 @@ The Santa flow is the playful one: four wizard steps, the link hand-off, then th
 **Paywall (more than 15 people)**
 
 - **Heading:** [N] people in the circle
-- **Line:** Draws up to 15 people are free. Bigger groups pay once for this draw.
-- **Button:** Pay ₦3,500 and draw
+- **Line (16–50):** Draws up to 15 people are free. A circle of [N] is ₦1,500, paid once for this draw.
+- **Line (51–500):** Draws up to 15 people are free. A circle of [N] is ₦7,500, paid once for this draw.
+- **Button:** Pay ₦[price] and draw
+- **Second option (small):** Running more than one draw this year? Get the Year pass for ₦15,000.
+- **Year pass holder:** Year pass active until [date]. No payment needed.
 
 **Errors**
 

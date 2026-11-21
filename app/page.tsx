@@ -19,36 +19,19 @@ import { common } from "@/lib/copy/common";
 import { landing } from "@/lib/copy/landing";
 
 
-// Small circle stays free in both periods. Yearly prices need accounts, so they
-// aren't sold yet; only the per-draw Big circle goes to checkout. Ajo is always free.
+// Per-draw prices from PRICING (lib/config.ts); the copy is from the deck's Pricing table.
 const P = landing.pricing;
+const [MID, BIG] = PRICING.TIERS;
 const PLANS: Plan[] = [
+  { id: "small", name: P.small.name, who: P.small.who, price: 0, unit: "", note: P.small.note, features: P.small.features, cta: { label: P.small.cta, href: "/draw", variant: "ghost" } },
+  { id: "mid", name: P.mid.name, who: P.mid.who, price: MID.price, unit: P.perDraw, note: P.mid.note, features: P.mid.features, cta: { label: P.mid.cta, href: "/draw", variant: "ghost" } },
   {
-    id: "small", name: P.small.name, who: P.small.who,
-    price: { monthly: 0, yearly: 0 }, unit: { monthly: "", yearly: "" },
-    note: { monthly: P.small.note, yearly: P.small.note },
-    features: P.small.features,
-    cta: { monthly: { label: P.small.cta, href: "/draw", variant: "ghost" }, yearly: { label: P.small.cta, href: "/draw", variant: "ghost" } },
+    id: "big", name: P.big.name, who: P.big.who, popular: true, price: BIG.price, unit: P.perDraw, note: P.big.note, features: P.big.features,
+    cta: { label: P.big.cta, href: "/draw", variant: "gold" }, extra: { label: P.big.talkToUs, href: mailto(CONTACT.sales, P.big.talkSubject) },
   },
-  {
-    id: "big", name: P.big.name, who: P.big.who, popular: true,
-    price: { monthly: PRICING.ONE_TIME, yearly: PRICING.BIG_CIRCLE_YEARLY }, unit: { monthly: P.perDraw, yearly: P.perYear },
-    note: { monthly: P.big.noteMonthly, yearly: P.big.noteYearly },
-    features: P.big.features,
-    cta: { monthly: { label: P.big.cta, href: "/draw", variant: "gold" }, yearly: { label: P.big.ctaYearly, variant: "ghost" } },
-    extra: { label: P.big.talkToUs, href: mailto(CONTACT.sales, P.big.talkSubject) },
-  },
-  {
-    id: "ajo", name: P.ajo.name, who: P.ajo.who,
-    price: { monthly: 0, yearly: 0 }, unit: { monthly: "", yearly: "" },
-    note: { monthly: P.ajo.note, yearly: P.ajo.note },
-    features: P.ajo.features,
-    cta: { monthly: { label: P.ajo.cta, href: "/ajo", variant: "ghost" }, yearly: { label: P.ajo.cta, href: "/ajo", variant: "ghost" } },
-  },
+  { id: "pass", name: P.pass.name, who: P.pass.who, price: PRICING.YEAR_PASS.price, unit: P.once, note: P.pass.note, features: P.pass.features, cta: { label: P.pass.cta, href: "/draw", variant: "ghost" } },
+  { id: "ajo", name: P.ajo.name, who: P.ajo.who, price: 0, unit: "", note: P.ajo.note, features: P.ajo.features, cta: { label: P.ajo.cta, href: "/ajo", variant: "ghost" } },
 ];
-// Best yearly saving against twelve monthly payments, for the toggle badge.
-const save = Math.max(...PLANS.filter((p) => p.price.monthly > 0).map((p) => 1 - p.price.yearly / (12 * p.price.monthly)));
-const yearlyBadge = P.saveUpTo(Math.round(save * 100));
 
 const M = common.menuItems;
 const MENU = [
@@ -107,7 +90,7 @@ export default function Home() {
         <div className="eyebrow">{P.eyebrow}</div>
         <h2>{P.heading}</h2>
         <p className="sub">{P.subline}</p>
-        <PricingTable plans={PLANS} yearlyBadge={yearlyBadge} />
+        <PricingTable plans={PLANS} />
       </div></section>
 
       {/* One sheet that slides up over the pricing section on the last scroll (FooterStack) */}

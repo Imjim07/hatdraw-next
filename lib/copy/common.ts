@@ -15,7 +15,7 @@ export const common = {
     offers: "What we offer",
   },
   startDraw: "Start a draw",
-  menuNote: `Free up to ${PRICING.FREE_LIMIT} people · Made in Lagos`,
+  menuNote: `Free up to ${PRICING.FREE_MAX} people · Made in Lagos`,
   logoHome: `${BRAND.name} home`,
   copied: "Link copied",
   couldntCopy: "Couldn't copy",

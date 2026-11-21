@@ -1,72 +1,49 @@
 "use client";
-// Pricing table with a Monthly/Yearly toggle, adapted from the Kara UI
+// Pricing table, adapted from the Kara UI
 // "pricing-table" block (karaui.kamisama-v0.my.id/components/blocks/pricing-table).
 // Same behaviour — a pill that glides between periods, prices that roll
 // digit-by-digit, a note that swaps under the price — rebuilt in plain CSS on
 // the Indigo & Starch tokens. No Tailwind, motion or icon library.
-import { useId, useState } from "react";
+import { useId } from "react";
 import { Owo } from "./motifs";
 import SpecularButton from "./SpecularButton";
 import { naira } from "@/lib/config";
 import { landing } from "@/lib/copy/landing";
 
-export type Billing = "monthly" | "yearly";
-type PerPeriod<T> = Record<Billing, T>;
-
 export type Plan = {
   id: string;
   name: string;
   who: string;
-  /** ₦. 0 in both periods = free. */
-  price: PerPeriod<number>;
+  /** ₦. 0 = free. */
+  price: number;
   /** Shown after the price, e.g. "per draw". */
-  unit: PerPeriod<string>;
-  note: PerPeriod<string>;
+  unit: string;
+  note: string;
   features: string[];
   popular?: boolean;
   tag?: string;
   /** No href: rendered as a disabled label. */
-  cta: PerPeriod<{ label: string; href?: string; variant: "gold" | "ghost" }>;
+  cta: { label: string; href?: string; variant: "gold" | "ghost" };
   /** An extra text link under the button, e.g. "Talk to us" by email. */
   extra?: { label: string; href: string };
 };
 
-export default function PricingTable({ plans, yearlyBadge }: { plans: Plan[]; yearlyBadge?: string }) {
-  const [period, setPeriod] = useState<Billing>("monthly");
+// Prices are per draw (or one Year pass), so there is no monthly/yearly switch any more.
+export default function PricingTable({ plans }: { plans: Plan[] }) {
   return (
     <div className="pricing-table">
-      <BillingToggle value={period} onChange={setPeriod} badge={yearlyBadge} />
       <div className="prices">
-        {plans.map((p) => <PlanCard key={p.id} plan={p} period={period} />)}
+        {plans.map((p) => <PlanCard key={p.id} plan={p} />)}
       </div>
     </div>
   );
 }
 
-function BillingToggle({ value, onChange, badge }: { value: Billing; onChange: (b: Billing) => void; badge?: string }) {
-  const options: { value: Billing; label: string }[] = [
-    { value: "monthly", label: landing.pricing.monthly },
-    { value: "yearly", label: landing.pricing.yearly },
-  ];
-  return (
-    <fieldset className="billing" data-period={value}>
-      <legend className="sr-only">{landing.pricing.billingPeriod}</legend>
-      <span className="billing-pill" aria-hidden="true" />
-      {options.map((o) => (
-        <button key={o.value} type="button" aria-pressed={o.value === value} onClick={() => onChange(o.value)}>
-          {o.label}
-          {o.value === "yearly" && badge && <span className="billing-badge">{badge}</span>}
-        </button>
-      ))}
-    </fieldset>
-  );
-}
-
-function PlanCard({ plan, period }: { plan: Plan; period: Billing }) {
+function PlanCard({ plan }: { plan: Plan }) {
   const titleId = useId();
-  const free = plan.price.monthly === 0 && plan.price.yearly === 0;
-  const amount = free ? landing.pricing.free : naira(plan.price[period]);
-  const cta = plan.cta[period];
+  const free = plan.price === 0;
+  const amount = free ? landing.pricing.free : naira(plan.price);
+  const cta = plan.cta;
   return (
     <section aria-labelledby={titleId} className={`price${plan.popular ? " hot" : ""}`}>
       {plan.tag && <span className="tag">{plan.tag}</span>}
@@ -74,9 +51,9 @@ function PlanCard({ plan, period }: { plan: Plan; period: Billing }) {
       <div className="who">{plan.who}</div>
       <div className="amt">
         <strong><Roll text={amount} /></strong>
-        {!free && <small>{plan.unit[period]}</small>}
+        {!free && <small>{plan.unit}</small>}
       </div>
-      <p className="price-note" key={plan.note[period]}>{plan.note[period]}</p>
+      <p className="price-note">{plan.note}</p>
       <ul>{plan.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--indigo)" />{t}</li>)}</ul>
       {cta.href
         ? <SpecularButton href={cta.href} className={`btn btn-${cta.variant}`}>{cta.label}</SpecularButton>

@@ -1,4 +1,4 @@
-import { BRAND, CONTACT } from "@/lib/config";
+import { BRAND, CONTACT, PRICING } from "@/lib/config";
 
 // /privacy and /terms, in plain words. Written only from the facts the owner gave
 // (see the Claude Code prompt of 2026-11-20); nothing here may be added without one.
@@ -33,9 +33,16 @@ export const legal = {
       { h: "Draws", p: ["Draws are random and run on our server.", "We don't guarantee any outcome beyond a fair draw."] },
       { h: "Ajo", p: [`${BRAND.name} never holds, moves or guarantees ajo money.`, "Members are responsible for paying each other."] },
       { h: "Gifts", p: ["Gifts are sold by independent vendors.", "The sale is between the buyer and the vendor."] },
-      { h: "Big circle", p: ["Big circle payments are one-time and cover one draw."] },
+      { h: "Paid draws", p: ["Mid circle and Big circle payments are one-time and cover one draw."] },
+      { h: "Year pass", id: "year-pass", p: [`A Year pass covers up to ${PRICING.YEAR_PASS.maxDraws} draws of up to ${PRICING.YEAR_PASS.maxPeople} people each, for 12 months from purchase, for one organiser or organisation.`, "It doesn't renew. There's no subscription."] },
+      { h: "Refund policy", id: "refunds", p: [
+        "Single draw: full refund if you ask before the draw is run. No refund after links have been created.",
+        "Year pass: full refund within 7 days if no draws have been run with it. Otherwise no refund.",
+        "How: email support with your Paystack reference.",
+      ], refunds: true },
       { h: "Fair use", p: [`Don't use ${BRAND.name} for gambling, lotteries or anything illegal.`] },
     ],
+    refundSubject: "Refund request: [Paystack reference]",
     contactLabel: "Contact:",
     contact: CONTACT,
   },

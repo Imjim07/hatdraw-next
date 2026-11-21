@@ -1,4 +1,6 @@
-import { BRAND, PRICING, naira } from "@/lib/config";
+import { BRAND, PRICING } from "@/lib/config";
+
+const [MID, BIG] = PRICING.TIERS;
 
 // The landing page. Source: docs/copy-deck.md, "Landing page".
 const SHEKERE = "ṣẹ̀kẹ̀rẹ̀";
@@ -17,7 +19,7 @@ export const landing = {
     santa: {
       line: `Drop everyone's name in the ${SHEKERE}. Each person gets a private link to see who they're gifting.`,
       button: "Start a Secret Santa",
-      smallPrint: [`Free up to ${PRICING.FREE_LIMIT} people`, "No sign-up"],
+      smallPrint: [`Free up to ${PRICING.FREE_MAX} people`, "No sign-up"],
     },
     ajo: {
       line: "Draw your group's payout order once, in front of everyone, and share one schedule to WhatsApp.",
@@ -86,39 +88,49 @@ export const landing = {
     line: "Gifts from Nigerian vendors, sorted by budget. You order straight from the vendor on WhatsApp.",
     button: "Browse gifts",
   },
+  /** Source: docs/copy-deck.md, "Pricing" (prices locked for launch). */
   pricing: {
     eyebrow: "Pricing",
     heading: "Free for small groups. One small fee for big ones.",
-    subline: `Any Secret Santa with up to ${PRICING.FREE_LIMIT} people is free. Bigger groups pay once per draw.`,
-    monthly: "Monthly",
-    yearly: "Yearly",
-    billingPeriod: "Billing period",
-    saveUpTo: (pct: number) => `Save up to ${pct}%`,
+    subline: `Any Secret Santa with up to ${PRICING.FREE_MAX} people is free. Bigger circles pay once per draw, or get the Year pass.`,
     free: "Free",
     perDraw: "per draw",
-    perYear: "per year",
+    once: "once, for 12 months",
     small: {
       name: "Small circle",
-      who: `Secret Santa for up to ${PRICING.FREE_LIMIT} people`,
-      note: "Always free",
-      features: [`Up to ${PRICING.FREE_LIMIT} people`, "Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode"],
+      who: `Up to ${PRICING.FREE_MAX} people`,
+      note: "Friends and family. No payment, no sign-up",
+      features: ["Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode"],
       cta: "Start a Secret Santa",
     },
+    mid: {
+      name: MID.label,
+      who: `${MID.min}–${MID.max} people`,
+      note: "Church fellowships, big families, small offices",
+      features: ["Everything in Small circle", "One big circle mode", "Custom note on every reveal"],
+      cta: "Start a draw",
+    },
     big: {
-      name: "Big circle",
-      who: `Offices, churches and big families, up to ${PRICING.MAX_PEOPLE} people`,
-      noteMonthly: "Pay once for each draw",
-      noteYearly: `Billed ${naira(PRICING.BIG_CIRCLE_YEARLY)} once a year`,
-      features: [`Up to ${PRICING.MAX_PEOPLE} people`, "Everything in Small circle", "One big circle mode", "Custom note on every reveal"],
+      name: BIG.label,
+      who: `${BIG.min}–${BIG.max} people`,
+      note: "Offices, churches and whole departments",
+      features: ["Everything in Mid circle", `Up to ${BIG.max} people`],
       cta: "Start a big draw",
-      ctaYearly: "Yearly coming soon",
       talkToUs: "Planning for a big office or church? Talk to us",
       talkSubject: "Big circle for [organisation]",
     },
+    pass: {
+      name: "Year pass",
+      who: `Up to ${PRICING.YEAR_PASS.maxPeople} per draw`,
+      // The deck says "Unlimited draws all year"; the pass is capped at 25 draws (fair use), so it says so.
+      note: `Up to ${PRICING.YEAR_PASS.maxDraws} draws all year: Christmas, birthdays, team events. No auto-renewal`,
+      features: [`${PRICING.YEAR_PASS.maxDraws} draws in 12 months`, `Up to ${PRICING.YEAR_PASS.maxPeople} people each`, "One code, no account"],
+      cta: "Start a draw",
+    },
     ajo: {
       name: "Ajo",
-      who: `Any group size. ${BRAND.name} never holds money`,
-      note: "Always free",
+      who: "Any size",
+      note: `${BRAND.name} never holds money`,
       features: ["Locked or live draw", "Reminders before each turn", "Swaps both members agree to"],
       cta: "Draw an ajo order",
     },

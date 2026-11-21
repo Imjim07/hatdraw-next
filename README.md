@@ -18,7 +18,7 @@ Preview any weather scene: `/?wx=snow|rain|storm|clear-day|clear-night|cloudy|fo
 
 | Piece | Where | Notes |
 |---|---|---|
-| Draw | `app/api/draw/route.ts` + `lib/draw.ts` | Runs on the **server** with `crypto.randomInt`. Enforces the 15-person free limit and the paywall. |
+| Draw | `app/api/draw/route.ts` + `lib/draw.ts` | Runs on the **server** with `crypto.randomInt`. Enforces the free limit (15 people) and the paywall: Mid circle ₦1,500 (16–50), Big circle ₦7,500 (51–500), or a Year pass. |
 | Reveal links | `lib/seal.ts`, `app/api/reveal/route.ts`, `app/r/page.tsx` | Links are `/r#<token>`. The token is AES-256-GCM encrypted, so nobody (organizer included) can read a match from the link. The `#` part never reaches server logs. |
 | Weather | `app/api/weather/route.ts`, `lib/weather.ts`, `components/Ambient.tsx` | Reads the visitor's approximate location from the host's headers (Vercel, Netlify or Cloudflare) and gets current weather from MET Norway (free for commercial use, CC BY 4.0, attribution in footer). Falls back to festive snow. "Let it snow" overrides. Harmattan = West Africa + Nov–Mar + humidity < 40%. |
 | Rename / prices | `lib/config.ts` | One file. |
@@ -68,17 +68,28 @@ Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `EMAIL_FROM` 
 - Set `DRAW_SECRET` in the host's environment variables **before** the first real draw, and never change it afterwards.
 - Cloudflare: turn on *Managed Transforms → Add visitor location headers* for weather to work.
 
+## Pricing and payments
+
+Prices live in `PRICING` (`lib/config.ts`); `tierFor()` in `lib/pricing.ts` picks the tier. The browser never sets an amount:
+
+1. Shake with more than 15 names → `POST /api/pay/start { kind: "draw", peopleCount }`. The server picks the tier, makes a `KDR-` reference and stores a `payments` row (`pending`), and returns the amount in kobo.
+2. Paystack Inline opens with that reference and amount. The email Paystack needs is typed in the paywall and sent only to Paystack.
+3. `/api/draw { reference }` checks Paystack (success, NGN, exactly that amount), that the circle fits the tier, and that the reference is unused; works the draw out; then marks the reference `used`. A draw that fails on our side leaves it usable. Names added after paying → the server offers to pay only the difference (`upgradeFrom`).
+4. `POST /api/paystack/webhook` (signature: HMAC SHA-512 of `PAYSTACK_SECRET_KEY`) marks payments paid even if the browser closes. Point Paystack's webhook URL at it.
+
+**Year pass** (₦15,000, 12 months, up to 25 draws of up to 500 people): bought the same way (`kind: "pass"`), then `/api/pass/issue` shows the code once (`KDR-XXXX-XXXX-XXXX-XXXX`); only its SHA-256 is stored. The buyer can email it to themselves (`/api/pass/email`; the address is used once and dropped). It's remembered on the phone (`localStorage` key `kdr-pass`). Lost code: `node scripts/reissue-pass.ts <Paystack reference>` prints a new one (same expiry and draws).
+
+Before `NEXT_PUBLIC_PAYWALL_MODE=live`: run the migrations, set `PAYSTACK_SECRET_KEY` and `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY`, add the webhook URL in Paystack, and test in Paystack test mode.
+
 ## Known gaps (next steps)
 
-1. **Paystack reference reuse.** `lib/paystack.ts` verifies a payment, but without a database one reference could unlock several draws. Add a `payments` table (Supabase) and mark references as used.
-2. **Live Paystack checkout is untested.** It uses the v2 inline script. Test in Paystack test mode before setting `NEXT_PUBLIC_PAYWALL_MODE=live`.
-3. **Fonts** load from Google Fonts via `<link>`. Switch to `next/font/google` for self-hosted fonts and no layout shift.
-4. Yearly plan, resolutions and email (Resend) need accounts: Supabase auth + tables.
+1. **Live Paystack checkout is untested.** It uses the v2 inline script. Test in Paystack test mode before going live.
+2. **Fonts** load from Google Fonts via `<link>`. Switch to `next/font/google` for self-hosted fonts and no layout shift.
 
 ## Data we keep, and for how long
 
 - **Secret Santa:** nothing. Names, matches, budgets and dates live only in the encrypted links. The draw and reveal routes log no request data (`lib/privacy.test.ts` checks).
-- **Big circle payments:** the Paystack reference, amount, status, a random draw id and the time (`payments`). Never the payer's email. One reference unlocks one draw.
+- **Paid draws and Year passes:** the reference, what it bought (tier or pass, max people), the amount, the status and times (`payments`); a pass's code hash, expiry and draws used (`year_passes`). Never the payer's email or name. One reference unlocks one draw.
 - **Ajo:** groups, member names, amounts, dates and swaps. Emails only for members who opt in on their own page; "Stop reminders" (or switching reminders off) deletes the address. `GET /api/cron/cleanup` (daily, `Authorization: Bearer $CRON_SECRET`) deletes each group 90 days after its last turn, with everything under it.
 - **Ajo research (opt-in):** group size, contribution, frequency and creation month, in `ajo_research_stats`, with no link back to the group.
 - **Gift orders:** `gift_clicks` holds a ref, the product and the vendor. Nothing about the buyer; the order itself happens on the vendor's WhatsApp.
