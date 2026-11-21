@@ -1,4 +1,4 @@
-import { BRAND, PRICING } from "@/lib/config";
+import { BRAND, PRICING, naira } from "@/lib/config";
 
 const [MID, BIG] = PRICING.TIERS;
 
@@ -93,58 +93,38 @@ export const landing = {
     eyebrow: "Pricing",
     heading: "Free for small groups. One small fee for big ones.",
     subline: `Any Secret Santa with up to ${PRICING.FREE_MAX} people is free. Bigger circles pay once per draw, or get the Year pass.`,
+    // The switch: what a bigger circle costs per draw, or for the year (the Year pass).
+    perDrawTab: "Per draw",
+    yearly: "Yearly",
+    billingPeriod: "How to pay for a bigger circle",
+    yearlyBadge: "Year pass",
     free: "Free",
     perDraw: "per draw",
-    once: "once, for 12 months",
-    // Three columns: what's free, what each draw costs, and the Year pass.
-    cards: {
-      free: { name: "Free", who: "Secret Santa for small circles, and ajo" },
-      perDraw: { name: "Pay per draw", who: `For circles of more than ${PRICING.FREE_MAX} people` },
-      pass: { name: "Year pass", who: "One payment, draws all year" },
-    },
-    // Each price card flips over to show what's included.
-    flip: {
-      more: "What's included",
-      back: "Back to the price",
-      moreLabel: (name: string) => `${name}: show what's included`,
-      backLabel: (name: string) => `${name}: back to the price`,
-    },
+    perYear: "per year",
     small: {
-      product: "Secret Santa",
       name: "Small circle",
-      who: `Up to ${PRICING.FREE_MAX} people`,
-      note: "Friends and family. No payment, no sign-up",
-      features: ["Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode"],
+      who: `Secret Santa for up to ${PRICING.FREE_MAX} people`,
+      note: "Always free",
+      features: [`Up to ${PRICING.FREE_MAX} people`, "Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode"],
       cta: "Start a Secret Santa",
     },
-    mid: {
-      name: MID.label,
-      who: `${MID.min}–${MID.max} people`,
-      note: "Church fellowships, big families, small offices",
-      features: ["Everything in Small circle", "One big circle mode", "Custom note on every reveal", "Paid once, for that draw"],
-      cta: "Start a draw",
-    },
     big: {
-      name: BIG.label,
-      who: `${BIG.min}–${BIG.max} people`,
-      note: "Offices, churches and whole departments",
-      features: ["Everything in Mid circle", `Up to ${BIG.max} people`, "Paid once, for that draw"],
+      name: "Big circle",
+      who: `Offices, churches and big families, up to ${BIG.max} people`,
+      // Per draw: the Mid circle price, with the Big circle price under it.
+      unitPerDraw: `per draw, ${MID.min}–${MID.max} people`,
+      notePerDraw: `${BIG.min}–${BIG.max} people: ${naira(BIG.price)} per draw`,
+      // Yearly: the Year pass. The deck says "Unlimited draws"; it is capped at 25 (fair use), so it says so.
+      noteYearly: `Year pass: up to ${PRICING.YEAR_PASS.maxDraws} draws all year. No auto-renewal`,
+      features: [`Up to ${BIG.max} people`, "Everything in Small circle", "One big circle mode", "Custom note on every reveal"],
       cta: "Start a big draw",
       talkToUs: "Planning for a big office or church? Talk to us",
       talkSubject: "Big circle for [organisation]",
     },
-    pass: {
-      name: "Year pass",
-      who: `Up to ${PRICING.YEAR_PASS.maxPeople} per draw`,
-      // The deck says "Unlimited draws all year"; the pass is capped at 25 draws (fair use), so it says so.
-      note: `Up to ${PRICING.YEAR_PASS.maxDraws} draws all year: Christmas, birthdays, team events. No auto-renewal`,
-      features: [`${PRICING.YEAR_PASS.maxDraws} draws in 12 months`, `Up to ${PRICING.YEAR_PASS.maxPeople} people each`, "One code, no account"],
-      cta: "Start a draw",
-    },
     ajo: {
       name: "Ajo",
-      who: "Any size",
-      note: `${BRAND.name} never holds money`,
+      who: `Any group size. ${BRAND.name} never holds money`,
+      note: "Always free",
       features: ["Locked or live draw", "Reminders before each turn", "Swaps both members agree to"],
       cta: "Draw an ajo order",
     },

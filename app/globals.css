@@ -264,39 +264,47 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .amt{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .amt strong{font-family:var(--display);font-size:2.6rem;font-weight:600;letter-spacing:-.02em;color:var(--indigo)}
 .amt small{color:var(--text-muted)}
-/* Pricing: three columns of flip cards (Free · Pay per draw · Year pass) */
+/* Pricing: a Per draw / Yearly switch over three cards (Small circle, Big circle, Ajo) */
 .pricing-table{margin-top:36px}.pricing-table .prices{margin-top:30px}
-.price-group{display:flex;flex-direction:column;min-width:0;padding:22px;border:1px solid var(--line);border-radius:var(--r-lg);background:color-mix(in srgb,var(--indigo-mist) 35%,transparent)}
-.price-group.hot{border-color:var(--indigo)}
-.price-group h3{font-family:var(--display);font-size:1.45rem;font-weight:600;color:var(--indigo)}
-.price-group .who{color:var(--text-muted);font-size:.9rem;margin:4px 0 18px}
-.flip-stack{flex:1;display:grid;grid-auto-rows:1fr;gap:14px}
-.flip{perspective:1200px;cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:0}
-.flip-inner{position:relative;display:grid;height:100%;transform-style:preserve-3d;transition:transform .7s var(--spring)}
-.flip.is-flipped .flip-inner{transform:rotateY(180deg)}
-.flip-face{grid-area:1/1;display:flex;flex-direction:column;min-width:0;padding:22px;border:1px solid var(--line);border-radius:var(--r);background:var(--cloud);box-shadow:0 14px 30px -22px rgba(20,26,51,.35);-webkit-backface-visibility:hidden;backface-visibility:hidden}
-.flip-back{transform:rotateY(180deg)}
-.flip:hover .flip-face{border-color:color-mix(in srgb,var(--indigo) 35%,transparent)}
-.flip-face h4{font-family:var(--display);font-size:1.15rem;font-weight:600;color:var(--indigo)}
-.flip-who{margin-top:2px;font-size:.86rem;color:var(--text-muted)}
-.flip-price{display:flex;flex-direction:column;align-items:center;gap:8px;margin:auto 0;padding:22px 0;text-align:center}
-.flip-price small{color:var(--text-muted);font-size:.84rem}
-.flip-note{margin:6px 0 0;font-size:.86rem;color:var(--text-muted);line-height:1.45}
-.flip-face ul{list-style:none;margin:12px 0 10px;padding:0;display:grid;gap:8px;font-size:.9rem;color:var(--ink)}
-.flip-face li{display:flex;gap:10px;align-items:flex-start}
-.flip-face li svg{flex:none;margin-top:3px}
-.flip-btn{align-self:flex-start;margin-top:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0;border:0;background:none;font:inherit;font-size:.86rem;font-weight:700;color:var(--indigo);cursor:pointer}
-.flip-front .flip-btn{align-self:center;margin-top:0}
-.flip-btn:hover{text-decoration:underline;text-underline-offset:3px}
-.flip-btn:focus-visible{outline:2px solid var(--indigo);outline-offset:3px;border-radius:6px}
-/* The price: amber glass with the specular edge (palm gold under dark ink, both themes) */
-.specular-button.price-glass{--sb-line:#FFF6DC;--sb-base:#B07A12;--sb-text-color:#141A33;cursor:inherit;padding:8px 20px;font-family:var(--display);font-size:1.7rem;font-weight:700;letter-spacing:-.02em;line-height:1.15;color:#141A33;background:linear-gradient(160deg,color-mix(in srgb,#FFD978 85%,transparent),color-mix(in srgb,var(--palm-gold) 80%,transparent));-webkit-backdrop-filter:blur(10px) saturate(1.5);backdrop-filter:blur(10px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(140,90,0,.25),0 12px 26px -14px rgba(176,122,18,.65)}
-.specular-button.price-glass:active{transform:none}
+.price{position:relative;min-width:0;background:var(--cloud);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px;display:flex;flex-direction:column}
+.price.hot{border-color:var(--indigo)}
+.price h3{font-family:var(--display);font-size:1.45rem;font-weight:600;color:var(--indigo)}
+.price .who{color:var(--text-muted);font-size:.9rem;margin:4px 0 20px}
+.price ul{list-style:none;margin:22px 0 26px;padding:0;display:grid;gap:9px;font-size:.93rem;color:var(--ink)}
+.price li{display:flex;gap:10px;align-items:flex-start}
+.price li svg{flex:none;margin-top:3px}
+.price-note{min-height:1.3em;margin-top:6px;font-size:.84rem;color:var(--text-muted)}
+.price-extra{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:6px;color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
+.billing{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;max-width:100%;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--indigo-mist);min-width:0}
+.billing button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border:0;background:none;border-radius:999px;font:inherit;font-weight:700;font-size:.92rem;color:var(--text-muted);cursor:pointer;transition:color .25s}
+.billing button[aria-pressed="true"]{color:var(--cloud)}
+.billing button:not([aria-pressed="true"]):hover{color:var(--ink)}
+.billing-pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--indigo);box-shadow:0 6px 18px -8px rgba(20,26,51,.4);transition:transform .45s var(--spring)}
+.billing[data-period="yearly"] .billing-pill{transform:translateX(100%)}
+.billing-badge{font-size:.75rem;font-weight:800;padding:3px 7px;border-radius:999px;background:var(--palm-gold);color:var(--on-accent);white-space:nowrap}
+@media (max-width:380px){.billing button{padding:0 12px;gap:6px}}
+/* The price turns over like a card when the switch changes it */
+.price-flip{perspective:900px}
+.price-flip-inner{display:grid;transform-style:preserve-3d;transition:transform .7s var(--spring)}
+.price-flip.is-turned .price-flip-inner{transform:rotateX(180deg)}
+.price-flip-face{grid-area:1/1;min-width:0;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.price-flip-back{transform:rotateX(180deg)}
+/* Buttons roll over like a cube: outlined face, then the filled face with an arrow */
+.flip-cta{--h:52px;position:relative;display:block;margin-top:auto;height:var(--h);perspective:700px;border-radius:999px;font-weight:700;font-size:.98rem;text-decoration:none}
+.flip-cta-box{position:relative;display:block;height:100%;transform-style:preserve-3d;transform:translateZ(calc(var(--h) / -2));transition:transform .55s var(--spring)}
+.flip-cta-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border-radius:999px;text-align:center;line-height:1.2;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.flip-cta-front{transform:translateZ(calc(var(--h) / 2));border:1.5px solid color-mix(in srgb,var(--ink) 25%,transparent);background:var(--cloud);color:var(--indigo)}
+.flip-cta-top{transform:rotateX(90deg) translateZ(calc(var(--h) / 2));background:var(--mode-cta-bg);color:var(--mode-cta-fg)}
+.price.hot .flip-cta-front{background:var(--indigo);border-color:var(--indigo);color:var(--cloud)}
+.price.hot .flip-cta-top{background:var(--palm-gold);color:var(--on-accent)}
+@media (hover:hover){.flip-cta:hover .flip-cta-box{transform:translateZ(calc(var(--h) / -2)) rotateX(-90deg)}}
+.flip-cta:focus-visible{outline:none}
+.flip-cta:focus-visible .flip-cta-box{transform:translateZ(calc(var(--h) / -2)) rotateX(-90deg)}
+.flip-cta:focus-visible .flip-cta-face{outline:2px solid var(--indigo);outline-offset:3px}
+.flip-cta:active .flip-cta-box{transition-duration:.15s}
 @media (prefers-reduced-motion:reduce){
-  .flip-inner{transition:none;transform:none!important}
-  .flip-face{-webkit-backface-visibility:visible;backface-visibility:visible;transition:opacity .2s}
-  .flip-back{transform:none;opacity:0}
-  .flip.is-flipped .flip-front{opacity:0}.flip.is-flipped .flip-back{opacity:1}
+  .billing-pill,.billing button{transition:none}
+  .price-flip-inner,.flip-cta-box{transition:none}
 }
 .btn-off{opacity:.5;cursor:default}
 /* site footer: one full-width sheet that slides up over the pricing section on the

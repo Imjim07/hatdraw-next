@@ -7,7 +7,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import FooterStack from "@/components/FooterStack";
 import SocialIcons from "@/components/SocialIcons";
 import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
-import PricingTable, { type PriceGroup } from "@/components/PricingTable";
+import PricingTable, { type Plan } from "@/components/PricingTable";
 import Offers from "@/components/Offers";
 import HowItWorks from "@/components/HowItWorks";
 // Old features section, replaced by "What <brand> offers" (Offers) in its place.
@@ -21,25 +21,26 @@ import { landing } from "@/lib/copy/landing";
 
 // Prices from PRICING (lib/config.ts); the copy is from the deck's Pricing table.
 const P = landing.pricing;
-const [MID, BIG] = PRICING.TIERS;
-const GROUPS: PriceGroup[] = [
+const [MID] = PRICING.TIERS;
+const PLANS: Plan[] = [
   {
-    id: "free", name: P.cards.free.name, who: P.cards.free.who,
-    cards: [
-      { id: "santa", name: P.small.product, who: `${P.small.name} · ${P.small.who}`, price: 0, unit: "", note: P.small.note, features: P.small.features },
-      { id: "ajo", name: P.ajo.name, who: P.ajo.who, price: 0, unit: "", note: P.ajo.note, features: P.ajo.features },
-    ],
+    id: "small", name: P.small.name, who: P.small.who,
+    price: { draw: 0, yearly: 0 }, unit: { draw: "", yearly: "" }, note: { draw: P.small.note, yearly: P.small.note },
+    features: P.small.features, cta: { label: P.small.cta, href: "/draw" },
   },
   {
-    id: "per-draw", name: P.cards.perDraw.name, who: P.cards.perDraw.who, hot: true,
-    cards: [
-      { id: "mid", name: P.mid.name, who: P.mid.who, price: MID.price, unit: P.perDraw, note: P.mid.note, features: P.mid.features },
-      { id: "big", name: P.big.name, who: P.big.who, price: BIG.price, unit: P.perDraw, note: P.big.note, features: P.big.features },
-    ],
+    // Per draw: the Mid circle price (the Big circle price is in the note). Yearly: the Year pass.
+    id: "big", name: P.big.name, who: P.big.who, popular: true,
+    price: { draw: MID.price, yearly: PRICING.YEAR_PASS.price },
+    unit: { draw: P.big.unitPerDraw, yearly: P.perYear },
+    note: { draw: P.big.notePerDraw, yearly: P.big.noteYearly },
+    features: P.big.features, cta: { label: P.big.cta, href: "/draw" },
+    extra: { label: P.big.talkToUs, href: mailto(CONTACT.sales, P.big.talkSubject) },
   },
   {
-    id: "pass", name: P.cards.pass.name, who: P.cards.pass.who,
-    cards: [{ id: "pass", name: P.pass.name, who: P.pass.who, price: PRICING.YEAR_PASS.price, unit: P.once, note: P.pass.note, features: P.pass.features }],
+    id: "ajo", name: P.ajo.name, who: P.ajo.who,
+    price: { draw: 0, yearly: 0 }, unit: { draw: "", yearly: "" }, note: { draw: P.ajo.note, yearly: P.ajo.note },
+    features: P.ajo.features, cta: { label: P.ajo.cta, href: "/ajo" },
   },
 ];
 
@@ -100,7 +101,7 @@ export default function Home() {
         <div className="eyebrow">{P.eyebrow}</div>
         <h2>{P.heading}</h2>
         <p className="sub">{P.subline}</p>
-        <PricingTable groups={GROUPS} />
+        <PricingTable plans={PLANS} />
       </div></section>
 
       {/* One sheet that slides up over the pricing section on the last scroll (FooterStack) */}
