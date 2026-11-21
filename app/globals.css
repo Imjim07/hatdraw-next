@@ -412,6 +412,12 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .kind-cards .mode-card{display:flex;flex-direction:column;align-items:center;gap:6px;min-height:44px;text-align:center;text-decoration:none;transition:border-color .2s,box-shadow .2s}
 .kind-cards .mode-card:hover{border-color:color-mix(in srgb,var(--ink) 30%,transparent)}
 .kind-cards .mode-card.on{border-color:var(--indigo);box-shadow:0 0 0 1px var(--indigo)}
+.kind-ico{display:block;width:32px;height:32px;flex:none}
+.kind-ico-gift{background:currentColor;-webkit-mask:url(/icons/kind-gift.png) center/contain no-repeat;mask:url(/icons/kind-gift.png) center/contain no-repeat}
+.kind-ico-ajo{background:url(/icons/kind-ajo.png) center/contain no-repeat}
+:root[data-theme="dark"] .kind-ico-ajo,:root.dark .kind-ico-ajo{background-image:url(/icons/kind-ajo-dark.png)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) .kind-ico-ajo{background-image:url(/icons/kind-ajo-dark.png)}}
+@media (forced-colors:active){.kind-ico-gift{background:CanvasText}}
 .chips-in{display:flex;gap:10px}.chips-in .pit{flex:1}
 
 /* the ayo board of names */
