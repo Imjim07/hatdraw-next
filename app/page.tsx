@@ -7,7 +7,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import FooterStack from "@/components/FooterStack";
 import SocialIcons from "@/components/SocialIcons";
 import CurvedMenu, { StartDrawFooter } from "@/components/ui/curved-menu";
-import PricingTable, { type Plan } from "@/components/PricingTable";
+import PricingTable, { type PriceGroup } from "@/components/PricingTable";
 import Offers from "@/components/Offers";
 import HowItWorks from "@/components/HowItWorks";
 // Old features section, replaced by "What <brand> offers" (Offers) in its place.
@@ -19,29 +19,28 @@ import { common } from "@/lib/copy/common";
 import { landing } from "@/lib/copy/landing";
 
 
-// Per-draw prices from PRICING (lib/config.ts); the copy is from the deck's Pricing table.
+// Prices from PRICING (lib/config.ts); the copy is from the deck's Pricing table.
 const P = landing.pricing;
 const [MID, BIG] = PRICING.TIERS;
-const PLANS: Plan[] = [
+const GROUPS: PriceGroup[] = [
   {
-    id: "free", name: P.cards.free.name, who: P.cards.free.who, price: 0, unit: "", note: "",
-    rows: [
-      { name: P.small.name, who: P.small.who, note: P.small.note, price: 0, unit: "" },
-      { name: P.ajo.name, who: P.ajo.who, note: P.ajo.note, price: 0, unit: "" },
+    id: "free", name: P.cards.free.name, who: P.cards.free.who,
+    cards: [
+      { id: "santa", name: P.small.product, who: `${P.small.name} · ${P.small.who}`, price: 0, unit: "", note: P.small.note, features: P.small.features },
+      { id: "ajo", name: P.ajo.name, who: P.ajo.who, price: 0, unit: "", note: P.ajo.note, features: P.ajo.features },
     ],
-    features: P.small.features,
-    cta: { label: P.small.cta, href: "/draw", variant: "ghost" }, extra: { label: P.cards.free.ajoLink, href: "/ajo" },
   },
   {
-    id: "per-draw", name: P.cards.perDraw.name, who: P.cards.perDraw.who, popular: true, price: MID.price, unit: P.perDraw, note: "",
-    rows: [
-      { name: P.mid.name, who: P.mid.who, note: P.mid.note, price: MID.price, unit: P.perDraw },
-      { name: P.big.name, who: P.big.who, note: P.big.note, price: BIG.price, unit: P.perDraw },
+    id: "per-draw", name: P.cards.perDraw.name, who: P.cards.perDraw.who, hot: true,
+    cards: [
+      { id: "mid", name: P.mid.name, who: P.mid.who, price: MID.price, unit: P.perDraw, note: P.mid.note, features: P.mid.features },
+      { id: "big", name: P.big.name, who: P.big.who, price: BIG.price, unit: P.perDraw, note: P.big.note, features: P.big.features },
     ],
-    features: P.mid.features,
-    cta: { label: P.mid.cta, href: "/draw", variant: "gold" }, extra: { label: P.big.talkToUs, href: mailto(CONTACT.sales, P.big.talkSubject) },
   },
-  { id: "pass", name: P.pass.name, who: P.pass.who, price: PRICING.YEAR_PASS.price, unit: P.once, note: P.pass.note, features: P.pass.features, cta: { label: P.pass.cta, href: "/draw", variant: "ghost" } },
+  {
+    id: "pass", name: P.cards.pass.name, who: P.cards.pass.who,
+    cards: [{ id: "pass", name: P.pass.name, who: P.pass.who, price: PRICING.YEAR_PASS.price, unit: P.once, note: P.pass.note, features: P.pass.features }],
+  },
 ];
 
 const M = common.menuItems;
@@ -101,7 +100,7 @@ export default function Home() {
         <div className="eyebrow">{P.eyebrow}</div>
         <h2>{P.heading}</h2>
         <p className="sub">{P.subline}</p>
-        <PricingTable plans={PLANS} />
+        <PricingTable groups={GROUPS} />
       </div></section>
 
       {/* One sheet that slides up over the pricing section on the last scroll (FooterStack) */}

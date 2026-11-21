@@ -1,16 +1,15 @@
 "use client";
-// Pricing table, adapted from the Kara UI
-// "pricing-table" block (karaui.kamisama-v0.my.id/components/blocks/pricing-table).
-// Same behaviour — a pill that glides between periods, prices that roll
-// digit-by-digit, a note that swaps under the price — rebuilt in plain CSS on
-// the Indigo & Starch tokens. No Tailwind, motion or icon library.
-import { useId } from "react";
+// Pricing: three columns (Free · Pay per draw · Year pass). Each product is a card
+// that flips over on click or tap to show what's included; the price sits in an
+// amber glass pill. Plain CSS on the Indigo & Starch tokens, no buttons to buy:
+// the draw itself asks for payment when a circle needs it.
+import { useId, useRef, useState } from "react";
 import { Owo } from "./motifs";
 import SpecularButton from "./SpecularButton";
 import { naira } from "@/lib/config";
 import { landing } from "@/lib/copy/landing";
 
-export type Plan = {
+export type PriceCard = {
   id: string;
   name: string;
   who: string;
@@ -20,91 +19,71 @@ export type Plan = {
   unit: string;
   note: string;
   features: string[];
-  popular?: boolean;
-  tag?: string;
-  /** No href: rendered as a disabled label. */
-  cta: { label: string; href?: string; variant: "gold" | "ghost" };
-  /** An extra text link under the button, e.g. "Talk to us" by email. */
-  extra?: { label: string; href: string };
-  /** Several prices in one card (e.g. Small circle and Ajo), shown instead of the single price. */
-  rows?: { name: string; who: string; note: string; price: number; unit: string }[];
 };
+export type PriceGroup = { id: string; name: string; who: string; cards: PriceCard[]; hot?: boolean };
 
-// Prices are per draw (or one Year pass), so there is no monthly/yearly switch any more.
-export default function PricingTable({ plans }: { plans: Plan[] }) {
+const F = landing.pricing.flip;
+
+export default function PricingTable({ groups }: { groups: PriceGroup[] }) {
   return (
     <div className="pricing-table">
       <div className="prices">
-        {plans.map((p) => <PlanCard key={p.id} plan={p} />)}
+        {groups.map((g) => <Group key={g.id} group={g} />)}
       </div>
     </div>
   );
 }
 
-function PlanCard({ plan }: { plan: Plan }) {
+function Group({ group }: { group: PriceGroup }) {
   const titleId = useId();
-  const free = plan.price === 0;
-  const amount = free ? landing.pricing.free : naira(plan.price);
-  const cta = plan.cta;
   return (
-    <section aria-labelledby={titleId} className={`price${plan.popular ? " hot" : ""}`}>
-      {plan.tag && <span className="tag">{plan.tag}</span>}
-      <h3 id={titleId}>{plan.name}</h3>
-      <div className="who">{plan.who}</div>
-      {plan.rows ? (
-        <ul className="price-rows">
-          {plan.rows.map((r) => (
-            <li key={r.name}>
-              <div className="price-row-head">
-                <b>{r.name}</b>
-                <span className="price-row-amt"><strong>{r.price === 0 ? landing.pricing.free : naira(r.price)}</strong>{r.price > 0 && <small>{r.unit}</small>}</span>
-              </div>
-              <span className="price-row-who">{r.who} · {r.note}</span>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <>
-          <div className="amt">
-            <strong><Roll text={amount} /></strong>
-            {!free && <small>{plan.unit}</small>}
-          </div>
-          <p className="price-note">{plan.note}</p>
-        </>
-      )}
-      <ul>{plan.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--indigo)" />{t}</li>)}</ul>
-      {cta.href
-        ? <SpecularButton href={cta.href} className={`btn btn-${cta.variant}`}>{cta.label}</SpecularButton>
-        : <span className="btn btn-ghost btn-off" aria-disabled="true">{cta.label}</span>}
-      {plan.extra && (plan.extra.href.startsWith("/")
-        ? <SpecularButton href={plan.extra.href} className="btn btn-ghost price-extra-btn">{plan.extra.label}</SpecularButton>
-        : <a href={plan.extra.href} className="price-note price-extra">{plan.extra.label}</a>)}
+    <section aria-labelledby={titleId} className={`price-group${group.hot ? " hot" : ""}`}>
+      <h3 id={titleId}>{group.name}</h3>
+      <p className="who">{group.who}</p>
+      <div className="flip-stack">
+        {group.cards.map((c) => <FlipCard key={c.id} card={c} />)}
+      </div>
     </section>
   );
 }
 
-// Each digit is a 0–9 column slid into place, sized by the digit it shows
-// (proportional digits differ in width); columns are keyed from the right
-// so ₦700 → ₦7,500 rolls the matching places instead of re-mounting them.
-function Roll({ text }: { text: string }) {
-  const chars = [...text];
+function FlipCard({ card }: { card: PriceCard }) {
+  const [flipped, setFlipped] = useState(false);
+  const front = useRef<HTMLButtonElement>(null);
+  const back = useRef<HTMLButtonElement>(null);
+  const free = card.price === 0;
+  // The whole card flips on a click; the button on each face is the keyboard and
+  // screen-reader control (its click bubbles up here). The hidden face is inert,
+  // so a keyboard user's focus follows to the button on the face that turns up
+  // (detail 0 = a click from Enter/Space, not a pointer).
+  const toggle = (e: React.MouseEvent) => {
+    const next = !flipped;
+    setFlipped(next);
+    if (e.detail === 0) requestAnimationFrame(() => (next ? back : front).current?.focus({ preventScroll: true }));
+  };
   return (
-    <>
-      <span className="sr-only">{text}</span>
-      <span className="roll" aria-hidden="true">
-        {chars.map((c, i) => {
-          const place = chars.length - i;
-          if (!/\d/.test(c)) return <span key={`c${place}${c}`}>{c}</span>;
-          return (
-            <span key={`d${place}`} className="roll-d">
-              <span className="roll-w">{c}</span>
-              <span className="roll-col" style={{ transform: `translateY(${-Number(c) * 10}%)`, transitionDelay: `${(place - 1) * 30}ms` }}>
-                {"0123456789".split("").map((d) => <span key={d}>{d}</span>)}
-              </span>
-            </span>
-          );
-        })}
-      </span>
-    </>
+    <div className={`flip${flipped ? " is-flipped" : ""}`} onClick={toggle}>
+      <div className="flip-inner">
+        <div className="flip-face flip-front" inert={flipped}>
+          <h4>{card.name}</h4>
+          <p className="flip-who">{card.who}</p>
+          <div className="flip-price">
+            <SpecularButton as="span" className="price-glass">{free ? landing.pricing.free : naira(card.price)}</SpecularButton>
+            {!free && <small>{card.unit}</small>}
+          </div>
+          <button ref={front} type="button" className="flip-btn" aria-label={F.moreLabel(card.name)}>
+            {F.more} <span aria-hidden="true">↻</span>
+          </button>
+        </div>
+        <div className="flip-face flip-back" inert={!flipped}>
+          <h4>{card.name}</h4>
+          <p className="flip-note">{card.note}</p>
+          <ul>{card.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--indigo)" />{t}</li>)}</ul>
+          <button ref={back} type="button" className="flip-btn" aria-label={F.backLabel(card.name)}>
+            <span aria-hidden="true">↺</span> {F.back}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -96,16 +96,25 @@ export const landing = {
     free: "Free",
     perDraw: "per draw",
     once: "once, for 12 months",
-    // The three cards: what's free, what each draw costs, and the Year pass.
+    // Three columns: what's free, what each draw costs, and the Year pass.
     cards: {
-      free: { name: "Free", who: "Small circle and ajo", ajoLink: "Draw an ajo order" },
-      perDraw: { name: "Pay per draw", who: "For circles of more than 15 people" },
+      free: { name: "Free", who: "Secret Santa for small circles, and ajo" },
+      perDraw: { name: "Pay per draw", who: `For circles of more than ${PRICING.FREE_MAX} people` },
+      pass: { name: "Year pass", who: "One payment, draws all year" },
+    },
+    // Each price card flips over to show what's included.
+    flip: {
+      more: "What's included",
+      back: "Back to the price",
+      moreLabel: (name: string) => `${name}: show what's included`,
+      backLabel: (name: string) => `${name}: back to the price`,
     },
     small: {
+      product: "Secret Santa",
       name: "Small circle",
       who: `Up to ${PRICING.FREE_MAX} people`,
       note: "Friends and family. No payment, no sign-up",
-      features: ["Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode", "Ajo: locked or live draw, reminders, swaps"],
+      features: ["Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode"],
       cta: "Start a Secret Santa",
     },
     mid: {
@@ -119,7 +128,7 @@ export const landing = {
       name: BIG.label,
       who: `${BIG.min}–${BIG.max} people`,
       note: "Offices, churches and whole departments",
-      features: ["Everything in Mid circle", `Up to ${BIG.max} people`],
+      features: ["Everything in Mid circle", `Up to ${BIG.max} people`, "Paid once, for that draw"],
       cta: "Start a big draw",
       talkToUs: "Planning for a big office or church? Talk to us",
       talkSubject: "Big circle for [organisation]",
