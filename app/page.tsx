@@ -138,7 +138,7 @@ export default function Home() {
           </div>
           {/* the wordmark with Yoruba tone marks (kádàrá, destiny), cut by the rule below it;
               each letter is filled with adire cloth */}
-          <div className="sf-mark" aria-hidden="true"><span>cáDàrá</span></div>
+          <div className="sf-mark" aria-hidden="true"><span>káDàrá</span></div>
           <div className="sf-bottom">
             <span>© <Year /> {F.line}</span>
             <span>{F.credit}</span>
