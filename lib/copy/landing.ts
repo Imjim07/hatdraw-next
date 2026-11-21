@@ -64,8 +64,6 @@ export const landing = {
         points: [] as string[],
       },
     },
-    promisesLabel: "Our promises",
-    promises: ["Fair and recorded", "No sign-up", "WhatsApp-first", "Free for small groups", "Draws never touch your money"],
   },
   how: {
     eyebrow: "How it works",

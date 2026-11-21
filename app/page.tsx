@@ -100,7 +100,8 @@ export default function Home() {
 
       <section className="band stack-under" id="pricing"><div className="wrap">
         <div className="eyebrow">{P.eyebrow}</div>
-        <h2><Headline>{P.heading}</Headline></h2>
+        {/* one sentence per line */}
+        <h2><Headline>{P.heading.split(/(?<=\.) /).map((line, i) => <span key={line}>{i > 0 && <>{" "}<br /></>}{line}</span>)}</Headline></h2>
         <p className="sub">{P.subline}</p>
         <PricingTable plans={PLANS} />
       </div></section>

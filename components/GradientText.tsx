@@ -206,11 +206,13 @@ export default function GradientText({
   );
 }
 
-/** Section headings: the brand gradient (theme-aware tokens --hl-1..3 in globals.css), a slow
- *  back-and-forth drift and a faint glow that phones drop. Put it inside the h1/h2. */
+/** Section headings: the brand gradient (theme-aware tokens --hl-1..3 in globals.css) and a
+ *  slow back-and-forth drift. Put it inside the h1/h2. The faint glow is a CSS drop-shadow
+ *  (desktop only), not upstream's second copy of the text: a copy would put every heading
+ *  in the page text twice (search engines, copy and paste). */
 export function Headline({ children }: { children: ReactNode }) {
   return (
-    <GradientText colors={["var(--hl-1)", "var(--hl-2)", "var(--hl-3)"]} animationSpeed={10} scale={2.5} glow={0.25} className="headline">
+    <GradientText colors={["var(--hl-1)", "var(--hl-2)", "var(--hl-3)"]} animationSpeed={10} scale={2.5} className="headline">
       {children}
     </GradientText>
   );

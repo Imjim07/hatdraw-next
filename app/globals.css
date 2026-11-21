@@ -237,11 +237,8 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .of-card>p{color:var(--text-muted);font-size:.95rem}
 .of-points{list-style:none;display:grid;gap:6px;margin:2px 0 6px;padding:0;font-size:.9rem}
 .of-points li{display:flex;align-items:baseline;gap:9px}
-.of-points li::before,.of-promise li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--indigo);transform:translateY(-2px)}
+.of-points li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--indigo);transform:translateY(-2px)}
 .pill.of-soon{padding:4px 10px;font-size:.72rem;font-family:var(--sans)}
-.of-promise{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;margin:34px 0 0;padding:0;font-size:.88rem;font-weight:600;color:var(--text-muted)}
-.of-promise li{display:flex;align-items:center;gap:9px}
-.of-promise li::before{transform:none}
 @media (max-width:1100px){.of-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.of-grid{grid-template-columns:1fr}}
 .how-head{text-align:center}.how-head .sub{margin:0 auto}
@@ -1082,10 +1079,9 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .gradient-text.headline{display:inline;text-align:inherit}
 .headline .gradient-text__inner{display:inline}
 .headline .gradient-text__content{display:inline;padding-bottom:.08em} /* room for descenders under background-clip */
-.headline .gradient-text__glow{display:none}
-@media (min-width:861px){.headline .gradient-text__inner{display:inline-block}.headline .gradient-text__content{display:inline-block}.headline .gradient-text__glow{display:block}}
+@media (min-width:861px){.headline .gradient-text__inner{display:inline-block}.headline .gradient-text__content{display:inline-block;filter:drop-shadow(0 0 .3em color-mix(in srgb,var(--hl-2) 22%,transparent))}}
 /* Windows high contrast and print: plain text in the system colour */
-@media (forced-colors:active){.gradient-text__content{-webkit-text-fill-color:CanvasText;background:none}.gradient-text__glow{display:none}}
+@media (forced-colors:active){.gradient-text__content{-webkit-text-fill-color:CanvasText;background:none;filter:none}.gradient-text__glow{display:none}}
 @media print{.gradient-text__content{-webkit-text-fill-color:currentColor;background:none}.gradient-text__glow{display:none}}
 
 /* Footer credits on tablets: two left-aligned columns instead of a ragged spread */
@@ -1098,3 +1094,34 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .sf-col:last-child h3{grid-column:1/-1}
   .sf-bottom{grid-template-columns:minmax(0,1fr);gap:4px}
 }
+
+/* ---- Desktop reading pass ----
+   One rhythm for every home section: a centred head (eyebrow, heading, one short line),
+   then the content 48px below. Headings and short lines wrap into balanced lines, so no
+   line ends on a lone word. */
+h1,h2,h3,.sub,.lede{text-wrap:balance}
+p{text-wrap:pretty}
+section.band{padding:clamp(56px,7vw,88px) 0}
+.how-head,.of-head,#pricing>.wrap>:is(.eyebrow,h2,.sub){text-align:center;margin-left:auto;margin-right:auto}
+.how-head,.of-head{max-width:760px}
+#pricing>.wrap>.sub,.how-head .sub,.of-head .sub{max-width:34rem}
+.how-steps,.of-grid{margin-top:48px}
+.pricing-table{margin-top:40px;display:flex;flex-direction:column;align-items:center}
+.pricing-table .prices{width:100%;margin-top:32px}
+/* The hero: less dead space under the buttons before How it works */
+.hero{padding:56px 0 40px}
+/* Pricing on desktop: the three cards share rows, so their names, prices, feature lists and
+   buttons line up across the row even when one card's text runs longer. */
+@media (min-width:861px){
+  .prices{grid-template-rows:repeat(6,auto);row-gap:0}
+  .price{display:grid;grid-row:span 6;grid-template-rows:subgrid;row-gap:0;align-content:start}
+  .price>.flip-cta{align-self:end}
+  .price>ul{align-content:start}
+}
+/* Plain pages (Privacy, Terms, Sell on, buying policy): the reading column sits in the
+   middle of the page, not against the left edge */
+@media (min-width:861px){.store .gf-policy{margin-left:auto;margin-right:auto}}
+/* Setup forms: the date picker's label and box match the text field beside it */
+.field>.react-aria-Label{display:block;font-size:.85rem;font-weight:600;color:var(--ink);margin-bottom:8px}
+.ob .field>.react-aria-Label{font-size:.875rem;font-weight:500;color:var(--ob-fg)}
+.ob .dp-group{min-height:53px}

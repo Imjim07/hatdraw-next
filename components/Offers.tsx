@@ -49,9 +49,6 @@ export default function Offers() {
           </li>
         ))}
       </ul>
-      <ul className="of-promise" aria-label={O.promisesLabel}>
-        {O.promises.map((p) => <li key={p}>{p}</li>)}
-      </ul>
     </div></section>
   );
 }
