@@ -12,12 +12,11 @@ export const CONTACT = {
   privacy: process.env.NEXT_PUBLIC_EMAIL_PRIVACY || `privacy@${BRAND.domain}`, // data access and deletion requests
 };
 
-// Social links (footer; Instagram and TikTok also in the phone/tablet menu). Placeholders for
-// now: each points at the platform's home page. Replace with the real profile URLs (e.g.
-// https://www.instagram.com/<handle>) and set `handle` (e.g. "@kadaradraw"); until a handle is
-// set, the menu shows the platform's name instead.
+// Social links (footer; Instagram and TikTok also in the phone/tablet menu). Instagram is live;
+// the others are placeholders pointing at the platform's home page until their profile URL and
+// `handle` are set (the menu shows the platform's name until a handle is set).
 export const SOCIAL = [
-  { id: "instagram", label: "Instagram", href: "https://www.instagram.com/", handle: "" as string },
+  { id: "instagram", label: "Instagram", href: "https://www.instagram.com/kadaradraw", handle: "@kadaradraw" as string },
   { id: "tiktok", label: "TikTok", href: "https://www.tiktok.com/", handle: "" as string },
   { id: "snapchat", label: "Snapchat", href: "https://www.snapchat.com/", handle: "" as string },
   { id: "facebook", label: "Facebook", href: "https://www.facebook.com/", handle: "" as string },
