@@ -1010,3 +1010,16 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .pass-code{margin:14px 0 6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:clamp(1.1rem,5vw,1.5rem);font-weight:700;letter-spacing:.06em;color:var(--ob-fg,var(--ink));overflow-wrap:anywhere;user-select:all}
 .pay-links{display:flex;flex-direction:column;align-items:flex-start;gap:2px;margin-top:10px}
 .pay-links .gf-text-link{display:inline-flex;align-items:center;min-height:44px;background:none;border:0;padding:0;font:inherit;text-align:left;cursor:pointer}
+
+/* Pricing cards that hold two prices (Free: Small circle + Ajo; Pay per draw: Mid + Big) */
+.price-rows{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.price .price-rows li{display:grid;gap:4px;padding:14px 0;border-top:1px solid var(--line)}
+.price .price-rows li:last-child{border-bottom:1px solid var(--line)}
+.price-row-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.price-row-head b{font-family:var(--display);font-weight:600;font-size:1.05rem;color:var(--indigo)}
+.price-row-amt{display:inline-flex;align-items:baseline;gap:6px}
+.price-row-amt strong{font-family:var(--display);font-size:1.6rem;font-weight:600;letter-spacing:-.02em;color:var(--indigo)}
+.price-row-amt small{color:var(--text-muted);font-size:.8rem}
+.price-row-who{font-size:.84rem;color:var(--text-muted);line-height:1.45}
+.price-extra-btn{margin-top:10px}
+.price .btn+.price-extra-btn{margin-top:10px}

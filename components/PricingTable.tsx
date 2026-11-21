@@ -26,6 +26,8 @@ export type Plan = {
   cta: { label: string; href?: string; variant: "gold" | "ghost" };
   /** An extra text link under the button, e.g. "Talk to us" by email. */
   extra?: { label: string; href: string };
+  /** Several prices in one card (e.g. Small circle and Ajo), shown instead of the single price. */
+  rows?: { name: string; who: string; note: string; price: number; unit: string }[];
 };
 
 // Prices are per draw (or one Year pass), so there is no monthly/yearly switch any more.
@@ -49,16 +51,34 @@ function PlanCard({ plan }: { plan: Plan }) {
       {plan.tag && <span className="tag">{plan.tag}</span>}
       <h3 id={titleId}>{plan.name}</h3>
       <div className="who">{plan.who}</div>
-      <div className="amt">
-        <strong><Roll text={amount} /></strong>
-        {!free && <small>{plan.unit}</small>}
-      </div>
-      <p className="price-note">{plan.note}</p>
+      {plan.rows ? (
+        <ul className="price-rows">
+          {plan.rows.map((r) => (
+            <li key={r.name}>
+              <div className="price-row-head">
+                <b>{r.name}</b>
+                <span className="price-row-amt"><strong>{r.price === 0 ? landing.pricing.free : naira(r.price)}</strong>{r.price > 0 && <small>{r.unit}</small>}</span>
+              </div>
+              <span className="price-row-who">{r.who} · {r.note}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <>
+          <div className="amt">
+            <strong><Roll text={amount} /></strong>
+            {!free && <small>{plan.unit}</small>}
+          </div>
+          <p className="price-note">{plan.note}</p>
+        </>
+      )}
       <ul>{plan.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--indigo)" />{t}</li>)}</ul>
       {cta.href
         ? <SpecularButton href={cta.href} className={`btn btn-${cta.variant}`}>{cta.label}</SpecularButton>
         : <span className="btn btn-ghost btn-off" aria-disabled="true">{cta.label}</span>}
-      {plan.extra && <a href={plan.extra.href} className="price-note price-extra">{plan.extra.label}</a>}
+      {plan.extra && (plan.extra.href.startsWith("/")
+        ? <SpecularButton href={plan.extra.href} className="btn btn-ghost price-extra-btn">{plan.extra.label}</SpecularButton>
+        : <a href={plan.extra.href} className="price-note price-extra">{plan.extra.label}</a>)}
     </section>
   );
 }

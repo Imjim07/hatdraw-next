@@ -96,18 +96,23 @@ export const landing = {
     free: "Free",
     perDraw: "per draw",
     once: "once, for 12 months",
+    // The three cards: what's free, what each draw costs, and the Year pass.
+    cards: {
+      free: { name: "Free", who: "Small circle and ajo", ajoLink: "Draw an ajo order" },
+      perDraw: { name: "Pay per draw", who: "For circles of more than 15 people" },
+    },
     small: {
       name: "Small circle",
       who: `Up to ${PRICING.FREE_MAX} people`,
       note: "Friends and family. No payment, no sign-up",
-      features: ["Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode"],
+      features: ["Encrypted reveal links", "Keep-apart rules", "Pass-the-phone mode", "Ajo: locked or live draw, reminders, swaps"],
       cta: "Start a Secret Santa",
     },
     mid: {
       name: MID.label,
       who: `${MID.min}–${MID.max} people`,
       note: "Church fellowships, big families, small offices",
-      features: ["Everything in Small circle", "One big circle mode", "Custom note on every reveal"],
+      features: ["Everything in Small circle", "One big circle mode", "Custom note on every reveal", "Paid once, for that draw"],
       cta: "Start a draw",
     },
     big: {

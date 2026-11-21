@@ -23,14 +23,25 @@ import { landing } from "@/lib/copy/landing";
 const P = landing.pricing;
 const [MID, BIG] = PRICING.TIERS;
 const PLANS: Plan[] = [
-  { id: "small", name: P.small.name, who: P.small.who, price: 0, unit: "", note: P.small.note, features: P.small.features, cta: { label: P.small.cta, href: "/draw", variant: "ghost" } },
-  { id: "mid", name: P.mid.name, who: P.mid.who, price: MID.price, unit: P.perDraw, note: P.mid.note, features: P.mid.features, cta: { label: P.mid.cta, href: "/draw", variant: "ghost" } },
   {
-    id: "big", name: P.big.name, who: P.big.who, popular: true, price: BIG.price, unit: P.perDraw, note: P.big.note, features: P.big.features,
-    cta: { label: P.big.cta, href: "/draw", variant: "gold" }, extra: { label: P.big.talkToUs, href: mailto(CONTACT.sales, P.big.talkSubject) },
+    id: "free", name: P.cards.free.name, who: P.cards.free.who, price: 0, unit: "", note: "",
+    rows: [
+      { name: P.small.name, who: P.small.who, note: P.small.note, price: 0, unit: "" },
+      { name: P.ajo.name, who: P.ajo.who, note: P.ajo.note, price: 0, unit: "" },
+    ],
+    features: P.small.features,
+    cta: { label: P.small.cta, href: "/draw", variant: "ghost" }, extra: { label: P.cards.free.ajoLink, href: "/ajo" },
+  },
+  {
+    id: "per-draw", name: P.cards.perDraw.name, who: P.cards.perDraw.who, popular: true, price: MID.price, unit: P.perDraw, note: "",
+    rows: [
+      { name: P.mid.name, who: P.mid.who, note: P.mid.note, price: MID.price, unit: P.perDraw },
+      { name: P.big.name, who: P.big.who, note: P.big.note, price: BIG.price, unit: P.perDraw },
+    ],
+    features: P.mid.features,
+    cta: { label: P.mid.cta, href: "/draw", variant: "gold" }, extra: { label: P.big.talkToUs, href: mailto(CONTACT.sales, P.big.talkSubject) },
   },
   { id: "pass", name: P.pass.name, who: P.pass.who, price: PRICING.YEAR_PASS.price, unit: P.once, note: P.pass.note, features: P.pass.features, cta: { label: P.pass.cta, href: "/draw", variant: "ghost" } },
-  { id: "ajo", name: P.ajo.name, who: P.ajo.who, price: 0, unit: "", note: P.ajo.note, features: P.ajo.features, cta: { label: P.ajo.cta, href: "/ajo", variant: "ghost" } },
 ];
 
 const M = common.menuItems;
