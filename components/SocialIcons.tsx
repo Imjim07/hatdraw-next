@@ -2,7 +2,7 @@ import { SOCIAL } from "@/lib/config";
 
 // Footer social links: round 44px buttons with simple line/filled marks drawn here
 // (no icon library). Each link's name comes from its aria-label.
-const ICONS: Record<(typeof SOCIAL)[number]["id"], React.ReactNode> = {
+export const SOCIAL_ICONS: Record<(typeof SOCIAL)[number]["id"], React.ReactNode> = {
   instagram: (
     <>
       <rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" strokeWidth="1.8" />
@@ -27,7 +27,7 @@ export default function SocialIcons({ name }: { name: string }) {
     <div className="sf-social">
       {SOCIAL.map((s) => (
         <a key={s.id} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`${name} on ${s.label}`}>
-          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">{ICONS[s.id]}</svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false">{SOCIAL_ICONS[s.id]}</svg>
         </a>
       ))}
     </div>

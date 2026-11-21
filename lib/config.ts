@@ -12,13 +12,15 @@ export const CONTACT = {
   privacy: process.env.NEXT_PUBLIC_EMAIL_PRIVACY || `privacy@${BRAND.domain}`, // data access and deletion requests
 };
 
-// Footer social links. Placeholders for now: each points at the platform's home page.
-// Replace with the real profile URLs (e.g. https://www.instagram.com/<handle>).
+// Social links (footer; Instagram and TikTok also in the phone/tablet menu). Placeholders for
+// now: each points at the platform's home page. Replace with the real profile URLs (e.g.
+// https://www.instagram.com/<handle>) and set `handle` (e.g. "@kadaradraw"); until a handle is
+// set, the menu shows the platform's name instead.
 export const SOCIAL = [
-  { id: "instagram", label: "Instagram", href: "https://www.instagram.com/" },
-  { id: "tiktok", label: "TikTok", href: "https://www.tiktok.com/" },
-  { id: "snapchat", label: "Snapchat", href: "https://www.snapchat.com/" },
-  { id: "facebook", label: "Facebook", href: "https://www.facebook.com/" },
+  { id: "instagram", label: "Instagram", href: "https://www.instagram.com/", handle: "" as string },
+  { id: "tiktok", label: "TikTok", href: "https://www.tiktok.com/", handle: "" as string },
+  { id: "snapchat", label: "Snapchat", href: "https://www.snapchat.com/", handle: "" as string },
+  { id: "facebook", label: "Facebook", href: "https://www.facebook.com/", handle: "" as string },
 ] as const;
 
 /** Sender for every automated email (server only). Replies go to CONTACT.support. */
