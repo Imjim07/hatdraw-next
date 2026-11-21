@@ -4,7 +4,7 @@
 // Ajo). No glass here: a price flips over like a card when the switch changes it, and
 // each button flips over on hover. Plain CSS on the Indigo & Starch tokens.
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 import { Owo } from "./motifs";
 import { naira } from "@/lib/config";
 import { landing } from "@/lib/copy/landing";
@@ -34,21 +34,25 @@ export default function PricingTable({ plans }: { plans: Plan[] }) {
   const [period, setPeriod] = useState<Billing>("draw");
   return (
     <div className="pricing-table">
-      <BillingToggle value={period} onChange={setPeriod} />
+      <BillingToggle value={period} onChange={setPeriod} className="billing-top" />
       <div className="prices">
-        {plans.map((p) => <PlanCard key={p.id} plan={p} period={period} />)}
+        {plans.map((p) => (
+          <PlanCard key={p.id} plan={p} period={period}
+            // On phones the switch moves into the one card it changes (CSS shows one or the other).
+            toggle={p.popular ? <BillingToggle value={period} onChange={setPeriod} className="billing-in-card" /> : null} />
+        ))}
       </div>
     </div>
   );
 }
 
-function BillingToggle({ value, onChange }: { value: Billing; onChange: (b: Billing) => void }) {
+function BillingToggle({ value, onChange, className }: { value: Billing; onChange: (b: Billing) => void; className: string }) {
   const options: { value: Billing; label: string }[] = [
     { value: "draw", label: P.perDrawTab },
     { value: "yearly", label: P.yearly },
   ];
   return (
-    <fieldset className="billing" data-period={value}>
+    <fieldset className={`billing ${className}`} data-period={value}>
       <legend className="sr-only">{P.billingPeriod}</legend>
       <span className="billing-pill" aria-hidden="true" />
       {options.map((o) => (
@@ -61,8 +65,11 @@ function BillingToggle({ value, onChange }: { value: Billing; onChange: (b: Bill
   );
 }
 
-function PlanCard({ plan, period }: { plan: Plan; period: Billing }) {
+function PlanCard({ plan, period, toggle }: { plan: Plan; period: Billing; toggle: ReactNode }) {
   const titleId = useId();
+  const listId = useId();
+  // Phones only: the feature list starts folded so all three prices fit in a short scroll.
+  const [open, setOpen] = useState(false);
   const free = plan.price.draw === 0 && plan.price.yearly === 0;
   const face: Face = {
     amount: free ? P.free : naira(plan.price[period]),
@@ -73,8 +80,13 @@ function PlanCard({ plan, period }: { plan: Plan; period: Billing }) {
     <section aria-labelledby={titleId} className={`price${plan.popular ? " hot" : ""}`}>
       <h3 id={titleId}>{plan.name}</h3>
       <div className="who">{plan.who}</div>
+      {toggle}
       <FlipPrice face={face} />
-      <ul>{plan.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--indigo)" />{t}</li>)}</ul>
+      <button type="button" className="price-more" aria-expanded={open} aria-controls={listId} onClick={() => setOpen(!open)}>
+        {P.included(plan.features.length)}
+        <span className="price-more-chev" aria-hidden="true" />
+      </button>
+      <ul id={listId} className={open ? undefined : "is-folded"}>{plan.features.map((t) => <li key={t}><Owo size={16} strokeWidth={6} color="var(--indigo)" />{t}</li>)}</ul>
       <FlipButton href={plan.cta.href} label={plan.cta.label} />
       {plan.extra && <a href={plan.extra.href} className="price-note price-extra">{plan.extra.label}</a>}
     </section>

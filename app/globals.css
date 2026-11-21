@@ -281,6 +281,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .billing button:not([aria-pressed="true"]):hover{color:var(--ink)}
 .billing-pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--indigo);box-shadow:0 6px 18px -8px rgba(20,26,51,.4);transition:transform .45s var(--spring)}
 .billing[data-period="yearly"] .billing-pill{transform:translateX(100%)}
+.billing-in-card,.price-more{display:none}
 .billing-badge{font-size:.75rem;font-weight:800;padding:3px 7px;border-radius:999px;background:var(--palm-gold);color:var(--on-accent);white-space:nowrap}
 @media (max-width:380px){.billing button{padding:0 12px;gap:6px}}
 /* The price turns over like a card when the switch changes it */
@@ -1023,3 +1024,46 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .pay-links .gf-text-link{display:inline-flex;align-items:center;min-height:44px;background:none;border:0;padding:0;font:inherit;text-align:left;cursor:pointer}
 
 .price .btn+.price-extra-btn{margin-top:10px}
+
+/* Pricing on tablets: the two free cards side by side, Big circle across the full width
+   underneath with its price on the left and its features on the right */
+@media (min-width:601px) and (max-width:860px){
+  .prices{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .price.hot{order:3;grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:32px;align-content:start}
+  .price.hot>*{grid-column:1}
+  .price.hot>ul{grid-column:2;grid-row:1/span 5;align-self:center;margin:0}
+  .price.hot .flip-cta{margin-top:20px}
+  .price.hot>ul{grid-row:1/span 6}
+}
+/* Up to tablet width the switch sits inside Big circle, the only card it changes */
+@media (max-width:860px){
+  .billing-top{display:none}
+  .billing-in-card{display:grid;width:100%;max-width:420px;margin:0 0 16px}
+  .pricing-table .prices{margin-top:0}
+}
+/* Pricing on phones: compact cards in reading order. The switch sits inside Big circle (the
+   only card it changes), feature lists fold behind "What's included", and every button is a
+   full-width thumb target at the bottom of its card. */
+@media (max-width:600px){
+  .pricing-table{margin-top:24px}.pricing-table .prices{margin-top:0;gap:14px}
+  .billing-in-card{max-width:none}
+  .price{padding:22px 20px 20px;border-radius:var(--r)}
+  .price h3{font-size:1.3rem}
+  .price .who{margin:2px 0 14px;font-size:.88rem;line-height:1.45}
+  .price .amt{gap:8px}
+  .price .amt strong{font-size:2.2rem;line-height:1.1}
+  .price .amt small{font-size:.84rem}
+  .price-more{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;margin:14px 0 0;padding:0;border:0;border-top:1px solid var(--line);background:none;font:inherit;font-size:.92rem;font-weight:700;color:var(--indigo);cursor:pointer;text-align:left}
+  .price-more-chev{width:9px;height:9px;margin-right:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .25s}
+  .price-more[aria-expanded="true"] .price-more-chev{transform:translateY(2px) rotate(-135deg)}
+  .price-more:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:6px}
+  .price ul{margin:4px 0 18px;gap:10px}
+  .price ul.is-folded{display:none}
+  .price-more[aria-expanded="false"]{margin-bottom:12px}
+  .flip-cta{--h:50px;margin-top:0}
+  .price-extra{align-self:center;text-align:center;margin-top:8px}
+}
+@media (max-width:600px) and (prefers-reduced-motion:reduce){.price-more-chev{transition:none}}
+/* Narrow phones: the switch keeps both words on one line; the Year pass note under the price says what the badge said */
+.billing button{white-space:nowrap}
+@media (max-width:400px){.billing-in-card .billing-badge{display:none}}

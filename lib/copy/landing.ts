@@ -98,6 +98,8 @@ export const landing = {
     yearly: "Yearly",
     billingPeriod: "How to pay for a bigger circle",
     yearlyBadge: "Year pass",
+    // Phones: each card's feature list folds away behind this.
+    included: (n: number) => `What's included (${n})`,
     free: "Free",
     perDraw: "per draw",
     perYear: "per year",
