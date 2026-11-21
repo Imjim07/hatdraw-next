@@ -3,6 +3,7 @@ import InfoPage from "@/components/InfoPage";
 import SpecularButton from "@/components/SpecularButton";
 import { CONTACT, brandWhatsApp, mailto, waLink } from "@/lib/config";
 import { gifts } from "@/lib/copy/gifts";
+import { Headline } from "@/components/GradientText";
 
 const V = gifts.vendors;
 export const metadata: Metadata = { title: V.meta };
@@ -14,7 +15,7 @@ export default function VendorsPage() {
   return (
     <InfoPage>
       <div className="eyebrow">{V.eyebrow}</div>
-      <h1>{V.heading}</h1>
+      <h1><Headline>{V.heading}</Headline></h1>
       <p className="sub">{V.line}</p>
       <section>
         <h2>{V.requirementsLabel}</h2>

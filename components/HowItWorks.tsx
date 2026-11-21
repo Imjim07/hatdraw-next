@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { AyeDegbe, Dundun, Sunbebe } from "./motifs";
 import { landing } from "@/lib/copy/landing";
+import { Headline } from "@/components/GradientText";
 
 // "How it works", laid out after the shadcn blocks "features-2" block: centred
 // heading, three centred cards, each with a faded grid behind a small framed
@@ -17,7 +18,7 @@ export default function HowItWorks() {
     <section className="band how" id="how"><div className="wrap">
       <div className="how-head">
         <div className="eyebrow">{H.eyebrow}</div>
-        <h2>{H.heading}</h2>
+        <h2><Headline>{H.heading}</Headline></h2>
         <p className="sub">{H.subline}</p>
       </div>
       <ol className="how-steps">

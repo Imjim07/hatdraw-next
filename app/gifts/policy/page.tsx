@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT, brandWhatsApp, mailto, waLink } from "@/lib/config";
 import { gifts } from "@/lib/copy/gifts";
+import { Headline } from "@/components/GradientText";
 
 const P = gifts.policy;
 export const metadata: Metadata = { title: P.meta };
@@ -13,7 +14,7 @@ export default function PolicyPage() {
     <article className="gf-policy">
       <Link href="/gifts" className="gf-text-link gp-back">{gifts.page.allGifts}</Link>
       <div className="eyebrow">{gifts.eyebrow}</div>
-      <h1>{P.title}</h1>
+      <h1><Headline>{P.title}</Headline></h1>
       <p className="sub">{P.lead}</p>
       {P.sections.map((s) => (
         <section key={s.h}>

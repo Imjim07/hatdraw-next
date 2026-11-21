@@ -10,6 +10,7 @@ import { ANY, budgetLabel, facetCounts, matches, parseFilters, sortGifts, toQuer
 import { CATEGORIES } from "@/lib/gifts/types";
 import { listGifts } from "@/lib/gifts/store";
 import { gifts } from "@/lib/copy/gifts";
+import { Headline } from "@/components/GradientText";
 
 const E = gifts.empty;
 
@@ -20,7 +21,7 @@ export default function GiftsPage({ searchParams }: PageProps<"/gifts">) {
     <>
       <header className="store-head">
         <div className="eyebrow">{gifts.eyebrow}</div>
-        <h1>{gifts.heading}</h1>
+        <h1><Headline>{gifts.heading}</Headline></h1>
         <p className="sub">{gifts.subline}</p>
       </header>
       <Suspense fallback={<div className="store-loading"><AdireLoader label={gifts.loading} /></div>}>

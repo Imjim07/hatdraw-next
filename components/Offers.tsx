@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { landing } from "@/lib/copy/landing";
 import BorderGlow from "./ui/BorderGlow";
 import SpecularButton from "./SpecularButton";
+import { Headline } from "@/components/GradientText";
 
 // "What <brand> offers": four cards after the hero, in the Sorbet style of the setup
 // wizards. Each card is bordered in its own colour (green for Secret Santa, gold for ajo,
@@ -32,7 +33,7 @@ export default function Offers() {
     <section className="band" id="features"><div className="wrap">
       <div className="of-head">
         <div className="eyebrow">{O.eyebrow}</div>
-        <h2>{O.heading}</h2>
+        <h2><Headline>{O.heading}</Headline></h2>
         <p className="sub">{O.subline}</p>
       </div>
       <ul className="of-grid ob">

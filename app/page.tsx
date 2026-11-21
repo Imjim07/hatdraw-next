@@ -17,6 +17,7 @@ import Countdown, { Year } from "@/components/Countdown";
 import { BRAND, CONTACT, PRICING, mailto } from "@/lib/config";
 import { common } from "@/lib/copy/common";
 import { landing } from "@/lib/copy/landing";
+import { Headline } from "@/components/GradientText";
 
 
 // Prices from PRICING (lib/config.ts); the copy is from the deck's Pricing table.
@@ -77,7 +78,7 @@ export default function Home() {
         <div className="hero">
           <div>
             <Countdown />
-            <h1>{landing.hero.headline[0]} <em>{landing.hero.headline[1]}</em></h1>
+            <h1>{landing.hero.headline[0]} <em><Headline>{landing.hero.headline[1]}</Headline></em></h1>
             <p className="lede">{landing.hero.subline}</p>
             <div className="hero-cta">
               <SpecularButton href="/draw" className="btn btn-primary">{landing.hero.santa.button} →</SpecularButton>
@@ -99,7 +100,7 @@ export default function Home() {
 
       <section className="band stack-under" id="pricing"><div className="wrap">
         <div className="eyebrow">{P.eyebrow}</div>
-        <h2>{P.heading}</h2>
+        <h2><Headline>{P.heading}</Headline></h2>
         <p className="sub">{P.subline}</p>
         <PricingTable plans={PLANS} />
       </div></section>

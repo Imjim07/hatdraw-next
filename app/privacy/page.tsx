@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import InfoPage, { legalDraft } from "@/components/InfoPage";
 import { mailto } from "@/lib/config";
 import { legal } from "@/lib/copy/legal";
+import { Headline } from "@/components/GradientText";
 
 const P = legal.privacy;
 export const metadata: Metadata = { title: P.meta };
@@ -9,7 +10,7 @@ export const metadata: Metadata = { title: P.meta };
 export default function PrivacyPage() {
   return (
     <InfoPage draft={legalDraft()}>
-      <h1>{P.title}</h1>
+      <h1><Headline>{P.title}</Headline></h1>
       <p className="sub">{P.lead}</p>
       {P.sections.map((s) => (
         <section key={s.h}>

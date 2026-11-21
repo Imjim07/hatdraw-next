@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import InfoPage, { legalDraft } from "@/components/InfoPage";
 import { mailto } from "@/lib/config";
 import { legal } from "@/lib/copy/legal";
+import { Headline } from "@/components/GradientText";
 
 const T = legal.terms;
 export const metadata: Metadata = { title: T.meta };
@@ -9,7 +10,7 @@ export const metadata: Metadata = { title: T.meta };
 export default function TermsPage() {
   return (
     <InfoPage draft={legalDraft()}>
-      <h1>{T.title}</h1>
+      <h1><Headline>{T.title}</Headline></h1>
       <p className="sub">{T.lead}</p>
       {T.sections.map((s) => (
         <section key={s.h} id={"id" in s ? s.id : undefined}>
