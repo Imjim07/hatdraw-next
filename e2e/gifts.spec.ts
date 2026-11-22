@@ -14,6 +14,8 @@ async function shot(page: Page, name: string, target?: Locator) {
 
 /** On phones the filter panel folds behind a "Filters" button; open it if it's closed. */
 async function openFilters(page: Page) {
+  // After an in-app link the URL changes before the store renders: wait for the panel.
+  await page.getByRole("main").getByRole("complementary", { name: "Filters" }).waitFor();
   const toggle = page.getByRole("main").getByRole("button", { name: /^Filters/ });
   if (await toggle.isVisible() && (await toggle.getAttribute("aria-expanded")) === "false") await toggle.click();
 }
