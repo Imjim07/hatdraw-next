@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import SpecularButton from "@/components/SpecularButton";
 import { Shell } from "@/components/ajo/Shell";
-import AdireLoader from "@/components/AdireLoader";
+import LoaderOne from "@/components/ui/loader-one";
 import { api, fragment } from "@/lib/ajo/client";
 import { ajo } from "@/lib/copy/ajo";
 import { common } from "@/lib/copy/common";
@@ -19,7 +19,7 @@ export default function Unsubscribe() {
   return (
     <Shell>
       <div className="panel rise" style={{ textAlign: "center" }}>
-        {state === "working" ? <div className="loading-screen" style={{ minHeight: 200 }}><AdireLoader label={U.working} /></div> : (
+        {state === "working" ? <div className="loading-screen" style={{ minHeight: 200 }}><LoaderOne label={U.working} /></div> : (
           <>
             <h2>{state === "done" ? U.done : common.hmm}</h2>
             <p className="sub" style={{ margin: "0 auto 24px" }}>{state === "done" ? U.doneText : U.error}</p>

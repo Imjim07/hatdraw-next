@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import AdireLoader from "@/components/AdireLoader";
+import LoaderOne from "@/components/ui/loader-one";
 import GiftImage from "@/components/gifts/GiftImage";
 import OrderButton from "@/components/gifts/OrderButton";
 import { naira } from "@/lib/config";
@@ -17,7 +17,7 @@ const G = gifts.page;
 // Components), so they're read under Suspense.
 export default function GiftPage({ params }: PageProps<"/gifts/[slug]">) {
   return (
-    <Suspense fallback={<div className="store-loading"><AdireLoader label={gifts.opening} /></div>}>
+    <Suspense fallback={<div className="store-loading"><LoaderOne label={gifts.opening} /></div>}>
       <Gift params={params} />
     </Suspense>
   );

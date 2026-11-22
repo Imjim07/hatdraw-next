@@ -1,7 +1,7 @@
 "use client";
 import { lazy, Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import AdireLoader from "@/components/AdireLoader";
+import LoaderOne from "@/components/ui/loader-one";
 import type { RevealPayload } from "@/lib/types";
 import { reveal as T } from "@/lib/copy/reveal";
 
@@ -13,7 +13,7 @@ const GiftReveal = lazy(loadReveal);
 function Opening() {
   return (
     <div className="reveal" data-mode="santa"><div className="reveal-inner">
-      <AdireLoader label={T.opening} />
+      <LoaderOne label={T.opening} />
       <p className="sub" style={{ margin: "18px auto 0" }} aria-hidden="true">{T.opening}…</p>
     </div></div>
   );

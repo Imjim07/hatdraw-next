@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import AdireLoader from "@/components/AdireLoader";
+import LoaderOne from "@/components/ui/loader-one";
 import SpecularButton from "@/components/SpecularButton";
 import FilterPanel, { SortSelect } from "@/components/gifts/FilterPanel";
 import GiftCard from "@/components/gifts/GiftCard";
@@ -24,7 +24,7 @@ export default function GiftsPage({ searchParams }: PageProps<"/gifts">) {
         <h1><Headline>{gifts.heading}</Headline></h1>
         <p className="sub">{gifts.subline}</p>
       </header>
-      <Suspense fallback={<div className="store-loading"><AdireLoader label={gifts.loading} /></div>}>
+      <Suspense fallback={<div className="store-loading"><LoaderOne label={gifts.loading} /></div>}>
         <Catalogue searchParams={searchParams} />
       </Suspense>
     </>

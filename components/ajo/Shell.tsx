@@ -3,7 +3,7 @@ import Logo from "@/components/Logo";
 import SpecularButton from "@/components/SpecularButton";
 import ThemeToggle from "@/components/ThemeToggle";
 import FloatingMenu, { SITE_MENU } from "@/components/ui/liquid-morph-floating-menu";
-import AdireLoader from "@/components/AdireLoader";
+import LoaderOne from "@/components/ui/loader-one";
 import { ajo } from "@/lib/copy/ajo";
 import { common } from "@/lib/copy/common";
 
@@ -22,7 +22,7 @@ export function Loading({ label = ajo.schedule.loadingLabel }: { label?: string 
   return (
     <Shell>
       <div className="loading-screen" style={{ minHeight: "50vh" }}>
-        <AdireLoader label={label} />
+        <LoaderOne label={label} />
         <p className="hint" aria-hidden="true">{label}…</p>
       </div>
     </Shell>

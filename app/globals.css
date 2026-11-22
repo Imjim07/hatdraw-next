@@ -485,15 +485,15 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .adire-grid svg{width:100%;height:100%}
 
 /* adire loader: 2.8s cycle. 0–20% dye wash, then each square draws in 120ms apart, holds, fades */
-.adire-loader{position:relative;margin:0 auto;border:1.5px solid var(--dye);border-radius:6px;overflow:hidden;background:var(--dye)}
-.adire-loader .adire-grid{position:absolute;inset:0;background:rgba(244,241,234,.3)}
-.adire-loader .adire-grid span{padding:18%}
-.adire-loader svg{opacity:0;animation:al-show 2.8s calc(var(--i) * 120ms) infinite}
-.adire-loader svg :is(path,ellipse){stroke-dasharray:1;stroke-dashoffset:1;animation:al-draw 2.8s calc(var(--i) * 120ms) infinite}
-.adire-loader::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(221,227,245,.5) 50%,transparent 70%) no-repeat;background-size:300% 300%;background-position:100% 100%;animation:al-wash 2.8s ease-in-out infinite;pointer-events:none}
-@keyframes al-wash{0%{background-position:100% 100%;opacity:1}20%{background-position:0 0;opacity:1}21%,100%{opacity:0}}
-@keyframes al-show{0%,20%{opacity:0}24%,80%{opacity:1}92%,100%{opacity:0}}
-@keyframes al-draw{0%,20%{stroke-dashoffset:1}38%,100%{stroke-dashoffset:0}}
+/* Loader (components/ui/loader-one.tsx): three dots, each 1s, a fifth of a second apart. */
+.loader-one{display:flex;align-items:center;justify-content:center;gap:4px;margin:0 auto;padding:0 10px 0 0;--dot:#3B82F6}
+:root[data-theme="dark"] .loader-one,:root.dark .loader-one{--dot:#60A5FA}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) .loader-one{--dot:#60A5FA}}
+.loader-one>[aria-hidden]{width:12px;height:12px;border-radius:50%;background:var(--dot);opacity:.5;animation:lo-nudge 1s ease-in-out infinite}
+.loader-one>[aria-hidden]:nth-child(2){animation-delay:.2s}
+.loader-one>[aria-hidden]:nth-child(3){animation-delay:.4s}
+@keyframes lo-nudge{50%{transform:translateX(10px) scale(1.2);opacity:1}}
+@media (forced-colors:active){.loader-one>[aria-hidden]{background:CanvasText}}
 .loading-screen{position:relative;z-index:1;min-height:70vh;display:grid;place-content:center;gap:16px;text-align:center}
 
 /* the starch reveal: one button, three beats */
@@ -596,7 +596,7 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .sched-amt,.sched-act{grid-column:2}.sched-act{justify-content:flex-start;margin-top:6px}
   .draw-choice{grid-template-columns:1fr}
 }
-@media (prefers-reduced-motion:reduce){.adire-loader svg,.adire-loader svg :is(path,ellipse),.adire-loader::after{animation:none!important}.adire-loader svg{opacity:1}.adire-loader svg :is(path,ellipse){stroke-dashoffset:0}.adire-loader::after{display:none}
+@media (prefers-reduced-motion:reduce){.loader-one>[aria-hidden]{animation:none!important;opacity:1}
   .cloth.shake-a,.cloth.shake-b{animation:none}.starch,.cracks path,.chunks path{transition:none!important}
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
