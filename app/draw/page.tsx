@@ -150,7 +150,7 @@ export default function DrawPage() {
   async function runDraw(opts: { reference?: string; passCode?: string } = {}) {
     const { reference, passCode } = opts;
     setErr(""); setDrawing(true); setResult(null); setSeen([]); go(3);
-    const minWait = new Promise((r) => setTimeout(r, 1700));
+    const minWait = new Promise((r) => setTimeout(r, 2000)); // long enough to see the shake
     try {
       const res = await fetch("/api/draw", {
         method: "POST", headers: { "Content-Type": "application/json" },
@@ -369,7 +369,7 @@ export default function DrawPage() {
           <div className="panel rise">
             {drawing || !result ? (
               <div className="drum" role="status">
-                <Shekere names={d.people} maxLabeled={0} beadsFromNames shakeOnTap={false} shaking={drawing} />
+                <Shekere names={d.people} maxLabeled={0} beadsFromNames shakeOnTap={false} shaking={drawing} vigour="strong" />
                 <div><div className="big">{S.shaking.heading}</div><p className="hint">{S.shaking.helper}</p></div>
               </div>
             ) : (

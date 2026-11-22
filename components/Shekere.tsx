@@ -40,14 +40,18 @@ export const SHEKERE_CAPACITY = 24;
 const TAG_SLOTS: [number, number][] = [[92, 150], [500, 104], [78, 300], [516, 250], [480, 412]];
 
 const TAP_MS = 900;       // one shake from a tap or autoShake
-const PERIOD = 360;       // ms per swing
-const MAX_DEG = 8;
-const RATTLE = 2.5;       // px a bead may move off its knot
+// How hard it shakes. "gentle": a tap, or the hero. "strong": the draw itself, a real
+// shake: a wider, quicker swing, a side-to-side sway from the hand, and a louder rattle.
+const VIGOUR = {
+  gentle: { period: 360, deg: 8, sway: 0, rattle: 2.5 },  // period: ms per swing; sway, rattle: px
+  strong: { period: 240, deg: 16, sway: 22, rattle: 5 },
+} as const;
+type Vigour = keyof typeof VIGOUR;
 
 const isGold = (name: string) => name.trim().endsWith("?");
 const reduced = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-type Loop = { raf: number; until: number; env: number; last: number; shaking: boolean; svg: SVGSVGElement | null; rot: SVGGElement | null };
+type Loop = { raf: number; until: number; env: number; last: number; shaking: boolean; v: Vigour; svg: SVGSVGElement | null; rot: SVGGElement | null };
 
 // One frame loop per shekere: one angle for the whole group, a small rattle per
 // bead, and tag strings re-tied to where each bead now sits. Stops when settled.
@@ -61,22 +65,25 @@ function start(L: Loop) {
     const done = !active && L.env < 0.004;
     const env = done ? 0 : L.env;
 
-    const deg = MAX_DEG * env * Math.sin((2 * Math.PI * now) / PERIOD);
+    const V = VIGOUR[L.v];
+    const deg = V.deg * env * Math.sin((2 * Math.PI * now) / V.period);
+    // The hand moves too: a sway a quarter-swing behind the tilt.
+    const dx = V.sway * env * Math.sin((2 * Math.PI * now) / V.period - Math.PI / 2);
     const a = (deg * Math.PI) / 180, cos = Math.cos(a), sin = Math.sin(a);
     const [px, py] = PIVOT;
-    L.rot?.setAttribute("transform", env ? `rotate(${deg.toFixed(3)} ${px} ${py})` : "");
+    L.rot?.setAttribute("transform", env ? `translate(${dx.toFixed(2)} 0) rotate(${deg.toFixed(3)} ${px} ${py})` : "");
 
     if (L.svg) {
       const at = new Map<string, [number, number]>();
       L.svg.querySelectorAll<SVGCircleElement>(".shk-bead").forEach((b) => {
         const x = +b.dataset.x!, y = +b.dataset.y!, p = +b.dataset.p!;
-        const r = RATTLE * env * Math.abs(Math.sin(now / 47 + p * 6.283));
+        const r = V.rattle * env * Math.abs(Math.sin(now / 47 + p * 6.283));
         const th = now / 90 + p * 12.57;
         const bx = x + r * Math.cos(th), by = y + r * Math.sin(th);
         b.setAttribute("cx", bx.toFixed(2));
         b.setAttribute("cy", by.toFixed(2));
         // Where this bead sits on screen after the group's rotation.
-        at.set(b.dataset.k!, [px + (bx - px) * cos - (by - py) * sin, py + (bx - px) * sin + (by - py) * cos]);
+        at.set(b.dataset.k!, [dx + px + (bx - px) * cos - (by - py) * sin, py + (bx - px) * sin + (by - py) * cos]);
       });
       L.svg.querySelectorAll<SVGLineElement>(".shk-string").forEach((l) => {
         const p = at.get(l.dataset.k!);
@@ -98,6 +105,8 @@ type Props = {
   beadsFromNames?: boolean;
   /** Keeps shaking while true, then settles to 0. */
   shaking?: boolean;
+  /** How hard `shaking` shakes it (taps and autoShake are always gentle). */
+  vigour?: Vigour;
   /** Shake once ~2s after mount. */
   autoShake?: boolean;
   /** Click/tap to shake. */
@@ -105,11 +114,11 @@ type Props = {
   className?: string;
 };
 
-export default function Shekere({ names, maxLabeled = 5, beadsFromNames = false, shaking = false, autoShake = false, shakeOnTap = true, className = "" }: Props) {
+export default function Shekere({ names, maxLabeled = 5, beadsFromNames = false, shaking = false, vigour = "gentle", autoShake = false, shakeOnTap = true, className = "" }: Props) {
   const clip = `shk-${useId().replace(/:/g, "")}`;
   const svg = useRef<SVGSVGElement>(null);
   const rot = useRef<SVGGElement>(null);
-  const loop = useRef<Loop>({ raf: 0, until: 0, env: 0, last: 0, shaking: false, svg: null, rot: null });
+  const loop = useRef<Loop>({ raf: 0, until: 0, env: 0, last: 0, shaking: false, v: "gentle", svg: null, rot: null });
 
   const n = names.length;
   const shown = Math.min(n, SHEKERE_CAPACITY);
@@ -134,12 +143,13 @@ export default function Shekere({ names, maxLabeled = 5, beadsFromNames = false,
   const kick = useCallback((ms = 0) => {
     if (reduced()) return;
     const L = loop.current;
+    if (ms) L.v = "gentle";
     L.svg = svg.current; L.rot = rot.current;
     if (ms) L.until = Math.max(L.until, performance.now() + ms);
     start(L);
   }, []);
 
-  useEffect(() => { loop.current.shaking = shaking; if (shaking) kick(); }, [shaking, kick]);
+  useEffect(() => { loop.current.shaking = shaking; if (shaking) { loop.current.v = vigour; kick(); } }, [shaking, vigour, kick]);
   useEffect(() => {
     if (!autoShake) return;
     const t = setTimeout(() => kick(TAP_MS), 2000);
