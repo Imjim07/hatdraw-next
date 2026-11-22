@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { BRAND } from "@/lib/config";
 import { landing } from "@/lib/copy/landing";
+import { common } from "@/lib/copy/common";
 import { PALETTE, THEME_KEY } from "@/lib/palette";
 import { gtmLoader } from "@/lib/analytics";
 import { WeatherProvider } from "@/components/WeatherContext";
@@ -47,7 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <WeatherProvider>
           <Ambient />
-          <TransitionLayer>{children}</TransitionLayer>
+          <TransitionLayer label={common.loading}>{children}</TransitionLayer>
           <WeatherChip />
         </WeatherProvider>
       </body>

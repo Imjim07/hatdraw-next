@@ -18,14 +18,14 @@ export default function DrawKindSwitch({ current }: { current: "gift" | "ajo" })
           aria-current={current === "gift" ? "page" : undefined}
           colors={["var(--pine)", "#6FBF95", "#2F6B52"]} glowColor="155 45 62"
         >
-          <i className="kind-ico kind-ico-gift" aria-hidden="true" /><h3>{K.gift}</h3>
+          <i className="dk-ico dk-ico-gift" aria-hidden="true" /><h3>{K.gift}</h3>
         </BorderGlow>
         <BorderGlow
           href="/ajo" data-mode="ajo" className={`mode-card${current === "ajo" ? " on" : ""}`}
           aria-current={current === "ajo" ? "page" : undefined}
           colors={["var(--palm-gold)", "#E08A1E", "#F7CF6B"]} glowColor="40 87 66"
         >
-          <i className="kind-ico kind-ico-ajo" aria-hidden="true" /><h3>{K.ajo}</h3>
+          <i className="dk-ico dk-ico-ajo" aria-hidden="true" /><h3>{K.ajo}</h3>
         </BorderGlow>
       </div>
     </nav>

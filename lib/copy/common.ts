@@ -19,7 +19,7 @@ export const common = {
   copied: "Link copied",
   couldntCopy: "Couldn't copy",
   saved: "Saved",
-  loading: "Dyeing the cloth…",
+  loading: "Loading…",
   networkError: `Couldn't reach ${BRAND.name}. Check your connection and try again.`,
   somethingWrong: "Something went wrong. Try again.",
   invalidRequest: "Invalid request.",
