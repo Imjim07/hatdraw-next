@@ -44,6 +44,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,500;0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
         />
+        {/* Ojuju (a Nigerian typeface), heaviest weight, for the header wordmark only:
+            cut to the letters of the name, so it costs a few KB. */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href={`https://fonts.googleapis.com/css2?family=Ojuju:wght@800&text=${encodeURIComponent(BRAND.display)}&display=swap`}
+        />
       </head>
       <body>
         <WeatherProvider>
