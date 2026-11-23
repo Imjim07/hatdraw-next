@@ -19,6 +19,12 @@ const all = strings(copy);
 const sources = ["lib/copy.ts", ...readdirSync("lib/copy").map((f) => `lib/copy/${f}`)].map((f) => readFileSync(f, "utf8"));
 
 describe("copy", () => {
+  it("never words the use cases like gambling (raffle, lottery, betting, jackpot, odds)", () => {
+    const uc = strings(copy.landing.useCases);
+    expect(uc.length).toBeGreaterThan(20);
+    for (const t of uc) expect(t, t).not.toMatch(/\b(raffles?|lotter(y|ies)|bet(s|ting)?|jackpots?|odds)\b/i);
+  });
+
   it("has a few hundred strings", () => expect(all.length).toBeGreaterThan(300));
 
   it("stores Yoruba text in NFC form", () => {

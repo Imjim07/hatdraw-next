@@ -1153,3 +1153,54 @@ section.band{padding:clamp(56px,7vw,88px) 0}
 @media (prefers-reduced-motion:reduce){
   .lm,.lm-scrim,.lm-fill,.lm-link,.lm-in,.lm-bar,.lm-burger i,.lm-roll{transition:none!important}
 }
+
+/* ---- "Who it's for" (components/UseCases.tsx, components/ui/interactive-selector.tsx) ----
+   Photo panels, one open at a time. Phone first: a vertical stack, 620px, so each of the
+   six closed panels is ≥48px tall; from 768px a row, min(440px, 80svh) tall. Text on the
+   panels is always white on a dark shade, so it reads on any photo in either theme; the
+   button is palm gold with ink text (--on-accent). */
+.uc-wrap{margin-top:32px}
+.uc{--uc-ease:cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;gap:8px;width:100%;height:620px}
+.uc-item{position:relative;flex:1 1 0;min-width:0;min-height:48px;overflow:hidden;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:#141A33;opacity:0;transform:translateX(-24px);
+  transition:flex-grow .5s var(--uc-ease),opacity .5s var(--uc-ease) calc(var(--i) * 120ms),transform .5s var(--uc-ease) calc(var(--i) * 120ms),border-color .5s var(--uc-ease)}
+.uc.is-shown .uc-item{opacity:1;transform:none}
+.uc-item.is-open{flex-grow:7;border-color:var(--palm-gold)}
+.uc-img{object-fit:cover;transform:scale(1.1);transition:transform .7s var(--uc-ease)}
+.uc-item.is-open .uc-img{transform:none}
+/* Closed: an even shade, so the title on it reads on the brightest photo. Open: dark at the
+   bottom, where the text sits. */
+.uc-shade{position:absolute;inset:0;background:rgba(10,14,30,.62);transition:background .5s}
+.uc-item.is-open .uc-shade{background:linear-gradient(to top,rgba(0,0,0,.9) 0%,rgba(0,0,0,.8) 45%,rgba(0,0,0,.45) 72%,rgba(0,0,0,.1) 100%)}
+.uc-btn{position:absolute;inset:0;z-index:1;display:flex;align-items:center;padding:0 12px;border:0;background:none;color:#fff;text-align:left;font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;border-radius:inherit}
+.uc-btn:focus-visible{outline:none;box-shadow:inset 0 0 0 2px var(--palm-gold)}
+.uc-item.is-open .uc-btn{cursor:default}
+.uc-tab{display:flex;align-items:center;gap:12px;min-width:0;transition:opacity .3s}
+.uc-item.is-open .uc-tab{opacity:0}
+.uc-icon{display:flex;align-items:center;justify-content:center;flex:none;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.5);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.uc-tab-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--display);font-weight:600;font-size:1rem;color:#fff}
+.uc-body{position:absolute;inset:auto 0 0;z-index:2;padding:16px;color:#fff;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity .5s var(--uc-ease),transform .5s var(--uc-ease)}
+.uc-item.is-open .uc-body{opacity:1;transform:none;transition-delay:.15s}
+.uc-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.uc-head h3{margin:0;font-family:var(--display);font-size:1.15rem;font-weight:700;line-height:1.2;color:#fff}
+.uc-soon{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:.75rem;font-weight:600;color:#fff}
+.uc-desc{max-width:28rem;margin:8px 0 0;font-size:.875rem;line-height:1.55;color:rgba(255,255,255,.92);text-wrap:pretty}
+.uc-cta{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:14px;padding:0 20px;border-radius:999px;background:var(--palm-gold);color:var(--on-accent);font-size:.9rem;font-weight:700;text-decoration:none;transition:filter .2s}
+.uc-cta:hover{filter:brightness(1.08)}
+.uc-cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.uc-credit{margin:12px 0 0;font-size:.6875rem;color:rgba(255,255,255,.7)}
+@media (min-width:768px){
+  .uc-wrap{margin-top:48px}
+  .uc{flex-direction:row;height:min(440px,80svh)}
+  .uc-item{min-width:56px;min-height:0}
+  .uc-btn{align-items:flex-end;padding:12px}
+  .uc-tab-title{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .uc-icon{width:44px;height:44px}
+  .uc-body{padding:24px}
+  .uc-head h3{font-size:1.5rem}
+  .uc-desc{font-size:1rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .uc-item,.uc-img,.uc-shade,.uc-tab,.uc-body{transition:none!important}
+  .uc-item{opacity:1;transform:none}
+}
+@media (forced-colors:active){.uc-item.is-open{border-color:Highlight}.uc-cta{border:1px solid ButtonText}}

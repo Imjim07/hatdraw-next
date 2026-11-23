@@ -9,6 +9,7 @@ import SocialIcons from "@/components/SocialIcons";
 import FloatingMenu from "@/components/ui/liquid-morph-floating-menu";
 import PricingTable, { type Plan } from "@/components/PricingTable";
 import Offers from "@/components/Offers";
+import UseCases from "@/components/UseCases";
 import HowItWorks from "@/components/HowItWorks";
 // Old features section, replaced by "What <brand> offers" (Offers) in its place.
 // import Features from "@/components/Features";
@@ -49,6 +50,7 @@ const M = common.menuItems;
 const MENU = [
   { heading: M.how, href: "#how" },
   { heading: M.offers, href: "#features" },
+  { heading: M.who, href: "#who-its-for" },
   { heading: M.pricing, href: "#pricing" },
   { heading: M.ajo, href: "/ajo" },
   { heading: M.gifts, href: "/gifts" },
@@ -93,6 +95,9 @@ export default function Home() {
 
       {/* "What <brand> offers" now sits where the features section was (it carries id="features"). */}
       <Offers />
+
+      {/* "Who it's for": photo panels, between what we offer and pricing */}
+      <UseCases />
 
       {/* Old features section, kept for reference:
       <Features />

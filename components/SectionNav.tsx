@@ -12,6 +12,7 @@ const N = landing.nav;
 const ITEMS = [
   { label: N.how, href: "#how" },
   { label: N.offers, href: "#features" },
+  { label: N.who, href: "#who-its-for" },
   { label: N.pricing, href: "#pricing" },
   { label: N.gifts, href: "/gifts" }, // a page, not a section: the spy below skips it
 ];

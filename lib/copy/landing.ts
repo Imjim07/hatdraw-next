@@ -86,6 +86,49 @@ export const landing = {
     line: "Gifts from Nigerian vendors, sorted by budget. You order straight from the vendor on WhatsApp.",
     button: "Browse gifts",
   },
+  /** Source: docs/copy-deck.md, "4a. Who it's for" (draft, awaiting approval). Never: raffle,
+   *  lottery, betting, jackpot, odds (lib/copy.test.ts checks). Photos are Unsplash
+   *  placeholders until real ones are shot; credits in public/use-cases/CREDITS.md. */
+  useCases: {
+    eyebrow: "Who it's for",
+    heading: "Made for the groups you already run.",
+    subline: "Offices, churches, ajo groups and party planners. One fair draw everyone can see.",
+    soon: "Coming soon",
+    offices: {
+      title: "Offices and HR",
+      description: "Run the office Secret Santa without a spreadsheet. Everyone gets a private link.",
+      cta: "Start an office draw",
+      image: { alt: "Two women in an office look at a laptop together, smiling.", credit: "Photo: Ninthgrid on Unsplash" },
+    },
+    churches: {
+      title: "Churches and fellowships",
+      description: "Pair up the choir, the youth fellowship or the whole parish. Nobody draws themselves.",
+      cta: "Start a fellowship draw",
+      image: { alt: "A church choir in red and black robes sings while the conductor leads them.", credit: "Photo: John Onaeko on Unsplash" },
+    },
+    ajo: {
+      title: "Ajo and thrift groups",
+      description: `Draw the payout order in front of everyone. ${BRAND.name} never holds your money.`,
+      cta: "Draw an ajo order",
+      image: { alt: "A trader at her market stall in Abeokuta, behind baskets of red peppers.", credit: "Photo: Omotayo Tajudeen on Unsplash" },
+    },
+    planners: {
+      title: "Event planners",
+      description: "Add a gift exchange to weddings, birthdays and end-of-year parties in minutes.",
+      cta: "Plan a gift exchange",
+      image: { alt: "A masquerade and dancers in red and white parade through a carnival crowd in Calabar.", credit: "Photo: Ben Iwara on Unsplash" },
+    },
+    vendors: {
+      title: "Instagram vendors",
+      description: "Pick giveaway winners fairly, with a link your followers can check.",
+      image: { alt: "A smiling woman holds up her phone and points at it.", credit: "Photo: Ahmed Nasiru on Unsplash" },
+    },
+    gamers: {
+      title: "Gamers and streamers",
+      description: "Pick giveaway winners live on stream, with a result your chat can check.",
+      image: { alt: "A gaming desk with a lit keyboard, a mouse and a game controller.", credit: "Photo: Rodrigo Rodrigues on Unsplash" },
+    },
+  },
   /** Source: docs/copy-deck.md, "Pricing" (prices locked for launch). */
   pricing: {
     eyebrow: "Pricing",
@@ -137,5 +180,5 @@ export const landing = {
     { q: "Who sells the gifts?", a: "Independent vendors. You order and pay on their WhatsApp, and they deliver." },
     { q: `What does ${BRAND.name} mean?`, a: `From kádàrá (Yoruba) and kaddara (Hausa): destiny. Built by ${BRAND.by} in Lagos.` },
   ],
-  nav: { sections: "Sections", how: "How it works", offers: "What we offer", pricing: "Pricing", gifts: "Gifts" },
+  nav: { sections: "Sections", how: "How it works", offers: "What we offer", who: "Who it's for", pricing: "Pricing", gifts: "Gifts" },
 };

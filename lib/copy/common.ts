@@ -13,6 +13,7 @@ export const common = {
     pricing: "Pricing",
     how: "How it works",
     offers: "What we offer",
+    who: "Who it's for",
   },
   startDraw: "Start a draw",
   logoHome: `${BRAND.name} home`,

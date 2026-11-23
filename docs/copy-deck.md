@@ -102,6 +102,25 @@ The landing page leads with fair draws in general, then lets the visitor pick Se
 - **Line:** Gifts from Nigerian vendors, sorted by budget. You order straight from the vendor on WhatsApp.
 - **Button:** Browse gifts
 
+### 4a. Who it's for
+
+> **Draft, 2026-11-23, waiting for approval.** Written in the deck's voice for the new section between "What Kadara offers" and "Pricing". Add it to the Claude Doc once approved, then re-export this file.
+
+- **Eyebrow:** Who it's for
+- **Heading:** Made for the groups you already run.
+- **Subline:** Offices, churches, ajo groups and party planners. One fair draw everyone can see.
+
+| Panel | Line | Link |
+| --- | --- | --- |
+| Offices and HR | Run the office Secret Santa without a spreadsheet. Everyone gets a private link. | Start an office draw |
+| Churches and fellowships | Pair up the choir, the youth fellowship or the whole parish. Nobody draws themselves. | Start a fellowship draw |
+| Ajo and thrift groups | Draw the payout order in front of everyone. Kadara never holds your money. | Draw an ajo order |
+| Event planners | Add a gift exchange to weddings, birthdays and end-of-year parties in minutes. | Plan a gift exchange |
+| Instagram vendors | Pick giveaway winners fairly, with a link your followers can check. | Coming soon |
+| Gamers and streamers | Pick giveaway winners live on stream, with a result your chat can check. | Coming soon |
+
+Never in this section: raffle, lottery, betting, jackpot, odds. No logos, testimonials, "trusted by" lines or usage numbers.
+
 ### 5. Pricing
 
 The hat is gone, so "Small Hat" and "Big Hat" become circles, matching the ṣẹ̀kẹ̀rẹ̀ and ajo.
