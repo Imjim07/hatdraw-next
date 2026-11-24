@@ -1254,3 +1254,38 @@ section.band{padding:clamp(56px,7vw,88px) 0}
   .uc-item{opacity:1;transform:none}
 }
 @media (forced-colors:active){.uc-item.is-open{border-color:Highlight}.uc-cta{border:1px solid ButtonText}}
+
+/* Alert (components/ui/alert.tsx): shadcn's Alert in plain CSS. The tone colours only the
+   border, a light wash and the icon; the text stays the page's ink so it keeps its contrast. */
+.alert{--tone:var(--text-muted);display:flex;align-items:flex-start;gap:12px;border:1px solid color-mix(in srgb,var(--tone) 50%,transparent);background:color-mix(in srgb,var(--tone) 7%,var(--cloud));color:var(--ink);border-radius:14px;font-size:var(--fs-sm);line-height:1.5;text-align:left}
+.alert-sm{padding:12px 14px}
+.alert-lg{padding:16px}
+.alert-info{--tone:#2B59C3}
+.alert-success{--tone:#2F7A4F}
+.alert-warning{--tone:#B26B00}
+.alert-error{--tone:var(--danger)}
+.alert-icon{flex:none;display:grid;place-items:center;height:21px;color:var(--tone)}
+.alert-body{flex:1;min-width:0}
+.alert-row{align-items:center}
+.alert-row .alert-icon{height:auto}
+.alert-action{flex:none;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.alert-title{margin:0;font-weight:700}
+.alert-desc{margin:2px 0 0;color:var(--text-muted)}
+.alert-content>*+*{margin-top:4px}
+.alert-x{display:grid;place-items:center;width:44px;height:44px;margin:-12px -10px -12px 0;padding:0;border:0;background:none;color:var(--text-muted);border-radius:50%;cursor:pointer}
+.alert-x:hover{color:var(--ink);background:color-mix(in srgb,var(--tone) 12%,transparent)}
+.alert-x:focus-visible{outline:2px solid var(--tone);outline-offset:-4px}
+.alert-in{animation:rise .25s ease-out}
+:root[data-theme="dark"] .alert-info{--tone:#9DB6FF} :root[data-theme="dark"] .alert-success{--tone:#74D19C} :root[data-theme="dark"] .alert-warning{--tone:#F2B33D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .alert-info{--tone:#9DB6FF} :root:not([data-theme="light"]) .alert-success{--tone:#74D19C} :root:not([data-theme="light"]) .alert-warning{--tone:#F2B33D}}
+@media (prefers-reduced-motion:reduce){.alert-in{animation:none}}
+/* Swap section: the alerts stack; on phones the actions go under the text, full width. */
+.swap-list{display:grid;gap:10px;margin-top:14px}
+.swap-ask{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:14px}
+@media (max-width:600px){
+  .alert-complex{flex-wrap:wrap}
+  .alert-complex .alert-body{flex-basis:calc(100% - 28px)}
+  .alert-complex .alert-action{width:100%}
+  .alert-complex .alert-action .btn{flex:1}
+  .swap-ask{grid-template-columns:1fr}
+}

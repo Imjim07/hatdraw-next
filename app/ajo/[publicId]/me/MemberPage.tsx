@@ -1,6 +1,8 @@
 "use client";
 import { use, useCallback, useEffect, useState } from "react";
 import SpecularButton from "@/components/SpecularButton";
+import Select from "@/components/ui/select";
+import { Alert, AlertDescription, AlertTitle, IconCheck, IconClock, IconError, IconInfo, IconSwap, IconX, type AlertVariant } from "@/components/ui/alert";
 import { ScheduleDownloads, GroupHead, NO_MONEY } from "@/components/ajo/GroupView";
 import { Loading, Problem, Shell } from "@/components/ajo/Shell";
 import { api, fragment, longDate, shortDate } from "@/lib/ajo/client";
@@ -20,12 +22,19 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
   const [swapWith, setSwapWith] = useState("");
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
+  // Swaps answer in the swap section itself: the question before a request is sent,
+  // then what happened (sent, done, declined, or what went wrong).
+  const [asking, setAsking] = useState("");
+  const [note, setNote] = useState<{ variant: AlertVariant; text: string } | null>(null);
+  // The question replaces the "Ask to swap" button, so keyboard focus moves to "Send request".
+  useEffect(() => { if (asking) document.querySelector<HTMLElement>("#swap-confirm .btn-primary")?.focus(); }, [asking]);
   const say = (t: string) => { setToast(t); setTimeout(() => setToast(""), 2400); };
 
   const take = useCallback((r: Data) => { setData(r); setEmail(r.me.email ?? ""); setRemind(r.me.remind); }, []);
   const load = useCallback(async () => {
     const t = fragment();
     setToken(t);
+    setAsking(""); setNote(null); setSwapWith(""); // another member's link: start clean
     if (!t) { setErr(A.member.missing); return; }
     const r = await api<Data>("/api/ajo/members/me", { token: t, publicId });
     if (!r.ok) { setErr(r.error); return; }
@@ -51,13 +60,14 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
   }
 
   async function swap(action: "request" | "confirm" | "decline", extra: { with?: string; swapId?: string }) {
-    if (action === "request" && !window.confirm(A.member.confirmSwap(extra.with ?? ""))) return;
-    setBusy(true); setErr("");
+    setBusy(true); setErr(""); setNote(null); setAsking("");
     const r = await api<Data>("/api/ajo/swaps", { token, publicId, action, ...extra });
     setBusy(false);
-    if (!r.ok) return setErr(r.error);
+    if (!r.ok) return setNote({ variant: "error", text: r.error });
     take(r);
-    say(action === "request" ? A.member.sent(extra.with ?? "") : action === "confirm" ? (r.me.date ? A.member.confirmed(shortDate(r.me.date)) : A.member.confirmedShort) : A.member.declined);
+    setNote(action === "request" ? { variant: "success", text: A.member.sent(extra.with ?? "") }
+      : action === "confirm" ? { variant: "success", text: r.me.date ? A.member.confirmed(shortDate(r.me.date)) : A.member.confirmedShort }
+      : { variant: "default", text: A.member.declined });
   }
 
   if (err && !data) return <Problem title={common.hmm} text={err} />;
@@ -92,24 +102,47 @@ export default function MemberPage({ params }: { params: Promise<{ publicId: str
         {drawn && (
           <div className="field"><span className="lbl">{A.member.swapHeading}</span>
             <p className="hint" style={{ marginTop: 0 }}>{A.member.swapHelp}{me.pinned ? A.member.swapPinned : ""}</p>
-            <div className="res">
-              {me.swapsIn.map((s) => (
-                <div key={s.id} className="res-row">
-                  <span>{(() => { const t = g.turns?.find((x) => x.name === s.from); return t && drawn ? A.member.incoming(s.from, t.turn, t.date, me.turn!, me.date!) : A.member.incomingShort(s.from); })()}</span>
-                  <div className="acts">
-                    <SpecularButton className="btn btn-ghost btn-sm" onClick={() => swap("decline", { swapId: s.id })} disabled={busy}>{A.member.decline}</SpecularButton>
-                    <SpecularButton className="btn btn-primary btn-sm" onClick={() => swap("confirm", { swapId: s.id })} disabled={busy}>{A.member.accept}</SpecularButton>
-                  </div>
-                </div>
-              ))}
+            <div className="swap-list">
+              {me.swapsIn.map((s) => {
+                const t = g.turns?.find((x) => x.name === s.from);
+                return (
+                  <Alert key={s.id} variant="info" layout="complex" icon={<IconSwap />} className="alert-in"
+                    action={<>
+                      <SpecularButton className="btn btn-ghost btn-sm" onClick={() => swap("decline", { swapId: s.id })} disabled={busy}>{A.member.decline}</SpecularButton>
+                      <SpecularButton className="btn btn-primary btn-sm" onClick={() => swap("confirm", { swapId: s.id })} disabled={busy}>{A.member.accept}</SpecularButton>
+                    </>}>
+                    <AlertTitle>{A.member.incomingShort(s.from)}</AlertTitle>
+                    {t && <AlertDescription>{A.member.incoming(t.turn, t.date, me.turn!, me.date!)}</AlertDescription>}
+                  </Alert>
+                );
+              })}
               {me.swapsOut.map((s) => (
-                <div key={s.id} className="res-row"><span>{A.member.waiting(s.to)} <span className="hint" style={{ display: "block", marginTop: 2 }}>{A.member.waitingHelp(shortDate(s.requestedAt.slice(0, 10)))}</span></span></div>
+                <Alert key={s.id} layout="complex" icon={<IconClock />}>
+                  <AlertTitle>{A.member.waiting(s.to)}</AlertTitle>
+                  <AlertDescription>{A.member.waitingHelp(shortDate(s.requestedAt.slice(0, 10)))}</AlertDescription>
+                </Alert>
               ))}
+              {asking && (
+                <Alert id="swap-confirm" variant="warning" layout="complex" icon={<IconInfo />} className="alert-in"
+                  action={<>
+                    <SpecularButton className="btn btn-ghost btn-sm" onClick={() => setAsking("")} disabled={busy}>{A.member.cancel}</SpecularButton>
+                    <SpecularButton className="btn btn-primary btn-sm" onClick={() => swap("request", { with: asking })} disabled={busy}>{A.member.sendRequest}</SpecularButton>
+                  </>}>
+                  <AlertTitle>{A.member.confirmSwap(asking)}</AlertTitle>
+                  <AlertDescription>{A.member.confirmSwapHelp(asking, g.turns?.find((x) => x.name === asking)?.date)}</AlertDescription>
+                </Alert>
+              )}
+              {note && (
+                <Alert key={note.text} variant={note.variant} icon={note.variant === "error" ? <IconError /> : note.variant === "success" ? <IconCheck /> : <IconInfo />} className="alert-in"
+                  action={<button type="button" className="alert-x" aria-label={A.member.dismiss} onClick={() => setNote(null)}><IconX /></button>}>
+                  {note.text}
+                </Alert>
+              )}
             </div>
-            {!me.pinned && choices.length > 0 && (
-              <div className="ex-row" style={{ marginTop: 12, gridTemplateColumns: "1fr auto" }}>
-                <span className="pit"><select className="in" aria-label={A.member.swapWith} value={target} onChange={(e) => setSwapWith(e.target.value)}>{choices.map((c) => <option key={c}>{c}</option>)}</select></span>
-                <SpecularButton className="btn btn-ghost" onClick={() => swap("request", { with: target })} disabled={busy || !target}>{A.member.askToSwap}</SpecularButton>
+            {!me.pinned && choices.length > 0 && !asking && (
+              <div className="swap-ask">
+                <Select aria-label={A.member.swapWith} value={target} onChange={setSwapWith} options={choices.map((c) => ({ id: c, label: c }))} />
+                <SpecularButton className="btn btn-ghost" onClick={() => { setNote(null); setAsking(target); }} disabled={busy || !target}>{A.member.askToSwap}</SpecularButton>
               </div>
             )}
           </div>

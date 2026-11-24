@@ -171,11 +171,17 @@ test("swaps: both confirm to swap; a decline changes nothing", async ({ page, re
   const order = async () => (await (await request.get(`/api/ajo/groups/${c.publicId}`)).json()).group.turns.map((t: { name: string }) => t.name) as string[];
   const start = await order();
 
-  page.on("dialog", (d) => d.accept()); // "Swap your turn with Bayo?"
   // Amaka asks Bayo; Bayo confirms from his own link.
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Amaka")}`);
-  await page.getByLabel("Swap with").selectOption("Bayo");
-  await page.getByRole("button", { name: "Ask to swap" }).click();
+  const ask = async (name: string) => {
+    await page.getByRole("button", { name: /Swap with/ }).click();
+    await page.getByRole("option", { name }).click();
+    await page.getByRole("button", { name: "Ask to swap" }).click();
+    await expect(page.getByText(`Swap your turn with ${name}?`)).toBeVisible(); // asked first, in the page
+    await expect(page.getByRole("button", { name: "Send request" })).toBeFocused();
+    await page.getByRole("button", { name: "Send request" }).click();
+  };
+  await ask("Bayo");
   await expect(page.getByText("Swap request sent to Bayo. Nothing changes until they agree.").first()).toBeVisible();
   await shot(page, "06-member");
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Bayo")}`);
@@ -191,8 +197,12 @@ test("swaps: both confirm to swap; a decline changes nothing", async ({ page, re
 
   // Chika asks Dami; Dami declines: nothing moves.
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Chika")}`);
-  await page.getByLabel("Swap with").selectOption("Dami");
+  await page.getByRole("button", { name: /Swap with/ }).click();
+  await page.getByRole("option", { name: "Dami" }).click();
   await page.getByRole("button", { name: "Ask to swap" }).click();
+  await page.getByRole("button", { name: "Cancel" }).click(); // changing your mind sends nothing
+  expect(await order()).toEqual(swapped);
+  await ask("Dami");
   await expect(page.getByText("Swap request sent to Dami. Nothing changes until they agree.").first()).toBeVisible();
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Dami")}`);
   await page.getByRole("button", { name: "Decline" }).click();

@@ -174,13 +174,20 @@ export const ajo = {
     askToSwap: "Ask to swap",
     swapWith: "Swap with",
     confirmSwap: (name: string) => `Swap your turn with ${name}?`,
-    incoming: (name: string, theirTurn: number, theirDate: string, yourTurn: number, yourDate: string) =>
-      `${name} wants to swap turns: their turn ${theirTurn} (${dayMonth(theirDate)}) for your turn ${yourTurn} (${dayMonth(yourDate)}).`,
+    /** Under the question, before the request is sent. */
+    confirmSwapHelp: (name: string, theirDate?: string) =>
+      `${theirDate ? `You'd collect on ${dayMonth(theirDate)} instead. ` : ""}Nothing changes until ${name} agrees from their own link.`,
+    sendRequest: "Send request",
+    cancel: "Cancel",
+    dismiss: "Dismiss",
+    /** Under "{name} wants to swap turns with you." */
+    incoming: (theirTurn: number, theirDate: string, yourTurn: number, yourDate: string) =>
+      `Their turn ${theirTurn} (${dayMonth(theirDate)}) for your turn ${yourTurn} (${dayMonth(yourDate)}).`,
     incomingShort: (name: string) => `${name} wants to swap turns with you.`,
     accept: "Accept",
     decline: "Decline",
     declined: "Swap declined",
-    sent: (name: string) => `Swap request sent to ${name}. Nothing changes until they agree.`,
+    sent: (name: string) => `Request sent to ${name}.`,
     waiting: (name: string) => `Swap request sent to ${name}. Nothing changes until they agree.`,
     waitingHelp: (date: string) => `Asked ${date}. Requests expire after 72 hours.`,
     confirmed: (date: string) => `Done. You now collect on ${date}.`,
