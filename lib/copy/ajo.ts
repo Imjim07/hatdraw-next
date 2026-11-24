@@ -63,6 +63,8 @@ export const ajo = {
     pins: (n: number) => `${n} agreed ${n === 1 ? "turn" : "turns"}`,
     research: "Allow anonymous group size and amount for research (optional).",
     researchHelp: "Only the group size, the amount, how often you pay and the month you started. No names.",
+    researchWhat: "What is the anonymous research?",
+    researchInfo: `If you allow it, ${BRAND.name} keeps four numbers about this group: how many members, the amount, how often you pay and the month you started. No names, emails or phone numbers, and nothing that leads back to your group. It helps us learn how ajo groups really run, so we can make ${BRAND.name} better for them. It's never shown on the site or shared.`,
     button: "Create group",
     creating: "Creating…",
   },

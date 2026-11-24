@@ -8,6 +8,7 @@ import DrawKindSwitch from "@/components/DrawKindSwitch";
 import Stepper from "@/components/Stepper";
 import DatePicker from "@/components/ui/DatePicker";
 import Select from "@/components/ui/select";
+import InfoTip from "@/components/ui/InfoTip";
 import { waLink } from "@/lib/config";
 import { ajo as A } from "@/lib/copy/ajo";
 import { common } from "@/lib/copy/common";
@@ -258,8 +259,12 @@ export default function AjoSetup() {
               {d.pins.length > 0 && <span>{A.setup4.pins(d.pins.length)}</span>}
             </div>
             <div className="notice">{A.noMoney}</div>
-            <label className="toggle"><input type="checkbox" checked={d.researchConsent} onChange={(e) => set({ researchConsent: e.target.checked })} /><span className="sw" />
-              <span><b>{A.setup4.research}</b><span className="d">{A.setup4.researchHelp}</span></span></label>
+            {/* The "?" sits beside the label, not in it: a tap on it mustn't tick the box. */}
+            <div className="toggle-wrap">
+              <label className="toggle"><input type="checkbox" checked={d.researchConsent} onChange={(e) => set({ researchConsent: e.target.checked })} /><span className="sw" />
+                <span><b>{A.setup4.research}</b><span className="d">{A.setup4.researchHelp}</span></span></label>
+              <InfoTip label={A.setup4.researchWhat}>{A.setup4.researchInfo}</InfoTip>
+            </div>
             <div className="err" role="alert">{err}</div>
             <div className="nav-row"><SpecularButton className="btn btn-ghost" onClick={() => go(2)}>{common.back}</SpecularButton>
               <SpecularButton className="btn btn-primary" onClick={create} disabled={busy}>{busy ? A.setup4.creating : A.setup4.button}</SpecularButton></div>

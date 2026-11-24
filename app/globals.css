@@ -482,6 +482,19 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .toggle input:checked+.sw::after{left:21px;background:var(--cloud)}
 .toggle input:focus-visible+.sw{outline:2px solid var(--indigo);outline-offset:2px}
 .toggle b{display:block;font-size:.95rem}.toggle .d{font-size:.85rem;color:var(--text-muted)}
+/* A toggle with a faint "?" in its top-right corner (InfoTip): room for it on the right. */
+.toggle-wrap{position:relative}
+.toggle-wrap>.toggle{padding-right:52px}
+.toggle-wrap>.info-tip{position:absolute;top:6px;right:4px;margin-top:12px}
+/* InfoTip: the "?" is faint (20px), its tap area 44px; the bubble opens below, right-aligned. */
+.info-tip{display:inline-block}
+.info-tip-btn{display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;background:none;color:inherit;cursor:pointer;border-radius:50%;-webkit-tap-highlight-color:transparent}
+.info-tip-btn>span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:1px solid currentColor;font-size:var(--fs-xs);font-weight:700;line-height:1;opacity:.45;transition:opacity .15s}
+.info-tip-btn:hover>span,.info-tip-btn[aria-expanded="true"]>span{opacity:.9}
+.info-tip-btn:focus-visible{outline:2px solid var(--rb-accent,var(--indigo));outline-offset:-4px}
+.info-tip-bubble{position:absolute;top:100%;right:0;z-index:20;width:min(300px,calc(100vw - 48px));padding:12px 14px;border-radius:12px;background:var(--ob-card,var(--cloud));border:1px solid var(--ob-line,var(--line));box-shadow:0 18px 40px -20px rgba(20,26,51,.45);color:var(--ob-fg,var(--ink));font-size:var(--fs-sm);line-height:1.5;font-weight:400;text-align:left}
+.info-tip-bubble[hidden]{display:none}
+@media (forced-colors:active){.info-tip-btn>span{opacity:1}.info-tip-bubble{border-color:CanvasText}}
 .ex-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}
 .ex-list{display:grid;gap:8px;margin-top:12px}
 .ex{display:flex;align-items:center;justify-content:space-between;padding:6px 6px 6px 18px;background:var(--indigo-mist);border-radius:999px;font-size:.92rem;gap:10px}
