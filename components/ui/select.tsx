@@ -7,13 +7,18 @@
 // semantics, typeahead, arrow keys, Escape and focus return.
 // The trigger keeps the setup wizard's field look (.in inside .pit, with the focus dot).
 import { Button } from "react-aria-components/Button";
-import { ListBox, ListBoxItem, ListBoxSection, Popover, Select as AriaSelect, SelectValue } from "react-aria-components/Select";
+import { Label, ListBox, ListBoxItem, ListBoxSection, Popover, Select as AriaSelect, SelectValue } from "react-aria-components/Select";
 import { Header } from "react-aria-components/ListBox";
 
 export type SelectOption = { id: string; label: string };
 
 type Props = {
+  /** The accessible name. With `label`, it is shown above the field instead. */
   "aria-label": string;
+  /** A visible label above the trigger (also its accessible name). */
+  label?: string;
+  /** Shown while nothing is chosen (value ""). */
+  placeholder?: string;
   value: string;
   onChange: (id: string) => void;
   options: SelectOption[];
@@ -29,14 +34,15 @@ const Check = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5" /></svg>
 );
 
-export default function Select({ "aria-label": label, value, onChange, options, groupLabel, isDisabled }: Props) {
+export default function Select({ "aria-label": ariaLabel, label, placeholder, value, onChange, options, groupLabel, isDisabled }: Props) {
   const items = options.map((o) => (
     <ListBoxItem key={o.id} id={o.id} textValue={o.label} className="sel-item">
       {({ isSelected }) => (<><span className="sel-check">{isSelected && <Check />}</span>{o.label}</>)}
     </ListBoxItem>
   ));
   return (
-    <AriaSelect aria-label={label} value={value} onChange={(k) => k != null && onChange(String(k))} isDisabled={isDisabled} className="sel">
+    <AriaSelect aria-label={label ? undefined : ariaLabel} value={value || null} placeholder={placeholder} onChange={(k) => k != null && onChange(String(k))} isDisabled={isDisabled} className="sel">
+      {label && <Label className="lbl">{label}</Label>}
       <span className="pit">
         <Button className="in sel-trigger"><SelectValue className="sel-value" /><Chevron /></Button>
       </span>

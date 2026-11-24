@@ -154,15 +154,29 @@ test("reminders: one email for a turn 3 days away, none on a rerun", async ({ pa
   expect((await request.get("/api/cron/ajo-reminders")).status()).toBe(401); // the cron needs CRON_SECRET
 
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Sola")}`);
-  await page.locator("#me-email").fill("sola@example.com");
-  await page.getByText("Remind me by email", { exact: true }).click();
-  await page.getByRole("button", { name: "Save" }).click();
-  await expect(page.getByText("Saved. We'll remind you 3 days before.")).toBeVisible();
+  const turnOn = page.getByRole("button", { name: "Turn on reminders" });
+  await expect(turnOn).toBeDisabled(); // one control: nothing to turn on without an email
+  await page.getByLabel("Your email").fill("sola@example");
+  await page.getByLabel("Your email").blur();
+  await expect(page.getByText("That email doesn't look right.")).toBeVisible();
+  await page.getByLabel("Your email").fill("sola@example.com");
+  await turnOn.click();
+  await expect(page.getByText("Saved. We'll remind you 3 days before every turn.")).toBeVisible();
+  await expect(page.getByText("Reminders are on for s••••@example.com")).toBeVisible();
 
   const first = await (await request.get("/api/cron/ajo-reminders", { headers: CRON })).json();
   expect(first.sent).toBe(1);
   const rerun = await (await request.get("/api/cron/ajo-reminders", { headers: CRON })).json();
   expect(rerun.sent).toBe(0);
+
+  // Turning off asks first, then deletes the email.
+  await page.getByRole("button", { name: "Turn off reminders" }).click();
+  await page.getByRole("button", { name: "Keep them on" }).click();
+  await expect(page.getByText("Reminders are on for s••••@example.com")).toBeVisible();
+  await page.getByRole("button", { name: "Turn off reminders" }).click();
+  await page.getByRole("button", { name: "Turn off", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Turn on reminders" })).toBeVisible();
+  await expect(page.getByLabel("Your email")).toHaveValue("");
 });
 
 test("swaps: both confirm to swap; a decline changes nothing", async ({ page, request }) => {
@@ -174,15 +188,17 @@ test("swaps: both confirm to swap; a decline changes nothing", async ({ page, re
   // Amaka asks Bayo; Bayo confirms from his own link.
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Amaka")}`);
   const ask = async (name: string) => {
+    await page.getByRole("button", { name: "Need a different date? Ask to swap" }).click();
+    const send = page.getByRole("button", { name: "Send swap request" });
+    await expect(send).toBeDisabled(); // nobody chosen yet
     await page.getByRole("button", { name: /Swap with/ }).click();
-    await page.getByRole("option", { name }).click();
-    await page.getByRole("button", { name: "Ask to swap" }).click();
-    await expect(page.getByText(`Swap your turn with ${name}?`)).toBeVisible(); // asked first, in the page
-    await expect(page.getByRole("button", { name: "Send request" })).toBeFocused();
-    await page.getByRole("button", { name: "Send request" }).click();
+    await page.getByRole("option", { name: new RegExp(`^${name} · Turn \\d+ · `) }).click();
+    await expect(page.getByText(new RegExp(`^You'd collect on .+\\. ${name} would collect on `))).toBeVisible();
+    await send.click();
   };
   await ask("Bayo");
-  await expect(page.getByText("Swap request sent to Bayo. Nothing changes until they agree.").first()).toBeVisible();
+  await expect(page.getByText("Request sent to Bayo. Nothing changes until they agree.")).toBeVisible();
+  await expect(page.getByText("Waiting for Bayo to agree.")).toBeVisible();
   await shot(page, "06-member");
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Bayo")}`);
   await page.getByRole("button", { name: "Accept" }).click();
@@ -197,16 +213,15 @@ test("swaps: both confirm to swap; a decline changes nothing", async ({ page, re
 
   // Chika asks Dami; Dami declines: nothing moves.
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Chika")}`);
-  await page.getByRole("button", { name: /Swap with/ }).click();
-  await page.getByRole("option", { name: "Dami" }).click();
-  await page.getByRole("button", { name: "Ask to swap" }).click();
-  await page.getByRole("button", { name: "Cancel" }).click(); // changing your mind sends nothing
-  expect(await order()).toEqual(swapped);
   await ask("Dami");
-  await expect(page.getByText("Swap request sent to Dami. Nothing changes until they agree.").first()).toBeVisible();
+  await page.getByRole("button", { name: "Cancel request" }).click(); // changing your mind: nothing moves
+  await expect(page.getByText("Request cancelled. Nothing changed.")).toBeVisible();
+  await expect(page.getByText("Waiting for Dami to agree.")).toHaveCount(0);
+  await ask("Dami");
+  await expect(page.getByText("Waiting for Dami to agree.")).toBeVisible();
   await page.goto(`/ajo/${c.publicId}/me#${tokenOf(c, "Dami")}`);
   await page.getByRole("button", { name: "Decline" }).click();
-  await expect(page.getByText("Swap declined")).toBeVisible();
+  await expect(page.getByText("Swap declined. Nothing changed.")).toBeVisible();
   expect(await order()).toEqual(swapped);
 });
 

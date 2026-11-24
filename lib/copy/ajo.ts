@@ -1,5 +1,9 @@
 import { BRAND, CONTACT, dayMonth, naira } from "@/lib/config";
 
+/** "Wed, 9 Dec" from "YYYY-MM-DD" (calendar date, no time zone shift). */
+const weekDay = (d: string) =>
+  new Date(d + "T12:00:00Z").toLocaleDateString("en-NG", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+
 // Ajo: setup, organiser page, member page, schedule, emails and errors. Calm and exact:
 // real names, amounts and dates, no jokes. Source: docs/copy-deck.md, "Ajo flow".
 type Turn = { turn: number; name: string; amount: number; date: string };
@@ -151,48 +155,83 @@ export const ajo = {
     loading: "Loading your schedule…",
     loadingLabel: "Loading your schedule",
   },
+  /** The member's private page (/ajo/[id]/me). Calm, plain, money-page tone. */
   member: {
-    eyebrow: (name: string) => `Ajo · ${name}`,
+    eyebrow: (group: string) => `${group} ajo`,
+    hi: (first: string) => `Hi ${first}`,
     loading: "Opening your turn",
     missing: "This private link is missing its part after the #. Ask your organiser to resend it.",
-    yourTurn: (turn: number, date: string, amount: number) => `Your turn: ${turn} · ${dayMonth(date)} · ${naira(amount)}`,
     notDrawn: "Not drawn yet",
     notDrawnHelp: "Your organiser hasn't drawn the payout order yet. Check back after the draw.",
+    // Your payout card
+    yourPayout: "Your payout",
+    turnOf: (turn: number, total: number) => `Turn ${turn} of ${total}`,
+    countdown: (c: { kind: "days"; days: number } | { kind: "tomorrow" } | { kind: "today" } | { kind: "past" }) =>
+      c.kind === "days" ? `in ${c.days} days` : c.kind === "tomorrow" ? "tomorrow" : "",
+    todayIsYours: "Today is your turn",
+    /** After the date. Never "paid" or "collected": we can't know whether money moved. */
+    wasOn: (date: string) => `Your turn was on ${date}`,
     agreed: "Agreed before the draw",
+    swappedWith: (name: string, date: string) => `Swapped with ${name}, ${dayMonth(date)}`,
+    addToCalendar: "Add to calendar",
+    icsSummary: (group: string, amount: number) => `${group} ajo: you collect ${naira(amount)}`,
+    icsDescription: (group: string) => `${group} ajo. ${BRAND.name} doesn't handle money; pay the way your group agreed.`,
+    // This turn card
+    thisTurn: "This turn",
+    collectsOn: (name: string, date: string) => `${name} collects on ${weekDay(date)}`,
+    yourContribution: (amount: number) => `Your contribution: ${naira(amount)}`,
+    /** Everyone pays every turn, the collector too (the payout is the contribution times the members). */
+    youNext: (amount: number) => `You collect next. Everyone contributes ${naira(amount)}, you included.`,
+    finished: "This ajo has finished. Every turn has been drawn and dated.",
+    fullSchedule: "See full schedule",
+    // Schedule preview
+    upcoming: "Coming up",
+    you: "You",
+    previewLabel: "The next turns",
+    // Reminders: one control, two states
     reminders: "Email reminders",
-    remindersHelp: `One email 3 days before each payout date. Only you and ${BRAND.name} see your address.`,
+    remindersHelp: `One email 3 days before every turn. Only you and ${BRAND.name} see your address.`,
     email: "Your email",
     emailPlaceholder: "you@example.com",
-    remindMe: "Remind me by email",
-    remindMeHelp: "Switch this off any time. We delete your email when you do.",
-    save: "Save",
-    saved: "Saved. We'll remind you 3 days before.",
+    turnOn: "Turn on reminders",
+    onFor: (masked: string) => `Reminders are on for ${masked}`,
+    onHelp: "Turn them off any time. We delete your email when you do.",
+    turnOff: "Turn off reminders",
+    confirmOff: "Turn off reminders? We'll delete your email.",
+    confirmOffYes: "Turn off",
+    keepOn: "Keep them on",
+    saving: "Saving",
+    saved: "Saved. We'll remind you 3 days before every turn.",
     off: "Reminders off. We've deleted your email.",
+    saveFailed: "Couldn't save. Check your connection and try again.",
+    badEmail: "That email doesn't look right.",
+    // Swap turns
     swapHeading: "Swap turns",
+    swapOpen: "Need a different date? Ask to swap",
     swapHelp: "A swap only happens when you both agree from your own links. Every swap shows on the schedule.",
-    swapPinned: " Your turn was agreed before the draw, so it can't be swapped.",
-    askToSwap: "Ask to swap",
+    swapPinned: "Your turn was agreed before the draw, so it can't be swapped.",
     swapWith: "Swap with",
-    confirmSwap: (name: string) => `Swap your turn with ${name}?`,
-    /** Under the question, before the request is sent. */
-    confirmSwapHelp: (name: string, theirDate?: string) =>
-      `${theirDate ? `You'd collect on ${dayMonth(theirDate)} instead. ` : ""}Nothing changes until ${name} agrees from their own link.`,
-    sendRequest: "Send request",
-    cancel: "Cancel",
-    dismiss: "Dismiss",
-    /** Under "{name} wants to swap turns with you." */
-    incoming: (theirTurn: number, theirDate: string, yourTurn: number, yourDate: string) =>
-      `Their turn ${theirTurn} (${dayMonth(theirDate)}) for your turn ${yourTurn} (${dayMonth(yourDate)}).`,
+    choose: "Choose a member",
+    swapOption: (name: string, turn: number, date: string) => `${name} · Turn ${turn} · ${weekDay(date)}`,
+    swapPreview: (name: string, theirDate: string, yourDate: string) =>
+      `You'd collect on ${weekDay(theirDate)}. ${name} would collect on ${weekDay(yourDate)}.`,
+    sendRequest: "Send swap request",
+    sent: (name: string) => `Request sent to ${name}. Nothing changes until they agree.`,
+    incoming: (name: string, theirTurn: number, theirDate: string, yourTurn: number, yourDate: string) =>
+      `${name} wants to swap: their turn ${theirTurn} (${weekDay(theirDate)}) for your turn ${yourTurn} (${weekDay(yourDate)}).`,
     incomingShort: (name: string) => `${name} wants to swap turns with you.`,
     accept: "Accept",
     decline: "Decline",
-    declined: "Swap declined",
-    sent: (name: string) => `Request sent to ${name}.`,
-    waiting: (name: string) => `Swap request sent to ${name}. Nothing changes until they agree.`,
+    declined: "Swap declined. Nothing changed.",
+    waiting: (name: string) => `Waiting for ${name} to agree.`,
     waitingHelp: (date: string) => `Asked ${date}. Requests expire after 72 hours.`,
+    cancelRequest: "Cancel request",
+    cancelled: "Request cancelled. Nothing changed.",
     confirmed: (date: string) => `Done. You now collect on ${date}.`,
     confirmedShort: "Done. Your new turn is on the schedule.",
-    fullSchedule: "See the full schedule",
+    dismiss: "Dismiss",
+    // Footer
+    questions: "Questions?",
   },
   unsubscribe: {
     working: "Stopping reminders",
@@ -246,6 +285,8 @@ export const ajo = {
     swapPinned: "Agreed turns were settled before the draw, so they can't be swapped.",
     swapWaiting: (name: string) => `There's already a swap waiting between you and ${name}.`,
     swapGone: "That swap request isn't waiting any more.",
+    swapPast: "That turn has already passed, so it can't be swapped.",
+    swapNotYoursToCancel: "Only the member who asked can cancel this request.",
     swapNotYours: "Only the member who was asked can answer this swap.",
     chooseMode: "Choose Draw now or Draw live.",
     liveSeconds: "A live draw starts in 10 to 60 seconds.",

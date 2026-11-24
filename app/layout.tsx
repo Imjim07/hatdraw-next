@@ -9,6 +9,7 @@ import { WeatherProvider } from "@/components/WeatherContext";
 import Ambient from "@/components/Ambient";
 import WeatherChip from "@/components/WeatherChip";
 import TransitionLayer from "@/components/TransitionLayer";
+import CalmOnAjo from "@/components/CalmOnAjo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BRAND.url),
@@ -53,9 +54,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <WeatherProvider>
-          <Ambient />
+          <CalmOnAjo><Ambient /></CalmOnAjo>
           <TransitionLayer label={common.loading}>{children}</TransitionLayer>
-          <WeatherChip />
+          <CalmOnAjo><WeatherChip /></CalmOnAjo>
         </WeatherProvider>
       </body>
     </html>
