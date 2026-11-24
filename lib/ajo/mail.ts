@@ -5,7 +5,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { isMemoryStore } from "./store";
 import { CONTACT, emailFrom } from "@/lib/config";
 
-export type Email = { to: string; subject: string; text: string; unsubscribeUrl: string };
+export type Email = { to: string; subject: string; text: string; html?: string; unsubscribeUrl: string };
 
 /** Resend's free tier allows 100 emails a day; override with REMINDER_DAILY_LIMIT. */
 export const dailyLimit = () => Math.max(0, Number(process.env.REMINDER_DAILY_LIMIT) || 100);
@@ -30,7 +30,7 @@ export async function sendBatch(emails: Email[]): Promise<number> {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify(chunk.map((e) => ({
-        from, to: [e.to], reply_to: CONTACT.support, subject: e.subject, text: e.text,
+        from, to: [e.to], reply_to: CONTACT.support, subject: e.subject, text: e.text, html: e.html,
         headers: { "List-Unsubscribe": `<${e.unsubscribeUrl}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" },
       }))),
     });

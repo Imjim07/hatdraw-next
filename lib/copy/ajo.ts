@@ -191,16 +191,25 @@ export const ajo = {
     doneText: "We've deleted your email address. You can add it again from your private link.",
     error: "This link doesn't work. You can stop reminders from your private link instead.",
   },
-  /** Reminder email. Subject and body from the deck; links and the support line added. */
+  /** Reminder email. Subject and body from the deck; links and the support line added.
+   *  The same sentences make the plain-text body and the HTML (lib/ajo/reminder-email.ts). */
   reminderEmail: {
     subject: (group: string, name: string, date: string) => `${group} ajo: ${name} collects on ${dayMonth(date)}`,
-    body: (p: { group: string; date: string; name: string; amount: number; schedule: string; stop: string }) => [
+    /** The line inboxes show after the subject, and the HTML heading. */
+    headline: (name: string, amount: number, date: string) => `${name} collects ${naira(amount)} on ${dayMonth(date)}`,
+    main: (p: { group: string; date: string; name: string; amount: number }) =>
       `Contributions for ${p.group} are due by ${dayMonth(p.date)}. This turn, ${p.name} collects ${naira(p.amount)}. ${BRAND.name} doesn't handle money, so pay the way your group agreed.`,
+    seeSchedule: "See schedule",
+    stop: "Stop reminders",
+    why: (group: string) => `You get this because you asked for reminders for ${group}.`,
+    questions: `Questions? Reply or email support: ${CONTACT.support}`,
+    body: (p: { group: string; date: string; name: string; amount: number; schedule: string; stop: string }) => [
+      ajo.reminderEmail.main(p),
       ``,
-      `See schedule: ${p.schedule}`,
-      `Stop reminders: ${p.stop}`,
+      `${ajo.reminderEmail.seeSchedule}: ${p.schedule}`,
+      `${ajo.reminderEmail.stop}: ${p.stop}`,
       ``,
-      `Questions? Reply or email support: ${CONTACT.support}`,
+      ajo.reminderEmail.questions,
     ].join("\n"),
   },
   calendar: {

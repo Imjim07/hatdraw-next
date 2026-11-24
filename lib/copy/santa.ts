@@ -160,11 +160,16 @@ export const santa = {
     issueFailed: "Your payment went through, but we couldn't show your code. Email support with your Paystack reference.",
     alreadyIssued: "This pass's code has already been shown. Email support with your Paystack reference for a new one.",
     emailSubject: `Your ${BRAND.name} Year pass code`,
+    // The same sentences make the plain-text body and the HTML (lib/pass-email.ts).
+    emailCodeLabel: `Your ${BRAND.name} Year pass code:`,
+    emailCovers: (date: string) => `It covers up to ${PRICING.YEAR_PASS.maxDraws} draws of up to ${PRICING.YEAR_PASS.maxPeople} people each, until ${date}. Enter it at the payment step of any draw.`,
+    emailStart: "Start a draw",
+    emailLost: `Lost it? Email ${CONTACT.support} with your Paystack reference and we'll issue a new one.`,
     emailBody: (code: string, date: string, site: string) => [
-      `Your ${BRAND.name} Year pass code:`, ``, code, ``,
-      `It covers up to ${PRICING.YEAR_PASS.maxDraws} draws of up to ${PRICING.YEAR_PASS.maxPeople} people each, until ${date}. Enter it at the payment step of any draw.`,
-      ``, `Start a draw: ${site}/draw`, ``,
-      `Lost it? Email ${CONTACT.support} with your Paystack reference and we'll issue a new one.`,
+      santa.pass.emailCodeLabel, ``, code, ``,
+      santa.pass.emailCovers(date),
+      ``, `${santa.pass.emailStart}: ${site}/draw`, ``,
+      santa.pass.emailLost,
     ].join("\n"),
   },
   errors: {

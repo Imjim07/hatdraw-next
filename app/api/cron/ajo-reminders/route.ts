@@ -3,6 +3,7 @@ import { dailyLimit, sendBatch, signMember, type Email } from "@/lib/ajo/mail";
 import { fail, load, now, ok, siteUrl, withStore } from "@/lib/ajo/server";
 import { cronAuthorised } from "@/lib/cron";
 import { ajo } from "@/lib/copy/ajo";
+import { reminderHtml } from "@/lib/ajo/reminder-email";
 
 // Daily cron: emails opted-in members about turns whose payout date is 3 days
 // away (or closer, if an earlier run ran out of daily sends). Each (group, turn)
@@ -34,15 +35,17 @@ export async function GET(req: Request) {
         const who = names.get(l.order[i]);
         const emails: Email[] = recipients.map((m) => {
           const unsubscribeUrl = `${site}/api/ajo/unsubscribe?m=${m.id}&s=${signMember(m.id)}`;
+          const content = {
+            group: group.name, date: l.dates[i], name: who ?? "", amount: total,
+            schedule: `${site}/ajo/${group.public_id}`,
+            stop: `${site}/ajo/unsubscribe#${m.id}.${signMember(m.id)}`,
+          };
           return {
             to: m.email!,
             subject: ajo.reminderEmail.subject(group.name, who ?? "", l.dates[i]),
             unsubscribeUrl,
-            text: ajo.reminderEmail.body({
-              group: group.name, date: l.dates[i], name: who ?? "", amount: total,
-              schedule: `${site}/ajo/${group.public_id}`,
-              stop: `${site}/ajo/unsubscribe#${m.id}.${signMember(m.id)}`,
-            }),
+            text: ajo.reminderEmail.body(content),
+            html: reminderHtml({ site, ...content }),
           };
         });
         const n = await sendBatch(emails);

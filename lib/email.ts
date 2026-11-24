@@ -3,7 +3,7 @@
 // tests and local development record emails in an in-memory outbox instead.
 import { CONTACT, emailFrom } from "./config";
 
-export type OutEmail = { to: string; subject: string; text: string };
+export type OutEmail = { to: string; subject: string; text: string; html?: string };
 const g = globalThis as unknown as { __outbox?: OutEmail[] };
 export const outbox = () => (g.__outbox ??= []);
 
@@ -18,7 +18,7 @@ export async function sendEmail(e: OutEmail): Promise<boolean> {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: emailFrom(), to: [e.to], reply_to: CONTACT.support, subject: e.subject, text: e.text }),
+      body: JSON.stringify({ from: emailFrom(), to: [e.to], reply_to: CONTACT.support, subject: e.subject, text: e.text, html: e.html }),
     });
     if (!res.ok) console.error(`[email] resend_failed ${res.status}`);
     return res.ok;

@@ -1,6 +1,7 @@
 import { passStatus } from "@/lib/paywall";
 import { normalisePassCode } from "@/lib/payments";
 import { sendEmail } from "@/lib/email";
+import { passHtml } from "@/lib/pass-email";
 import { dayMonthYear } from "@/lib/config";
 import { santa } from "@/lib/copy/santa";
 
@@ -18,6 +19,7 @@ export async function POST(req: Request) {
   const status = code ? await passStatus(code).catch(() => null) : null;
   if (!code || !status || !status.ok) return json({ ok: false, error: santa.paywall.passInvalid }, 403);
   const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") || new URL(req.url).origin;
-  const sent = await sendEmail({ to: email, subject: santa.pass.emailSubject, text: santa.pass.emailBody(code, dayMonthYear(status.expiresAt), site) });
+  const date = dayMonthYear(status.expiresAt);
+  const sent = await sendEmail({ to: email, subject: santa.pass.emailSubject, text: santa.pass.emailBody(code, date, site), html: passHtml({ site, code, date }) });
   return sent ? json({ ok: true }) : json({ ok: false, error: santa.pass.sendFailed }, 502);
 }
