@@ -1,4 +1,4 @@
-import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Locator, type Page } from "@playwright/test";
 
 // Ajo payout-order draw, end to end. See playwright.config.ts for the setup.
 const CRON = { Authorization: "Bearer e2e-cron-secret" };
@@ -49,12 +49,27 @@ test("instant draw with pins, redraw within the window, refused after it", async
   await box.press("Enter");
   await expect(page.getByText("Each turn pays ₦160,000")).toBeVisible();
   await page.getByRole("button", { name: /next: agreed turns/i }).click();
-  await page.getByLabel("Member", { exact: true }).selectOption("Chidi");
-  await page.getByLabel("Turn", { exact: true }).selectOption("3");
-  await page.getByRole("button", { name: "Pin", exact: true }).click();
-  await page.getByLabel("Member", { exact: true }).selectOption("Kemi");
-  await page.getByLabel("Turn", { exact: true }).selectOption("1");
-  await page.getByRole("button", { name: "Pin", exact: true }).click();
+  // The member picker starts on "None": nothing to pin, so the turn and Pin wait.
+  const member = page.getByRole("button", { name: /Member$/ }), turn = page.getByRole("button", { name: /Turn$/ });
+  const pin = page.getByRole("button", { name: "Pin", exact: true });
+  await expect(member).toContainText("None");
+  await expect(pin).toBeDisabled();
+  await expect(turn).toBeDisabled();
+  const choose = async (picker: Locator, option: string | RegExp) => {
+    await picker.click();
+    await page.getByRole("option", { name: option }).click();
+  };
+  await choose(member, "Chidi");
+  await expect(pin).toBeEnabled();
+  await choose(member, "None"); // changing your mind: back to nobody
+  await expect(pin).toBeDisabled();
+  await choose(member, "Chidi");
+  await choose(turn, /^Turn 3\b/);
+  await pin.click();
+  await expect(member).toContainText("None"); // back to "None" after each pin
+  await choose(member, "Kemi");
+  await choose(turn, /^Turn 1\b/);
+  await pin.click();
   await page.getByRole("button", { name: /next: review/i }).click();
   await expect(page.getByText(/never holds or moves your money/)).toBeVisible();
   await expect(page.getByRole("checkbox", { name: /for research/i })).not.toBeChecked(); // research consent is off by default

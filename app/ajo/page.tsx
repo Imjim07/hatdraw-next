@@ -7,6 +7,7 @@ import FloatingMenu, { SITE_MENU } from "@/components/ui/liquid-morph-floating-m
 import DrawKindSwitch from "@/components/DrawKindSwitch";
 import Stepper from "@/components/Stepper";
 import DatePicker from "@/components/ui/DatePicker";
+import Select from "@/components/ui/select";
 import { waLink } from "@/lib/config";
 import { ajo as A } from "@/lib/copy/ajo";
 import { common } from "@/lib/copy/common";
@@ -23,6 +24,8 @@ const DRAFT_KEY = "hd-ajo-draft-v1";
 const AV = ["#DDE3F5", "var(--palm-gold)"];
 const STEPS = A.steps;
 const FREQS: Frequency[] = ["weekly", "biweekly", "monthly"];
+// The member picker's "None" item: a single space, which no member name can be (names are trimmed).
+const NONE = " ";
 const blank = (): Draft => ({ name: "", amount: "", frequency: "monthly", startDate: "", members: [], pins: [], researchConsent: false });
 const initials = (s: string) => Array.from(new Intl.Segmenter().segment(s.normalize("NFC")), (x) => x.segment).slice(0, 2).join("").toUpperCase();
 
@@ -85,8 +88,9 @@ export default function AjoSetup() {
   const freeMembers = d.members.filter((m) => !d.pins.some((p) => p.name === m));
   const freeTurns = Array.from({ length: n }, (_, i) => i + 1).filter((t) => !d.pins.some((p) => p.turn === t));
   const addPin = () => {
-    const who = pinWho || freeMembers[0], turn = Number(pinTurn || freeTurns[0]);
-    if (!who || !turn) return setErr(A.setup3.allPinned);
+    // Nobody is pinned until a member is picked: "None" is the default.
+    const who = freeMembers.includes(pinWho) ? pinWho : "", turn = Number(pinTurn || freeTurns[0]);
+    if (!who || !turn) return;
     setErr(""); set({ pins: [...d.pins, { name: who, turn }].sort((a, b) => a.turn - b.turn) }); setPinWho(""); setPinTurn("");
   };
 
@@ -222,12 +226,18 @@ export default function AjoSetup() {
             <h2>{A.setup3.heading}</h2>
             <p className="hint">{A.setup3.helper}</p>
             <div className="field"><span className="lbl">{A.setup3.pinLabel}</span>
-              <div className="ex-row">
-                <span className="pit"><select className="in" aria-label={A.setup3.member} value={pinWho || freeMembers[0] || ""} onChange={(e) => setPinWho(e.target.value)} disabled={!freeMembers.length}>{freeMembers.map((p) => <option key={p}>{p}</option>)}</select></span>
-                <span className="pit"><select className="in" aria-label={A.setup3.turn} value={pinTurn || freeTurns[0] || ""} onChange={(e) => setPinTurn(e.target.value)} disabled={!freeTurns.length}>
-                  {freeTurns.map((t) => <option key={t} value={t}>{A.setup3.turnOption(t, dates[t - 1] ? longDate(dates[t - 1]) : undefined)}</option>)}</select></span>
-                <SpecularButton className="btn btn-ghost" onClick={addPin} disabled={!freeMembers.length || !freeTurns.length}>{A.setup3.pin}</SpecularButton>
+              <div className="ex-row pin-row">
+                {/* "None" first and by default: a group that agreed nobody's turn just goes on. */}
+                <Select aria-label={A.setup3.member} groupLabel={A.setup3.member}
+                  value={freeMembers.includes(pinWho) ? pinWho : NONE} onChange={(v) => setPinWho(v === NONE ? "" : v)}
+                  options={[{ id: NONE, label: A.setup3.none }, ...freeMembers.map((p) => ({ id: p, label: p }))]} isDisabled={!freeMembers.length} />
+                <Select aria-label={A.setup3.turn} groupLabel={A.setup3.turn}
+                  value={String(pinTurn || freeTurns[0] || "")} onChange={setPinTurn}
+                  options={freeTurns.map((t) => ({ id: String(t), label: A.setup3.turnOption(t, dates[t - 1] ? longDate(dates[t - 1]) : undefined) }))}
+                  isDisabled={!pinWho || !freeTurns.length} />
+                <SpecularButton className="btn btn-ghost" onClick={addPin} disabled={!pinWho || !freeTurns.length}>{A.setup3.pin}</SpecularButton>
               </div>
+              {n > 0 && (!freeMembers.length || !freeTurns.length) && <p className="hint">{A.setup3.allPinned}</p>}
               <div className="ex-list">
                 {d.pins.map((p) => <div key={p.name} className="ex"><span>{A.setup3.pinned(p.name, p.turn)} <span className="hint" style={{ display: "inline" }}>{A.setup3.agreed}</span></span>
                   <button onClick={() => set({ pins: d.pins.filter((q) => q.name !== p.name) })}>{A.setup3.remove}</button></div>)}

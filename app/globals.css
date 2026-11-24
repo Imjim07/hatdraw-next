@@ -780,6 +780,33 @@ select.in option{background:var(--cloud);color:var(--ink)}
 .dp-pop[data-entering]{animation:dp-in .18s ease-out}
 .dp-pop[data-exiting]{animation:dp-in .12s ease-in reverse}
 @keyframes dp-in{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+
+/* Select (components/ui/select.tsx): the shadcn Select format in the wizard's colours.
+   The trigger is a field (.in in .pit); the list floats in a card the trigger's width,
+   a check marks the chosen item, and the item under the pointer or keyboard is tinted.
+   Rows are 44px for touch. */
+.sel{min-width:0}
+.sel-trigger{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer;font:inherit}
+.sel-trigger[data-focus-visible]{outline:none;border-color:var(--rb-accent);box-shadow:0 0 0 4px var(--ob-ring)}
+.sel-trigger[data-disabled]{opacity:.5;cursor:not-allowed}
+.sel-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sel-value[data-placeholder]{color:var(--ob-placeholder)}
+.sel-chev{flex:none;opacity:.6;transition:transform .2s}
+.sel-trigger[aria-expanded="true"] .sel-chev{transform:rotate(180deg)}
+.sel-pop{z-index:110;min-width:var(--trigger-width);max-height:min(24rem,var(--visual-viewport-height,100vh));overflow:auto;padding:4px;background:var(--ob-card);border:1px solid var(--ob-line);border-radius:var(--rb-r-md);box-shadow:0 24px 60px -24px oklch(20.8% 0.042 265.755 / .4);color:var(--ob-fg);font-family:var(--rb-font-sans);outline:none}
+.sel-pop[data-entering]{animation:dp-in .16s ease-out}
+.sel-pop[data-exiting]{animation:dp-in .12s ease-in reverse}
+.sel-list{outline:none}
+.sel-label{padding:8px 8px 4px 32px;font-size:var(--fs-sm);font-weight:600;color:var(--ob-muted)}
+.sel-item{position:relative;display:flex;align-items:center;min-height:44px;padding:8px 12px 8px 32px;border-radius:calc(var(--rb-r-md) - 4px);font-size:var(--fs-sm);cursor:pointer;outline:none;user-select:none}
+.sel-item[data-focused],.sel-item[data-hovered]{background:var(--ob-soft)}
+.sel-item[data-selected]{font-weight:600}
+.sel-item[data-disabled]{opacity:.5;cursor:default}
+.sel-check{position:absolute;left:8px;top:50%;display:grid;place-items:center;width:16px;height:16px;margin-top:-8px}
+/* Ajo pins: on phones, member and turn each take the full width, so the turn's date shows. */
+@media (max-width:600px){.pin-row{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.sel-pop[data-entering],.sel-pop[data-exiting]{animation:none}.sel-chev{transition:none}}
+@media (forced-colors:active){.sel-item[data-focused]{outline:2px solid Highlight}}
 .dp-dialog{outline:none}
 .dp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 0 8px}
 .dp-title{margin:0;font-size:.95rem;font-weight:600;color:var(--ob-fg)}

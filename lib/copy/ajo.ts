@@ -45,6 +45,7 @@ export const ajo = {
     button: "Next: review",
     pinLabel: "Pin a member to a turn",
     member: "Member",
+    none: "None",
     turn: "Turn",
     turnOption: (t: number, date?: string) => `Turn ${t}${date ? ` · ${date}` : ""}`,
     pin: "Pin",
