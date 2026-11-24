@@ -2,7 +2,7 @@
 // (what Gmail, Outlook, Apple Mail and Yahoo all render), the brand's cloud page with an
 // indigo heading and button, and the landing page's logo at the bottom.
 // Every email still has its plain-text twin; this is only the HTML part.
-// The logo is a PNG (public/email/logo.png, the landing logo rendered at 3x on a cloud pill):
+// The logo is a PNG (public/email/logo.png: the header wordmark, Ojuju 800, at 3x on cloud):
 // mail apps don't show SVG or the Ojuju web font. It's an ordinary image, not a tracker.
 // Everything a person typed (group and member names) goes through esc().
 import { BRAND } from "./config";
