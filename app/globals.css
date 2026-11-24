@@ -23,6 +23,9 @@
   --pit-shadow:inset 0 2px 5px rgba(20,26,51,.16),inset 0 -1px 0 rgba(255,255,255,.55);
   --spring:cubic-bezier(.3,1.6,.5,1);
   --r:18px; --r-lg:28px;
+  /* Type scale (home page): eight steps, each clearly bigger than the last, so headings,
+     body and small print read as distinct levels. Headings over 24px use clamp(). */
+  --fs-xs:.75rem; --fs-sm:.875rem; --fs-md:1rem; --fs-lg:1.125rem; --fs-xl:1.25rem; --fs-2xl:1.5rem;
   --display:'Hanken Grotesk',system-ui,-apple-system,Segoe UI,sans-serif; --sans:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,sans-serif;
   /* fixed in both themes: the indigo-dyed illustrations (gourd, cloth, adire grid)
      and the text on persimmon / palm gold fills */
@@ -133,7 +136,7 @@ html{scroll-padding-top:104px}
 .specular-button__label{position:relative;z-index:2;display:inline-flex;align-items:center;gap:inherit}
 
 /* buttons */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:13px 26px;border-radius:999px;font-weight:700;font-size:.98rem;transition:transform .2s,background .2s,border-color .2s;text-decoration:none;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:13px 26px;border-radius:999px;font-weight:700;font-size:var(--fs-md);transition:transform .2s,background .2s,border-color .2s;text-decoration:none;white-space:nowrap}
 .btn:active{transform:scale(.97)}
 /* primary = the mode's CTA colours (indigo + cloud on neutral screens) */
 .btn-primary{--sb-line:var(--cloud);--sb-base:var(--indigo-mist);background:var(--mode-cta-bg);color:var(--mode-cta-fg);box-shadow:0 10px 24px -12px rgba(20,26,51,.35)}
@@ -142,19 +145,19 @@ html{scroll-padding-top:104px}
 .btn-ghost:hover{border-color:var(--indigo)}
 /* the specular hairline replaces the ghost border */
 .btn-ghost.specular-button{border-color:transparent}.btn-ghost.specular-button:hover{background:color-mix(in srgb,var(--indigo) 7%,transparent)}
-.btn-sm{padding:9px 16px;font-size:.85rem}
+.btn-sm{padding:8px 16px;font-size:var(--fs-sm)}
 .btn[disabled]{opacity:.45;pointer-events:none}
 
 /* hero */
 .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;padding:56px 0 90px}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--indigo-mist);color:var(--ink);font-size:.82rem;font-weight:600;border:1px solid var(--line)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:var(--indigo-mist);color:var(--ink);font-size:var(--fs-sm);font-weight:600;border:1px solid var(--line)}
 .pill i{width:7px;height:7px;border-radius:50%;background:var(--indigo);box-shadow:0 0 0 4px color-mix(in srgb,var(--indigo) 18%,transparent);animation:pulse 2s infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 8px transparent}}
 h1{font-family:var(--display);font-weight:600;font-size:clamp(2.6rem,6vw,4.6rem);line-height:1.02;letter-spacing:-.025em;margin:22px 0 20px;color:var(--indigo)}
 h1 em{font-style:italic}
 :root[data-theme="dark"] h1 em,:root.dark h1 em{color:var(--palm-gold)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]):not(.light) h1 em{color:var(--palm-gold)}}
-.lede{font-size:1.15rem;color:var(--text-muted);max-width:520px}
+.lede{font-size:var(--fs-lg);color:var(--text-muted);max-width:520px}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
 .trust{display:flex;gap:22px;margin-top:30px;color:var(--text-muted);font-size:.86rem;flex-wrap:wrap}
 .trust span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--indigo);margin-right:8px;vertical-align:middle}
@@ -162,7 +165,7 @@ h1 em{font-style:italic}
 .hero-shekere{max-width:440px;width:100%;margin-left:auto;text-align:center}
 .shekere-btn{display:block;width:100%;border-radius:24px;-webkit-tap-highlight-color:transparent}
 .shekere{display:block;width:100%;height:auto;overflow:visible}
-.shekere-cap{font-size:.82rem;color:var(--text-muted);margin-top:4px}
+.shekere-cap{font-size:var(--fs-sm);color:var(--text-muted);margin-top:4px}
 .names-head{display:grid;grid-template-columns:1fr 150px;gap:18px;align-items:center}
 .names-head .shekere{width:150px}
 .drum{display:grid;place-items:center;gap:6px;min-height:300px;text-align:center}
@@ -177,7 +180,7 @@ h1 em{font-style:italic}
 
 /* sections */
 section.band{padding:80px 0}
-.eyebrow{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);font-weight:700}
+.eyebrow{font-size:var(--fs-xs);letter-spacing:.16em;text-transform:uppercase;color:var(--text-muted);font-weight:700}
 h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);letter-spacing:-.02em;line-height:1.08;margin:12px 0 14px;color:var(--indigo)}
 .sub{color:var(--text-muted);max-width:560px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:44px}
@@ -190,26 +193,50 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 /* "What <brand> offers": four mode cards (Santa and ajo carry their stripe, the rest
    the neutral one), equal height, then a one-line promise row */
 .of-head{text-align:center;max-width:760px;margin:0 auto}.of-head .sub{margin:0 auto}
-.of-grid{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:48px 0 0;padding:0}
-.of-card{display:flex;flex-direction:column;gap:10px;padding:30px 24px 22px}
-.of-motif{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--indigo-mist)}
-.of-card h3{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:1.2rem;margin-top:6px}
-.of-card>p{color:var(--text-muted);font-size:.95rem}
-.of-points{list-style:none;display:grid;gap:6px;margin:2px 0 6px;padding:0;font-size:.9rem}
-.of-points li{display:flex;align-items:baseline;gap:9px}
-.of-points li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--indigo);transform:translateY(-2px)}
-.pill.of-soon{padding:4px 10px;font-size:.72rem;font-family:var(--sans)}
+.of-grid{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:48px 0 0;padding:0}
+/* Offer cards: the same surface as the how-it-works and pricing cards (cloud, hairline
+   border, --r-lg), so the page reads as one system. Each keeps its product's colour on
+   the border, the bullets and the icon tile. Buttons are ghost: the hero's button stays
+   the loudest thing on the page. */
+.of-item{display:flex;min-width:0}
+.of-card{--tone:var(--pine);flex:1;display:flex;flex-direction:column;gap:12px;padding:32px 24px 24px;background:var(--cloud);color:var(--ink);border:1px solid color-mix(in srgb,var(--tone) 45%,var(--line));border-radius:var(--r-lg);transition:border-color .2s}
+.of-card:hover{border-color:var(--tone)}
+.of-santa{--tone:var(--pine)}
+.of-ajo{--tone:var(--palm-gold)}
+.of-gift{--tone:#3B6FE0}
+.of-give{--tone:#7C86D6}
+.of-motif{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:color-mix(in srgb,var(--tone) 14%,transparent);margin-bottom:4px}
+.of-motif .of-ico{width:28px;height:28px;margin:0;vertical-align:0;color:var(--indigo)}
+.of-card h3{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;font-family:var(--display);font-weight:600;font-size:var(--fs-xl);line-height:1.25;color:var(--indigo)}
+.of-card>p{margin:0;color:var(--text-muted);font-size:var(--fs-md)}
+.of-points{list-style:none;display:grid;gap:8px;margin:4px 0 8px;padding:0;font-size:var(--fs-sm)}
+.of-points li{display:flex;align-items:baseline;gap:8px}
+.of-points li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--tone);transform:translateY(-2px)}
+.pill.of-soon{padding:4px 8px;font-size:var(--fs-xs);font-family:var(--sans)}
+.of-btn{margin-top:auto;align-self:flex-start}
+@media (max-width:600px){.of-card{padding:24px 16px 16px}.of-btn{align-self:stretch}}
 @media (max-width:1100px){.of-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:600px){.of-grid{grid-template-columns:1fr}}
 .how-head{text-align:center}.how-head .sub{margin:0 auto}
 .how-steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:56px auto 0;padding:0}
-.how-card{background:var(--cloud);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px 26px 32px;text-align:center}
+.how-card{background:var(--cloud);border:1px solid var(--line);border-radius:var(--r-lg);padding:32px 24px;text-align:center}
 .how-deco{position:relative;width:144px;height:144px;margin:0 auto;-webkit-mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 70%,transparent 100%);mask-image:radial-gradient(ellipse 50% 50% at 50% 50%,#000 70%,transparent 100%)}
 .how-deco-grid{position:absolute;inset:0;opacity:.14;background:linear-gradient(to right,var(--indigo) 1px,transparent 1px),linear-gradient(to bottom,var(--indigo) 1px,transparent 1px);background-size:24px 24px}
 .how-deco-mark{position:absolute;inset:0;margin:auto;width:56px;height:56px;display:grid;place-items:center;background:var(--cloud);border-top:1px solid color-mix(in srgb,var(--indigo) 35%,transparent);border-left:1px solid color-mix(in srgb,var(--indigo) 35%,transparent)}
-.how-num{margin-top:22px;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
-.how-card h3{font-family:var(--display);font-weight:600;font-size:1.3rem;margin:6px 0 10px}
-.how-card p{color:var(--text-muted);font-size:.95rem}
+.how-num{margin-top:24px;font-size:var(--fs-xs);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+.how-card h3{font-family:var(--display);font-weight:600;font-size:var(--fs-2xl);margin:8px 0}
+.how-card p{color:var(--text-muted);font-size:var(--fs-md)}
+/* Phones: each step is one compact row (the mark on the left, the words beside it), so
+   the three steps fit in about one screen instead of two. */
+@media (max-width:600px){
+  .how-steps{gap:12px}
+  .how-card{display:grid;grid-template-columns:72px 1fr;grid-template-rows:auto auto 1fr;column-gap:16px;align-items:start;padding:16px;text-align:left}
+  .how-card .how-deco{grid-row:1/4;width:72px;height:72px;margin:0}
+  .how-card .how-deco-grid{background-size:18px 18px}
+  .how-card .how-deco-mark{width:44px;height:44px}
+  .how-card .how-num{margin-top:0}
+  .how-card h3{margin:4px 0;font-size:var(--fs-xl)}
+}
 /* Features: centred head over a ruled grid (1px lines drawn by the gap) */
 .fg-head{text-align:center;max-width:760px;margin:0 auto}
 .fg-grid{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin:56px 0 0;padding:0;background:var(--line);border:1px solid var(--line)}
@@ -220,20 +247,20 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .prices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:44px}
 .amt{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .amt strong{font-family:var(--display);font-size:2.6rem;font-weight:600;letter-spacing:-.02em;color:var(--indigo)}
-.amt small{color:var(--text-muted)}
+.amt small{color:var(--text-muted);font-size:var(--fs-sm)}
 /* Pricing: a Per draw / Yearly switch over three cards (Small circle, Big circle, Ajo) */
 .pricing-table{margin-top:36px}.pricing-table .prices{margin-top:30px}
 .price{position:relative;min-width:0;background:var(--cloud);border:1px solid var(--line);border-radius:var(--r-lg);padding:30px;display:flex;flex-direction:column}
 .price.hot{border-color:var(--indigo)}
-.price h3{font-family:var(--display);font-size:1.45rem;font-weight:600;color:var(--indigo)}
-.price .who{color:var(--text-muted);font-size:.9rem;margin:4px 0 20px}
-.price ul{list-style:none;margin:22px 0 26px;padding:0;display:grid;gap:9px;font-size:.93rem;color:var(--ink)}
+.price h3{font-family:var(--display);font-size:var(--fs-2xl);font-weight:600;color:var(--indigo)}
+.price .who{color:var(--text-muted);font-size:var(--fs-sm);margin:4px 0 20px}
+.price ul{list-style:none;margin:24px 0;padding:0;display:grid;gap:8px;font-size:var(--fs-sm);color:var(--ink)}
 .price li{display:flex;gap:10px;align-items:flex-start}
 .price li svg{flex:none;margin-top:3px}
-.price-note{min-height:1.3em;margin-top:6px;font-size:.84rem;color:var(--text-muted)}
+.price-note{min-height:1.3em;margin-top:8px;font-size:var(--fs-sm);color:var(--text-muted)}
 .price-extra{display:inline-flex;align-items:center;justify-content:center;min-height:44px;margin-top:6px;color:var(--indigo);text-decoration:underline;text-underline-offset:3px}
 .billing{position:relative;display:inline-grid;grid-template-columns:1fr 1fr;max-width:100%;padding:4px;border:1px solid var(--line);border-radius:999px;background:var(--indigo-mist);min-width:0}
-.billing button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border:0;background:none;border-radius:999px;font:inherit;font-weight:700;font-size:.92rem;color:var(--text-muted);cursor:pointer;transition:color .25s}
+.billing button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border:0;background:none;border-radius:999px;font:inherit;font-weight:700;font-size:var(--fs-sm);color:var(--text-muted);cursor:pointer;transition:color .25s}
 .billing button[aria-pressed="true"]{color:var(--cloud)}
 .billing button:not([aria-pressed="true"]):hover{color:var(--ink)}
 .billing-pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--indigo);box-shadow:0 6px 18px -8px rgba(20,26,51,.4);transition:transform .45s var(--spring)}
@@ -248,7 +275,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .price-flip-face{grid-area:1/1;min-width:0;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .price-flip-back{transform:rotateX(180deg)}
 /* Buttons roll over like a cube: outlined face, then the filled face with an arrow */
-.flip-cta{--h:52px;position:relative;display:block;margin-top:auto;height:var(--h);perspective:700px;border-radius:999px;font-weight:700;font-size:.98rem;text-decoration:none}
+.flip-cta{--h:52px;position:relative;display:block;margin-top:auto;height:var(--h);perspective:700px;border-radius:999px;font-weight:700;font-size:var(--fs-md);text-decoration:none}
 .flip-cta-box{position:relative;display:block;height:100%;transform-style:preserve-3d;transform:translateZ(calc(var(--h) / -2));transition:transform .55s var(--spring)}
 .flip-cta-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;border-radius:999px;text-align:center;line-height:1.2;-webkit-backface-visibility:hidden;backface-visibility:hidden}
 .flip-cta-front{transform:translateZ(calc(var(--h) / 2));border:1.5px solid color-mix(in srgb,var(--ink) 25%,transparent);background:var(--cloud);color:var(--indigo)}
@@ -271,15 +298,15 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
    effect (reduced motion, short screens) the footer simply follows the page.
    Tagline + ruled link columns, then a giant wordmark filled with adire cloth, cut
    off by the bottom rule and fading into it. */
-.site-foot{position:relative;z-index:2;padding:64px 0 96px;font-size:.95rem;background:var(--cloud);
+.site-foot{position:relative;z-index:2;padding:64px 0 96px;font-size:var(--fs-md);background:var(--cloud);
   border-top:1px solid var(--line);border-radius:32px 32px 0 0;box-shadow:0 -24px 48px -28px rgba(20,26,51,.35)}
 .stack-under{position:relative}
 .stack-under>.wrap{transform-origin:50% calc(100% - 50vh)}
 .stack-under::after{content:"";position:absolute;inset:0;z-index:2;background:#000;opacity:var(--sf-dim,0);pointer-events:none}
 .sf-top{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(3,minmax(0,1fr));gap:40px;align-items:start}
-.sf-tag{font-size:1.1rem;line-height:1.55;color:var(--ink);max-width:22rem}
+.sf-tag{font-size:var(--fs-lg);line-height:1.55;color:var(--ink);max-width:22rem}
 .sf-col{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0}
-.sf-col h3{font-family:var(--display);font-weight:700;font-size:1.15rem;line-height:1.55;color:var(--indigo);margin:0 0 8px}
+.sf-col h3{font-family:var(--display);font-weight:700;font-size:var(--fs-lg);line-height:1.55;color:var(--indigo);margin:0 0 8px}
 .sf-col a{display:inline-flex;align-items:center;min-height:44px;color:var(--text-muted);text-decoration:none;transition:color .2s}
 .sf-col a:hover{color:var(--ink)}
 .sf-social{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
@@ -290,7 +317,7 @@ h2{font-family:var(--display);font-weight:600;font-size:clamp(2rem,4vw,3rem);let
 .sf-mark span{display:block;text-align:center;font-family:var(--display);font-weight:800;font-size:var(--sf-size);line-height:.9;letter-spacing:-.04em;
   color:transparent;background:url(/adire-fill.jpg) center/cover;-webkit-background-clip:text;background-clip:text;
   -webkit-text-stroke:1.5px color-mix(in srgb,var(--ink) 40%,transparent)}
-.sf-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:22px;border-top:1px solid var(--line);color:var(--text-muted);font-size:.85rem}
+.sf-bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:22px;border-top:1px solid var(--line);color:var(--text-muted);font-size:var(--fs-sm)}
 .sf-bottom a{color:var(--indigo);text-decoration:none}
 .sf-bottom a:hover{color:var(--ink)}
 
@@ -896,24 +923,6 @@ select.in option{background:var(--cloud);color:var(--ink)}
 }
 .specular-button__label>.tint-ico{margin-right:-2px}
 
-/* "What <brand> offers" cards in the Sorbet style, each bordered in its own colour */
-.of-item{display:flex;min-width:0}
-.ob .of-card{--mode-stripe:var(--pine);flex:1;display:flex;flex-direction:column;gap:12px;padding:28px 24px 24px;background:var(--ob-card);color:var(--ob-fg);font-family:var(--rb-font-sans);border:1px solid color-mix(in srgb,var(--mode-stripe) 70%,transparent);border-radius:var(--rb-r-3xl);box-shadow:var(--ob-shadow);transition:border-color .2s}
-.ob .of-card:hover{border-color:var(--mode-stripe)}
-.ob .of-santa{--mode-stripe:var(--pine)}
-.ob .of-ajo{--mode-stripe:var(--palm-gold)}
-.ob .of-gift{--mode-stripe:#3B6FE0}
-.ob .of-give{--mode-stripe:#7C86D6}
-.ob .of-motif{width:52px;height:52px;border-radius:var(--rb-r-xs);background:var(--ob-soft);margin-bottom:4px}
-.ob .of-card h3{font-family:var(--rb-font-sans);font-weight:600;font-size:1.15rem;line-height:1.3;color:var(--ob-fg);margin:0}
-.ob .of-card>p{color:var(--ob-muted);font-size:.95rem;line-height:1.55;margin:0}
-.ob .of-points{gap:8px;margin:4px 0 8px;font-size:.9rem;color:var(--ob-fg)}
-.ob .of-points li::before{background:var(--mode-stripe)}
-.ob .of-card .pill.of-soon{background:var(--ob-soft);color:var(--ob-fg);border:1px solid var(--ob-line);font-family:var(--rb-font-sans);font-weight:500}
-.ob .of-btn{margin-top:auto;align-self:flex-start}
-@media (max-width:600px){.ob .of-card{padding:24px 20px 20px}.ob .of-btn{align-self:stretch}}
-.ob .of-motif{display:grid;place-items:center}
-.ob .of-motif .of-ico{width:32px;height:32px;margin:0;vertical-align:0;color:var(--ob-fg)}
 
 /* Who's playing? icons take the theme blue when their card is chosen, focused or hovered.
    The white glass icon is multiplied with currentColor and masked to its own shape. */
@@ -1008,12 +1017,12 @@ select.in option{background:var(--cloud);color:var(--ink)}
   .pricing-table{margin-top:24px}.pricing-table .prices{margin-top:0;gap:14px}
   .billing-in-card{max-width:none}
   .price{padding:22px 20px 20px;border-radius:var(--r)}
-  .price h3{font-size:1.3rem}
-  .price .who{margin:2px 0 14px;font-size:.88rem;line-height:1.45}
+  .price h3{font-size:var(--fs-xl)}
+  .price .who{margin:4px 0 16px;font-size:var(--fs-sm);line-height:1.45}
   .price .amt{gap:8px}
   .price .amt strong{font-size:2.2rem;line-height:1.1}
-  .price .amt small{font-size:.84rem}
-  .price-more{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;margin:14px 0 0;padding:0;border:0;border-top:1px solid var(--line);background:none;font:inherit;font-size:.92rem;font-weight:700;color:var(--indigo);cursor:pointer;text-align:left}
+  .price .amt small{font-size:var(--fs-sm)}
+  .price-more{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;margin:14px 0 0;padding:0;border:0;border-top:1px solid var(--line);background:none;font:inherit;font-size:var(--fs-sm);font-weight:700;color:var(--indigo);cursor:pointer;text-align:left}
   .price-more-chev{width:9px;height:9px;margin-right:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .25s}
   .price-more[aria-expanded="true"] .price-more-chev{transform:translateY(2px) rotate(-135deg)}
   .price-more:focus-visible{outline:2px solid var(--indigo);outline-offset:2px;border-radius:6px}
@@ -1064,7 +1073,8 @@ select.in option{background:var(--cloud);color:var(--ink)}
    One rhythm for every home section: a centred head (eyebrow, heading, one short line),
    then the content 48px below. Headings and short lines wrap into balanced lines, so no
    line ends on a lone word. */
-h1,h2,h3,.sub,.lede{text-wrap:balance}
+h1,h2,h3,.sub,.lede,.h-line{text-wrap:balance}
+.h-line{display:block}
 p{text-wrap:pretty}
 section.band{padding:clamp(56px,7vw,88px) 0}
 .how-head,.of-head,#pricing>.wrap>:is(.eyebrow,h2,.sub){text-align:center;margin-left:auto;margin-right:auto}
@@ -1181,13 +1191,13 @@ section.band{padding:clamp(56px,7vw,88px) 0}
 .uc-body{position:absolute;inset:auto 0 0;z-index:2;padding:16px;color:#fff;pointer-events:none;opacity:0;transform:translateY(12px);transition:opacity .5s var(--uc-ease),transform .5s var(--uc-ease)}
 .uc-item.is-open .uc-body{opacity:1;transform:none;transition-delay:.15s}
 .uc-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
-.uc-head h3{margin:0;font-family:var(--display);font-size:1.15rem;font-weight:700;line-height:1.2;color:#fff}
+.uc-head h3{margin:0;font-family:var(--display);font-size:var(--fs-lg);font-weight:700;line-height:1.2;color:#fff}
 .uc-soon{padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:.75rem;font-weight:600;color:#fff}
 .uc-desc{max-width:28rem;margin:8px 0 0;font-size:.875rem;line-height:1.55;color:rgba(255,255,255,.92);text-wrap:pretty}
-.uc-cta{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:14px;padding:0 20px;border-radius:999px;background:var(--palm-gold);color:var(--on-accent);font-size:.9rem;font-weight:700;text-decoration:none;transition:filter .2s}
+.uc-cta{pointer-events:auto;display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:14px;padding:0 20px;border-radius:999px;background:var(--dye-fg);color:var(--dye);font-size:var(--fs-sm);font-weight:700;text-decoration:none;transition:filter .2s}
 .uc-cta:hover{filter:brightness(1.08)}
 .uc-cta:focus-visible{outline:2px solid #fff;outline-offset:3px}
-.uc-credit{margin:12px 0 0;font-size:.6875rem;color:rgba(255,255,255,.7)}
+.uc-credit{margin:12px 0 0;font-size:var(--fs-xs);color:rgba(255,255,255,.7)}
 @media (min-width:768px){
   .uc-wrap{margin-top:48px}
   .uc{flex-direction:row;height:min(440px,80svh)}
@@ -1196,7 +1206,7 @@ section.band{padding:clamp(56px,7vw,88px) 0}
   .uc-tab-title{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
   .uc-icon{width:44px;height:44px}
   .uc-body{padding:24px}
-  .uc-head h3{font-size:1.5rem}
+  .uc-head h3{font-size:var(--fs-2xl)}
   .uc-desc{font-size:1rem}
 }
 @media (prefers-reduced-motion:reduce){

@@ -137,3 +137,8 @@
     color: var(--gn-ink);
   }
 }
+
+/* No current item (activeIndex -1): the pill and its label overlay fade out. */
+.gooey-nav__canvas,.gooey-nav__fallback,.gooey-nav__list--active{transition:opacity .3s ease}
+.gooey-nav--idle :is(.gooey-nav__canvas,.gooey-nav__fallback,.gooey-nav__list--active){opacity:0 !important} /* the fallback pill sets its opacity inline */
+@media (prefers-reduced-motion:reduce){.gooey-nav__canvas,.gooey-nav__fallback,.gooey-nav__list--active{transition:none}}

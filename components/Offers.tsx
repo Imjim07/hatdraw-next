@@ -4,12 +4,13 @@ import BorderGlow from "./ui/BorderGlow";
 import SpecularButton from "./SpecularButton";
 import { Headline } from "@/components/GradientText";
 
-// "What <brand> offers": four cards after the hero, in the Sorbet style of the setup
-// wizards. Each card is bordered in its own colour (green for Secret Santa, gold for ajo,
-// blue for Gift Finder, indigo for the giveaway picker), and the border glows near the
-// pointer (BorderGlow). The giveaway picker isn't built yet, so its card has no button at
-// all (not a disabled one). Icons by Icons8, tinted with the text colour so they follow
-// the theme.
+// "What <brand> offers": four cards after the hero, on the same cloud surface as the
+// how-it-works and pricing cards. Each card is bordered in its own colour (green for Secret
+// Santa, gold for ajo, blue for Gift Finder, indigo for the giveaway picker), and the border
+// glows near the pointer (BorderGlow). Their buttons are ghost, so the hero's button stays
+// the one loud button on the page. The giveaway picker isn't built yet, so its card has no
+// button at all (not a disabled one). Icons by Icons8, tinted with the text colour so they
+// follow the theme.
 type Tone = "santa" | "ajo" | "gift" | "give";
 type Offer = { title: string; motif: string; tone: Tone; text: string; points: string[]; link?: { href: string; label: string } };
 
@@ -36,7 +37,7 @@ export default function Offers() {
         <h2><Headline>{O.heading}</Headline></h2>
         <p className="sub">{O.subline}</p>
       </div>
-      <ul className="of-grid ob">
+      <ul className="of-grid">
         {OFFERS.map((o) => (
           <li key={o.title} className="of-item">
             <BorderGlow className={`of-card of-${o.tone}`} colors={GLOW[o.tone].colors} glowColor={GLOW[o.tone].glow} aria-disabled={o.link ? undefined : true}>
@@ -44,7 +45,7 @@ export default function Offers() {
               <h3>{o.title}{!o.link && <span className="pill of-soon">{O.soon}</span>}</h3>
               <p>{o.text}</p>
               {o.points.length > 0 && <ul className="of-points">{o.points.map((p) => <li key={p}>{p}</li>)}</ul>}
-              {o.link && <SpecularButton href={o.link.href} className="btn btn-primary btn-sm of-btn">{o.link.label} <span aria-hidden="true">→</span></SpecularButton>}
+              {o.link && <SpecularButton href={o.link.href} className="btn btn-ghost btn-sm of-btn">{o.link.label} <span aria-hidden="true">→</span></SpecularButton>}
             </BorderGlow>
           </li>
         ))}

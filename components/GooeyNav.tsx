@@ -211,6 +211,7 @@ type Settings = {
 export type GooeyNavProps = {
   items?: GooeyItem[];
   initialActiveIndex?: number;
+  /** -1: no item is current (e.g. the page is above the first section); the pill fades out. */
   activeIndex?: number;
   onChange?: (index: number, item: GooeyItem) => void;
   theme?: "dark" | "light";
@@ -254,6 +255,7 @@ const GooeyNav = ({
   "aria-label": ariaLabel,
 }: GooeyNavProps) => {
   const [innerIndex, setInnerIndex] = useState(initialActiveIndex);
+  const none = activeIndex === -1;
   const current = Math.min(Math.max(0, activeIndex ?? innerIndex), Math.max(0, items.length - 1));
   const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -786,14 +788,14 @@ const GooeyNav = ({
       }
       const shared = {
         className: "gooey-nav__link",
-        "aria-current": index === current ? ("page" as const) : undefined,
+        "aria-current": !none && index === current ? ("location" as const) : undefined,
         onClick: (event: MouseEvent) => {
           if (!item.href || item.href === "#") event.preventDefault();
           select(index);
         },
       };
       return (
-        <li key={index} className="gooey-nav__item" data-gooey-index={index} data-active={index === current ? "" : undefined}>
+        <li key={index} className="gooey-nav__item" data-gooey-index={index} data-active={!none && index === current ? "" : undefined}>
           {item.href ? (
             <a href={item.href} {...shared}>
               {content}
@@ -810,7 +812,7 @@ const GooeyNav = ({
   return (
     <nav
       aria-label={ariaLabel}
-      className={`gooey-nav ${SIZES[size] ?? SIZES.md}${frame ? " gooey-nav--framed" : ""} ${className}`.trim()}
+      className={`gooey-nav ${SIZES[size] ?? SIZES.md}${frame ? " gooey-nav--framed" : ""}${none ? " gooey-nav--idle" : ""} ${className}`.trim()}
       style={{ ...THEMES[palette], "--gn-pill": pillColor, "--gn-active-ink": textColor, ...style } as unknown as CSSProperties}
     >
       {frame && <span className="gooey-nav__rim" />}

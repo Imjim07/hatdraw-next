@@ -5,7 +5,8 @@ import { DARK, PALETTE } from "@/lib/palette";
 import { useTheme } from "@/lib/theme";
 import { landing } from "@/lib/copy/landing";
 
-// Landing-page section links. The gold pill follows the section you're reading;
+// Landing-page section links. The pill follows the section you're reading (none while
+// you're still in the hero);
 // after a click it stays on the clicked item until the smooth scroll ends, so it
 // doesn't hop through the sections in between.
 const N = landing.nav;
@@ -32,22 +33,25 @@ const THEME = {
 } as React.CSSProperties;
 
 export default function SectionNav() {
-  const [active, setActive] = useState(0);
+  const [active, setActive] = useState(-1);
   const dark = useTheme() === "dark";
   const locked = useRef(false);
 
   useEffect(() => {
     const sections = ITEMS.map((i) => (i.href.startsWith("#") ? document.getElementById(i.href.slice(1)) : null));
-    let frame = 0;
+    // The smooth scroller keeps moving the page for a moment after the last scroll event,
+    // so the spy keeps checking, once a frame, until shortly after scrolling stops.
+    let frame = 0, until = 0;
     const spy = () => {
       frame = 0;
+      if (performance.now() < until) frame = requestAnimationFrame(spy);
       if (locked.current) return;
       const line = innerHeight * 0.35;
-      let idx = 0;
+      let idx = -1;
       sections.forEach((s, i) => { if (s && s.getBoundingClientRect().top <= line) idx = i; });
       setActive(idx);
     };
-    const onScroll = () => { if (!frame) frame = requestAnimationFrame(spy); };
+    const onScroll = () => { until = performance.now() + 1500; if (!frame) frame = requestAnimationFrame(spy); };
     const unlock = () => { locked.current = false; onScroll(); };
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("scrollend", unlock);
